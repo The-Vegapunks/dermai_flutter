@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
             TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
           },
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         useMaterial3: true,
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
