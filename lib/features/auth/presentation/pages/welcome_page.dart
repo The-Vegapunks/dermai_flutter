@@ -44,50 +44,6 @@ class _WelcomePageState extends State<WelcomePage> {
               child: const Text('Sign Up'),
             ),
           ),
-          const SizedBox(height: 24),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Checkbox(value: true, onChanged: (value) {}),
-                Flexible(
-                  child: RichText(
-                    text: TextSpan(
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      children: <TextSpan>[
-                        const TextSpan(text: 'By joining, you agree to our '),
-                        TextSpan(
-                            text: 'Terms of Service',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // todo
-                              }),
-                        const TextSpan(text: ' and '),
-                        TextSpan(
-                            text: 'Privacy Policy',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // todo
-                              }),
-                        const TextSpan(text: '.'),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 32),
         ],
       ),

@@ -11,7 +11,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  int _currentIndex = 0;
+  int currentPageIndex = 0;
   final List<Widget> _screens = [
     const HomePage(),
     const AppointmentPage(),
@@ -22,28 +22,28 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
+      body: _screens[currentPageIndex],
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
           setState(() {
-            _currentIndex = index;
+            currentPageIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget> [
+          NavigationDestination(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.calendar_today),
             label: 'Appointment',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.medical_services),
             label: 'AI',
           ),
-        ],
+        ]
       )
     );
   }

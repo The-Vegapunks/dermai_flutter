@@ -1,3 +1,4 @@
+import 'package:dermai/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,17 @@ class _SignInPageState extends State<SignInPage> {
             child: ObscuredTextField(
                 labelText: 'Password', icon: Icon(Icons.lock)),
           ),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () { 
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
+                 },
+                child: const Text('Forgot Password'),
+              ),
+            ],
+          )),
           const Expanded(child: SizedBox(height: 16)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -52,20 +64,6 @@ class _SignInPageState extends State<SignInPage> {
                           MaterialPageRoute(builder: (context) => const RootPage()));
                     },
                     child: const Text('Sign In'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: null,
-                    child: Text('Forgot Password'),
                   ),
                 ),
               ],
