@@ -11,6 +11,9 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  String? _email;
+  String? _password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,15 +34,21 @@ class _SignInPageState extends State<SignInPage> {
       body:  Column(
         children: [
           const SizedBox(height: 64),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: EmailTextField(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: EmailTextField(onChanged: (value) => {
+              _email = value
+            },),
           ),
           const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ObscuredTextField(
-                labelText: 'Password', icon: Icon(Icons.lock)),
+                labelText: 'Password', 
+                icon: const Icon(Icons.lock),
+                onChanged: (value) => {
+                  _password = value
+                },),
           ),
           Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -60,8 +69,10 @@ class _SignInPageState extends State<SignInPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context,
+                      if (_validateInputs()) {
+                        Navigator.push(context,
                           MaterialPageRoute(builder: (context) => const RootPage()));
+                      }
                     },
                     child: const Text('Sign In'),
                   ),
@@ -74,4 +85,25 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
+
+  bool _validateInputs() {
+  
+  if (_email == null || _email!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter your email.'),
+      ),
+    );
+    return false;
+  }
+  if (_password == null || _password!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter your password.'),
+      ),
+    );
+    return false;
+  }
+  return true;
+}
 }

@@ -9,6 +9,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  String? _email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,15 +27,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           },
         ),
       ),
-      body: const Column(
+      body: Column(
         children: [
-          SizedBox(height: 64),
+          const SizedBox(height: 64),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: EmailTextField(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: EmailTextField(
+              onChanged: (value) => {
+                _email = value
+              },
+            ),
           ),
-          SizedBox(height: 16),
-          Padding(
+          const SizedBox(height: 16),
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [

@@ -1,7 +1,6 @@
 import 'package:dermai/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:dermai/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});

@@ -2,6 +2,7 @@ import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -12,6 +13,11 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   bool? _isPrivacyPolicyChecked = false;
+  String? _fullName;
+  String? _email;
+  String? _password;
+  String? _confirmPassword;
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +39,34 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Column(
         children: [
           const SizedBox(height: 64),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: UniversalTextField(labelText: "Full Name", icon: Icon(Icons.person),),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: UniversalTextField(labelText: "Full Name", icon: const Icon(Icons.person), onChanged: (value) => {
+              setState(() {
+                _fullName = value;
+              })
+            },),
           ),
           const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: EmailTextField()
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: EmailTextField(onChanged: (value) => {
+              _email = value
+            },)
           ),
           const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: ObscuredTextField(labelText: 'Password', icon: Icon(Icons.lock_outline)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ObscuredTextField(labelText: 'Password', icon: const Icon(Icons.lock_outline), onChanged: (value) => {
+              _password = value
+            },),
           ),
           const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: ObscuredTextField(labelText: 'Confirm Password', icon: Icon(Icons.lock)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ObscuredTextField(labelText: 'Confirm Password', icon: const Icon(Icons.lock), onChanged: (value) => {
+              _confirmPassword = value
+            },),
           ),
           const SizedBox(height: 16),
           Container(
@@ -110,7 +126,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: 
                       () {
                         if (_isPrivacyPolicyChecked == true){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const RootPage()));
+                          if (_validateInputs()) {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const RootPage()));
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -129,4 +147,60 @@ class _SignUpPageState extends State<SignUpPage> {
       ]),
     );
   }
+
+  bool _validateInputs() {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  if (_fullName == null || _fullName!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter your full name.'),
+      ),
+    );
+    return false;
+  }
+
+  if (_email == null || _email!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter your email.'),
+      ),
+    );
+    return false;
+  }
+  if (!emailRegex.hasMatch(_email!)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter a valid email address.'),
+      ),
+    );
+    return false;
+  }
+
+  if (_password == null || _password!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter your password.'),
+      ),
+    );
+    return false;
+  }
+  if (_confirmPassword == null || _confirmPassword!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please confirm your password.'),
+      ),
+    );
+    return false;
+  }
+  if (_password != _confirmPassword) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Passwords do not match.'),
+      ),
+    );
+    return false;
+  }
+  return true;
 }
+}
+
