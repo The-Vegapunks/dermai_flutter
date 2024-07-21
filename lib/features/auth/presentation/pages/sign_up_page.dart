@@ -2,7 +2,6 @@ import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

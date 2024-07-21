@@ -13,15 +13,18 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
     return Scaffold(
         body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Expanded(child: SizedBox(height: 128)),
-          Container(
-            child: SvgPicture.asset("assets/Logo/DermAI-darkmode.svg"),
-          ),
+          if (isDarkMode)
+            SvgPicture.asset("assets/Logo/DermAI-darkmode.svg")
+          else
+            SvgPicture.asset("assets/Logo/DermAI-lightmode.svg"),
           const SizedBox(height: 16),
           const Expanded(child: SizedBox(height: 16)),
           Container(

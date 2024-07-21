@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   fpdart: ^1.1.0
   supabase_flutter: ^2.5.8
-  form_builder_validators: ^11.0.0
+  flutter_bloc: ^8.1.6
 
 dev_dependencies:
   flutter_test:
