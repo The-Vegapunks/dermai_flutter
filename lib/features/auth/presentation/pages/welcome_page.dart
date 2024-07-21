@@ -1,6 +1,7 @@
 import 'package:dermai/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:dermai/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -18,8 +19,9 @@ class _WelcomePageState extends State<WelcomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Expanded(child: SizedBox(height: 128)),
-          Text('DermAI', style: Theme.of(context).textTheme.displayLarge),
-          Text('By Vegapunks', style: Theme.of(context).textTheme.titleSmall),
+          Container(
+            child: SvgPicture.asset("assets/Logo/DermAI-darkmode.svg"),
+          ),
           const SizedBox(height: 16),
           const Expanded(child: SizedBox(height: 16)),
           Container(
@@ -27,7 +29,10 @@ class _WelcomePageState extends State<WelcomePage> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInPage()));
               },
               child: const Text('Sign In'),
             ),
@@ -38,7 +43,10 @@ class _WelcomePageState extends State<WelcomePage> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpPage()));
               },
               child: const Text('Sign Up'),
             ),
