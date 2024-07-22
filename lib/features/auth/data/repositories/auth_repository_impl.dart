@@ -1,5 +1,7 @@
 import 'package:dermai/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:dermai/features/auth/domain/repository/auth_repository.dart';
+import 'package:dermai/features/core/entities/user.dart';
+import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -15,44 +17,61 @@ class AuthRepositoryImpl implements AuthRepository {
       final message = await remoteDataSource.forgotPassword(email: email);
 
       return right(message);
-    } catch (e) {
-      return left(Failure(e.toString()));
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, String>> signIn({
+  Future<Either<Failure, User>> signIn({
     required String email,
     required String password,
   }) async{
     try {
-      final userID = await remoteDataSource.signIn(
+      final user = await remoteDataSource.signIn(
         email: email,
         password: password,
       );
 
-      return right(userID);
-    } catch (e) {
-      return left(Failure(e.toString()));
+      return right(user);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, String>> signUp({
+  Future<Either<Failure, User>> signUp({
     required String name,
     required String email,
     required String password,
   }) async {
     try {
-      final userID = await remoteDataSource.signUp(
+      final user = await remoteDataSource.signUp(
         name: name,
         email: email,
         password: password,
       );
 
-      return right(userID);
-    } catch (e) {
-      return left(Failure(e.toString()));
+      return right(user);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
     }
   }
+  
+  @override
+  Future<Either<Failure, User>> currentUser() async {
+    try {
+      final user = await remoteDataSource.getCurrentUserData();
+      if (user == null) {
+        return left(Failure('User not signed in'));
+      } else {
+        return right(user);
+      }
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  
+
 }

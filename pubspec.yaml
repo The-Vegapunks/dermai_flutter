@@ -53,6 +53,10 @@ dev_dependencies:
   stream_video: ^0.4.2
   stream_video_flutter: ^0.4.2
   stream_video_push_notification: ^0.4.2
+  envied: ^0.5.4+1
+  envied_generator: ^0.5.4+1
+  build_runner: ^2.4.11
+  get_it: ^7.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
