@@ -76,11 +76,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'name': name,
         'isDoctor': false,
       });
-
       if (response.user == null) {
         throw const ServerException('User not created');
       }
-      return UserModel.fromJsonPatient(response.user!.toJson());
+      final userData = await client.from('patient').select().eq(
+            'patientID',
+            response.user!.id,
+          );
+      return UserModel.fromJsonPatient(userData.first);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {

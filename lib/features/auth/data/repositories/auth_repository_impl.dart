@@ -46,12 +46,12 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
+      print('User: $name, $email, $password');
       final user = await remoteDataSource.signUp(
         name: name,
         email: email,
         password: password,
       );
-
       return right(user);
     } on ServerException catch (e) {
       return left(Failure(e.message));
