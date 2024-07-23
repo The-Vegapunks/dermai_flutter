@@ -23,7 +23,6 @@ void main() async {
   //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiVGFsb25fS2FycmRlIiwiaXNzIjoiaHR0cHM6Ly9wcm9udG8uZ2V0c3RyZWFtLmlvIiwic3ViIjoidXNlci9UYWxvbl9LYXJyZGUiLCJpYXQiOjE3MjE1MzYxNjgsImV4cCI6MTcyMjE0MDk3M30._36Jx_65SveNtfuZMpV-F2gPq8dpNkQnnpYSB74Fd-U',
   // );
 
-
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
       create: (_) => serviceLocator<AppUserCubit>(),
@@ -47,7 +46,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      
       context.read<AuthBloc>().add(AuthAuthenticated());
     });
   }
