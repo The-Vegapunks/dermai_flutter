@@ -57,6 +57,7 @@ dev_dependencies:
   envied_generator: ^0.5.4+1
   build_runner: ^2.4.11
   get_it: ^7.7.0
+  flutter_gemini: ^2.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
