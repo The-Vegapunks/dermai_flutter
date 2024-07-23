@@ -8,8 +8,6 @@ import 'package:dermai/features/doctor/presentation/pages/root_page.dart'
 import 'package:dermai/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fpdart/fpdart.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +23,6 @@ void main() async {
   //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiVGFsb25fS2FycmRlIiwiaXNzIjoiaHR0cHM6Ly9wcm9udG8uZ2V0c3RyZWFtLmlvIiwic3ViIjoidXNlci9UYWxvbl9LYXJyZGUiLCJpYXQiOjE3MjE1MzYxNjgsImV4cCI6MTcyMjE0MDk3M30._36Jx_65SveNtfuZMpV-F2gPq8dpNkQnnpYSB74Fd-U',
   // );
 
-  Gemini.init(apiKey: "API KEY HERE");
 
   runApp(MultiBlocProvider(providers: [
     BlocProvider(

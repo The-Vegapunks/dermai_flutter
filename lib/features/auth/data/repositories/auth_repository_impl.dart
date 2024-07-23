@@ -46,7 +46,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      print('User: $name, $email, $password');
       final user = await remoteDataSource.signUp(
         name: name,
         email: email,
@@ -67,6 +66,21 @@ class AuthRepositoryImpl implements AuthRepository {
       } else {
         return right(user);
       }
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, User>> verifyOTPForRecovery({required String email, required String password, required String token}) async {
+    try {
+      final user = await remoteDataSource.verifyOTPForRecovery(
+        email: email,
+        password: password,
+        token: token,
+      );
+
+      return right(user);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

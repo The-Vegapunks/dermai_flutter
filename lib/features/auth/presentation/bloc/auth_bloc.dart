@@ -1,5 +1,6 @@
 import 'package:dermai/features/auth/domain/usecases/current_user.dart';
 import 'package:dermai/features/auth/domain/usecases/user_forget_password.dart';
+import 'package:dermai/features/auth/domain/usecases/user_recover_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_in.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
@@ -16,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserForgetPassword _userForgetPassword;
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
+  final UserRecoverPassword _userRecoverPassword;
 
   AuthBloc({
     required UserSignUp userSignUp,
@@ -23,11 +25,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required UserForgetPassword userForgetPassword,
     required CurrentUser currentUser,
     required AppUserCubit appUserCubit,
+    required UserRecoverPassword userRecoverPassword,
   })  : _userSignUp = userSignUp,
         _userSignIn = userSignIn,
         _userForgetPassword = userForgetPassword,
         _currentUser = currentUser,
         _appUserCubit = appUserCubit,
+        _userRecoverPassword = userRecoverPassword,
         super(AuthInitial()) {
     on<AuthSignUp>((event, emit) async {
       emit(AuthLoading());
@@ -58,6 +62,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     on<AuthAuthenticated>((event, emit) async {
       final response = await _currentUser(NoParams());
+      response.fold(
+        (failure) => _emitAuthFailure(failure.message, emit),
+        (user) => _emitAuthSuccess(user, emit),
+      );
+    });
+
+    on<AuthRecoverPassword>((event, emit) async {
+      emit(AuthLoading());
+      final response = await _userRecoverPassword(UserRecoverPasswordParams(
+          email: event.email, password: event.password, token: event.token));
       response.fold(
         (failure) => _emitAuthFailure(failure.message, emit),
         (user) => _emitAuthSuccess(user, emit),
