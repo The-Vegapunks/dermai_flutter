@@ -2,6 +2,7 @@ import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_page.dart';
 import 'package:dermai/features/patient/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});
@@ -23,12 +24,20 @@ class _RootPageState extends State<RootPage> {
         body: _screens[currentPageIndex],
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AiPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const AiPage()));
           },
-          child: const Icon(Icons.add),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: SizedBox(
+                height: 128,
+                child: Column(children: [Icon(Icons.add)],),
+              )),
+            ],
+          ),
         ),
         bottomNavigationBar: NavigationBar(
             onDestinationSelected: (int index) {
