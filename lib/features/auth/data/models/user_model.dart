@@ -6,7 +6,7 @@ class UserModel extends User {
     required super.name,
     required super.email,
     required super.isDoctor,
-    required super.specialization,
+    required super.address,
     required super.dateJoined,
   });
   factory UserModel.fromJsonDoctor(Map<String, dynamic> json) {
@@ -15,7 +15,7 @@ class UserModel extends User {
       name: json['name'],
       email: json['email'],
       isDoctor: true,
-      specialization: json['specialization'],
+      address: json['address'],
       dateJoined: DateTime.parse(json['dateJoined']),
     );
   }
@@ -25,7 +25,7 @@ class UserModel extends User {
       name: json['name'],
       email: json['email'],
       isDoctor: false,
-      specialization: '',
+      address: '',
       dateJoined: DateTime.now(),
     );
   }
@@ -35,7 +35,7 @@ class UserModel extends User {
     String? name,
     String? email,
     bool? isDoctor,
-    String? specialization,
+    String? address,
     DateTime? dateJoined,
   }) {
     return UserModel(
@@ -43,7 +43,7 @@ class UserModel extends User {
       name: name ?? super.name,
       email: email ?? super.email,
       isDoctor: isDoctor ?? super.isDoctor,
-      specialization: specialization ?? super.specialization,
+      address: address ?? super.address,
       dateJoined: dateJoined ?? super.dateJoined,
     );
   }

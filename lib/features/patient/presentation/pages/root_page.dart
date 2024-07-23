@@ -15,36 +15,37 @@ class _RootPageState extends State<RootPage> {
   final List<Widget> _screens = [
     const HomePage(),
     const AppointmentPage(),
-    const AiPage(),
   ];
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[currentPageIndex],
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget> [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_today),
-            label: 'Appointment',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.medical_services),
-            label: 'AI',
-          ),
-        ]
-      )
-    );
+        body: _screens[currentPageIndex],
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AiPage()));
+          },
+          child: const Icon(Icons.add),
+        ),
+        bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            selectedIndex: currentPageIndex,
+            destinations: const <Widget>[
+              NavigationDestination(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.calendar_today),
+                label: 'Appointment',
+              ),
+            ]));
   }
 }
