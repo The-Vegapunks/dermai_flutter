@@ -34,7 +34,9 @@ class _RootPageState extends State<RootPage> {
               Expanded(
                   child: SizedBox(
                 height: 128,
-                child: Column(children: [Icon(Icons.add)],),
+                child: Column(
+                  children: [Icon(Icons.add)],
+                ),
               )),
             ],
           ),
