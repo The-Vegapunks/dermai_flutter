@@ -9,6 +9,11 @@ import 'package:dermai/features/auth/domain/usecases/user_sign_in.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
+import 'package:dermai/features/doctor/data/repository/doctor_repository_impl.dart';
+import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_diagnosed_diseases.dart';
+import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
@@ -25,52 +30,64 @@ Future<void> initDependencies() async {
 }
 
 void _initAuth() {
-  serviceLocator.registerFactory<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(
-      client: serviceLocator(),
-    ),
-  );
-
-  serviceLocator.registerFactory<AuthRepository>(
-    () => AuthRepositoryImpl(
-      remoteDataSource: serviceLocator(),
-    ),
-  );
-
-  serviceLocator.registerFactory(
-    () => UserSignUp(
-      serviceLocator(),
-    ),
-  );
-  serviceLocator.registerFactory(
-    () => UserSignIn(
-      serviceLocator(),
-    ),
-  );
-  serviceLocator.registerFactory(
-    () => UserForgetPassword(
-      serviceLocator(),
-    ),
-  );
-  serviceLocator.registerFactory(
-    () => CurrentUser(
-      serviceLocator(),
+  serviceLocator
+    ..registerFactory<AuthRemoteDataSource>(
+      () => AuthRemoteDataSourceImpl(
+        client: serviceLocator(),
+      ),
     )
-  );
-  serviceLocator.registerFactory(
-    () => UserRecoverPassword(
-      serviceLocator(),
-    ),
-  );
+    ..registerFactory<AuthRepository>(
+      () => AuthRepositoryImpl(
+        remoteDataSource: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => UserSignUp(
+        serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => UserSignIn(
+        serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => UserForgetPassword(
+        serviceLocator(),
+      ),
+    )
+    ..registerFactory(() => CurrentUser(
+          serviceLocator(),
+        ))
+    ..registerFactory(
+      () => UserRecoverPassword(
+        serviceLocator(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => AuthBloc(
+        userSignUp: serviceLocator<UserSignUp>(),
+        userSignIn: serviceLocator<UserSignIn>(),
+        userForgetPassword: serviceLocator<UserForgetPassword>(),
+        currentUser: serviceLocator<CurrentUser>(),
+        appUserCubit: serviceLocator<AppUserCubit>(),
+        userRecoverPassword: serviceLocator<UserRecoverPassword>(),
+      ),
+    );
 
-  serviceLocator.registerLazySingleton(
-    () => AuthBloc(
-      userSignUp: serviceLocator<UserSignUp>(),
-      userSignIn: serviceLocator<UserSignIn>(),
-      userForgetPassword: serviceLocator<UserForgetPassword>(),
-      currentUser: serviceLocator<CurrentUser>(),
-      appUserCubit: serviceLocator<AppUserCubit>(),
-      userRecoverPassword: serviceLocator<UserRecoverPassword>(),
+  serviceLocator
+  ..registerFactory<DoctorRemoteDataSource>(
+    () => DoctorRemoteDataSourceImpl(client: serviceLocator()),
+  )
+  ..registerFactory<DoctorRepository>(
+    () => DoctorRepositoryImpl(remoteDataSource: serviceLocator()),
+  )
+  ..registerFactory<DoctorGetDiagnosedDiseases>(
+    () => DoctorGetDiagnosedDiseases(serviceLocator()),
+  )
+  ..registerLazySingleton(
+    () => DoctorBloc(
+      doctorGetDiagnosedDiseases: serviceLocator<DoctorGetDiagnosedDiseases>(),
     ),
   );
 }

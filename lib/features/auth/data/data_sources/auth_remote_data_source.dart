@@ -46,6 +46,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       if (response.user!.userMetadata!['isDoctor'] == true) {
+        
         final userData = await client.from('doctor').select().eq(
               'doctorID',
               response.user!.id,

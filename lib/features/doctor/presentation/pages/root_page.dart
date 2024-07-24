@@ -21,27 +21,32 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _screens[currentPageIndex],
-        bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            selectedIndex: currentPageIndex,
-            destinations: const <Widget>[
-              NavigationDestination(
-                icon: Icon(Icons.home),
-                label: 'Current Cases',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.calendar_today),
-                label: 'Appointment',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.event_busy),
-                label: 'Reschedule',
-              ),
-            ]));
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            label: 'Current Cases',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_today),
+            label: 'Appointment',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.event_busy),
+            label: 'Reschedule',
+          ),
+        ],
+      ),
+    );
   }
 }
