@@ -1,4 +1,4 @@
-import 'package:dermai/features/doctor/presentation/pages/current_cases_page.dart';
+import 'package:dermai/features/doctor/presentation/pages/cases_page.dart';
 import 'package:dermai/features/doctor/presentation/pages/appointment_page.dart';
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   int currentPageIndex = 0;
   final List<Widget> _screens = [
-    const CurrentCasesPage(),
+    const CasesPage(),
     const AppointmentPage(),
     const ReschedulePage(),
   ];
@@ -35,7 +35,7 @@ class _RootPageState extends State<RootPage> {
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(Icons.home),
-            label: 'Current Cases',
+            label: 'Cases',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_today),

@@ -7,14 +7,14 @@ import 'package:dermai/features/doctor/presentation/components/patient_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CurrentCasesPage extends StatefulWidget {
-  const CurrentCasesPage({super.key});
+class CasesPage extends StatefulWidget {
+  const CasesPage({super.key});
 
   @override
-  State<CurrentCasesPage> createState() => _CurrentCasesPageState();
+  State<CasesPage> createState() => _CasesPageState();
 }
 
-class _CurrentCasesPageState extends State<CurrentCasesPage>
+class _CasesPageState extends State<CasesPage>
     with SingleTickerProviderStateMixin {
   List<DiagnosedDisease> diagnosedDiseases = [];
   var selectedCaseType = CasesType.values[0];
