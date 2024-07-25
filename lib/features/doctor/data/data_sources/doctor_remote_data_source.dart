@@ -1,14 +1,14 @@
 import 'package:dermai/features/core/error/exception.dart';
+import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_get_diagnosed_diseases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class DoctorRemoteDataSource {
   Future<List<DiagnosedDiseaseModel>> getCases(
       {required String doctorID, required CasesType casesType});
 
-  // Future<UserModel> signIn({required String email, required String password});
-  // Future<UserModel> signUp({required String name, required String email, required String password});
+  Future<List<AppointmentModel>> getAppointments({required String doctorID});
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
@@ -48,5 +48,11 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
       throw const ServerException(
           'An error occurred while fetching diagnosed diseases');
     }
+  }
+
+  @override
+  Future<List<AppointmentModel>> getAppointments({required String doctorID}) async {
+    // TODO: implement getAppointments
+    throw UnimplementedError();
   }
 }

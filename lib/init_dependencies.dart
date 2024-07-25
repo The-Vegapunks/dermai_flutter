@@ -12,7 +12,7 @@ import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
 import 'package:dermai/features/doctor/data/repository/doctor_repository_impl.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_get_diagnosed_diseases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -82,12 +82,12 @@ void _initAuth() {
   ..registerFactory<DoctorRepository>(
     () => DoctorRepositoryImpl(remoteDataSource: serviceLocator()),
   )
-  ..registerFactory<DoctorGetDiagnosedDiseases>(
-    () => DoctorGetDiagnosedDiseases(serviceLocator()),
+  ..registerFactory<DoctorGetCases>(
+    () => DoctorGetCases(serviceLocator()),
   )
   ..registerLazySingleton(
     () => DoctorBloc(
-      doctorGetDiagnosedDiseases: serviceLocator<DoctorGetDiagnosedDiseases>(),
+      doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
     ),
   );
 }

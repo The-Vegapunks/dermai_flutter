@@ -4,7 +4,7 @@ import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_get_diagnosed_diseases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:fpdart/src/either.dart';
 
 class DoctorRepositoryImpl implements DoctorRepository {
@@ -12,7 +12,7 @@ class DoctorRepositoryImpl implements DoctorRepository {
   const DoctorRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<DiagnosedDisease>>> getListOfDiagnosedDisease({required String doctorID, required CasesType casesType}) async {
+  Future<Either<Failure, List<DiagnosedDisease>>> getCases({required String doctorID, required CasesType casesType}) async {
     try {
       final diagnosedDiseases = await remoteDataSource.getCases(doctorID: doctorID, casesType: casesType);
       return right(diagnosedDiseases);

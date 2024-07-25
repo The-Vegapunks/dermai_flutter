@@ -1,9 +1,9 @@
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_get_diagnosed_diseases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
-import 'package:dermai/features/doctor/presentation/components/patient_card.dart';
+import 'package:dermai/features/doctor/presentation/components/case_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,7 +16,7 @@ class CasesPage extends StatefulWidget {
 
 class _CasesPageState extends State<CasesPage>
     with SingleTickerProviderStateMixin {
-  List<DiagnosedDisease> diagnosedDiseases = [];
+  List<DiagnosedDisease> _cases = [];
   var selectedCaseType = CasesType.values[0];
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _CasesPageState extends State<CasesPage>
           }
           if (state is DoctorSuccessListOfDiagnosedDisease) {
             setState(() {
-              diagnosedDiseases = state.diagnosedDiseases;
+              _cases = state.diagnosedDiseases;
             });
           }
         },
@@ -99,17 +99,17 @@ class _CasesPageState extends State<CasesPage>
                     )
                   : RefreshIndicator(
                       onRefresh: _fetchDiagnosedDiseases,
-                      child: diagnosedDiseases.isEmpty ? const Center(
+                      child: _cases.isEmpty ? const Center(
                               child: Text('No cases'),
                             ) : ListView.builder(
-                        itemCount: diagnosedDiseases.length,
+                        itemCount: _cases.length,
                         padding: const EdgeInsets.all(16),
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
-                              PatientCard(
-                                  diagnosedDisease: diagnosedDiseases[index]),
-                              if (index >= diagnosedDiseases.length)
+                              CaseCard(
+                                  diagnosedDisease: _cases[index]),
+                              if (index >= _cases.length)
                                 const SizedBox(
                                   height: 16,
                                 )

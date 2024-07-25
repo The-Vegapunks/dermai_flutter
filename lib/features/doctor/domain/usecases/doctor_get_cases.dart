@@ -4,22 +4,22 @@ import 'package:dermai/features/core/usecase/usecase.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
-class DoctorGetDiagnosedDiseases implements UseCase<List<DiagnosedDisease>, DoctorGetDiagnosedDiseaseParams> {
+class DoctorGetCases implements UseCase<List<DiagnosedDisease>, DoctorGetCasesParams> {
   final DoctorRepository repository;
 
-  DoctorGetDiagnosedDiseases(this.repository);
+  DoctorGetCases(this.repository);
 
   @override
-  Future<Either<Failure, List<DiagnosedDisease>>> call(DoctorGetDiagnosedDiseaseParams params) async {
-    return await repository.getListOfDiagnosedDisease(doctorID: params.doctorID, casesType: params.casesType);
+  Future<Either<Failure, List<DiagnosedDisease>>> call(DoctorGetCasesParams params) async {
+    return await repository.getCases(doctorID: params.doctorID, casesType: params.casesType);
   }
 }
 
-class DoctorGetDiagnosedDiseaseParams {
+class DoctorGetCasesParams {
   final String doctorID;
   final CasesType casesType;
 
-  DoctorGetDiagnosedDiseaseParams({required this.doctorID, required this.casesType});
+  DoctorGetCasesParams({required this.doctorID, required this.casesType});
 
 }
 

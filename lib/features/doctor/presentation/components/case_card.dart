@@ -2,15 +2,15 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart';
 import 'package:flutter/material.dart';
 
-class PatientCard extends StatefulWidget {
-  const PatientCard({super.key, required this.diagnosedDisease});
+class CaseCard extends StatefulWidget {
+  const CaseCard({super.key, required this.diagnosedDisease});
   final DiagnosedDisease diagnosedDisease;
 
   @override
-  State<PatientCard> createState() => _PatientCardState();
+  State<CaseCard> createState() => _CaseCardState();
 }
 
-class _PatientCardState extends State<PatientCard> {
+class _CaseCardState extends State<CaseCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,14 +46,19 @@ class _PatientCardState extends State<PatientCard> {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(width: 8),
-                    if (widget.diagnosedDisease.doctorID == null)
+                    if (widget.diagnosedDisease.doctorID == null && !widget.diagnosedDisease.status)
                       Text(
                         'Available',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                    if (widget.diagnosedDisease.doctorID != null)
+                    if (widget.diagnosedDisease.doctorID != null && !widget.diagnosedDisease.status)
                       Text(
-                        'Assigned',
+                        'Currently Consulting',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    if (widget.diagnosedDisease.doctorID != null && widget.diagnosedDisease.status)
+                      Text(
+                        'Completed',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                   ],
