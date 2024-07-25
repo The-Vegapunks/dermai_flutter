@@ -7,7 +7,7 @@ class User {
     required this.name,
     required this.email,
     required this.isDoctor,
-    required this.specialization,
+    required this.address,
     required this.dateJoined,
   });
 
@@ -15,7 +15,7 @@ class User {
   final String name;
   final String email;
   final bool isDoctor;
-  final String specialization;
+  final String address;
   final DateTime dateJoined;
 
   patient() {
@@ -31,7 +31,7 @@ class User {
       id: id,
       name: name,
       email: email,
-      specialization: specialization,
+      address: address,
       dateJoined: dateJoined,
     );
   }

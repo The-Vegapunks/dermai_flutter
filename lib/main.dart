@@ -1,6 +1,7 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart'
     as patient;
 import 'package:dermai/features/doctor/presentation/pages/root_page.dart'
@@ -30,6 +31,9 @@ void main() async {
     BlocProvider(
       create: (_) => serviceLocator<AuthBloc>(),
     ),
+    BlocProvider(
+      create: (_) => serviceLocator<DoctorBloc>(),
+    )
   ], child: const MyApp()));
 }
 

@@ -1,3 +1,6 @@
+import 'package:dermai/features/doctor/presentation/pages/cases_page.dart';
+import 'package:dermai/features/doctor/presentation/pages/appointment_page.dart';
+import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
 
 class RootPage extends StatefulWidget {
@@ -8,11 +11,41 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  int currentPageIndex = 0;
+  final List<Widget> _screens = [
+    const CasesPage(),
+    const AppointmentPage(),
+    const ReschedulePage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Root Page'),
+    return Scaffold(
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            label: 'Cases',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_today),
+            label: 'Appointment',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.event_busy),
+            label: 'Reschedule',
+          ),
+        ],
       ),
     );
   }

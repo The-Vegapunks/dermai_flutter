@@ -1,7 +1,10 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
-import 'package:dermai/features/patient/presentation/pages/root_page.dart';
+import 'package:dermai/features/patient/presentation/pages/root_page.dart'
+    as patient;
+import 'package:dermai/features/doctor/presentation/pages/root_page.dart'
+    as doctor;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,11 +32,21 @@ class _SignInPageState extends State<SignInPage> {
             );
           }
           if (state is AuthSuccess) {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const RootPage(),),
-                    (Route<dynamic> route) => false);
+            if (state.user!.isDoctor) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const doctor.RootPage(),
+                  ),
+                  (Route<dynamic> route) => false);
+            } else {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const patient.RootPage(),
+                  ),
+                  (Route<dynamic> route) => false);
+            }
           }
         },
         builder: (context, state) {
@@ -47,7 +60,8 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    tooltip:
+                        MaterialLocalizations.of(context).backButtonTooltip,
                   ),
                   title: const Text('Sign In'),
                 ),
@@ -110,24 +124,24 @@ class _SignInPageState extends State<SignInPage> {
                                   }
                                 },
                                 child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (state is! AuthLoading)
-                                        const Text('Sign In')
-                                      else 
-                                        const Text('Signing In'),
-                                      if (state is AuthLoading)
-                                        const SizedBox(width: 8),
-                                      if (state is AuthLoading)
-                                        const SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                          ),
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (state is! AuthLoading)
+                                      const Text('Sign In')
+                                    else
+                                      const Text('Signing In'),
+                                    if (state is AuthLoading)
+                                      const SizedBox(width: 8),
+                                    if (state is AuthLoading)
+                                      const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
                                         ),
-                                    ],
-                                  ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],

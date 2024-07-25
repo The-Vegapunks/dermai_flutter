@@ -2,6 +2,7 @@ import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_page.dart';
 import 'package:dermai/features/patient/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});
@@ -15,36 +16,47 @@ class _RootPageState extends State<RootPage> {
   final List<Widget> _screens = [
     const HomePage(),
     const AppointmentPage(),
-    const AiPage(),
   ];
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[currentPageIndex],
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget> [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
+        body: _screens[currentPageIndex],
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const AiPage()));
+          },
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: SizedBox(
+                height: 128,
+                child: Column(
+                  children: [Icon(Icons.add)],
+                ),
+              )),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_today),
-            label: 'Appointment',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.medical_services),
-            label: 'AI',
-          ),
-        ]
-      )
-    );
+        ),
+        bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            selectedIndex: currentPageIndex,
+            destinations: const <Widget>[
+              NavigationDestination(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.calendar_today),
+                label: 'Appointment',
+              ),
+            ]));
   }
 }
