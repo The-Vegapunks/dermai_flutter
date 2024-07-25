@@ -20,7 +20,7 @@ class _CaseCardState extends State<CaseCard> {
           context,
           MaterialPageRoute(
             builder: (context) => CaseDetailPage(
-              diagnosedID: widget.diagnosedDisease.diagnosedID!,
+              diagnosedDisease: widget.diagnosedDisease,
             ),
           ),
         ),

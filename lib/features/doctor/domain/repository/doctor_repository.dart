@@ -5,5 +5,6 @@ import 'package:fpdart/fpdart.dart';
 
 abstract interface class DoctorRepository {
   Future<Either<Failure, List<DiagnosedDisease>>> getCases({ required String doctorID, required CasesType casesType});
-
+  Future<Either<Failure, DiagnosedDisease>> getCaseDetails({ required String diagnosedID});
+  Future<Either<Failure, DiagnosedDisease>> updateCase({ required DiagnosedDisease diagnosedDisease});
 }

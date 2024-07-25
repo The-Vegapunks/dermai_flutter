@@ -3,6 +3,7 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 class DiagnosedDiseaseModel extends DiagnosedDisease {
   DiagnosedDiseaseModel({
     required super.diagnosedID,
+    required super.picture,
     required super.diseaseID,
     required super.patientID,
     required super.doctorID,
@@ -21,6 +22,7 @@ class DiagnosedDiseaseModel extends DiagnosedDisease {
   factory DiagnosedDiseaseModel.fromJson(Map<String, dynamic> json) {
     return DiagnosedDiseaseModel(
       diagnosedID: json['diagnosedID'],
+      picture: json['picture'],
       diseaseID: json['diseaseID'],
       patientID: json['patientID'],
       doctorID: json['doctorID'],

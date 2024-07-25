@@ -18,6 +18,12 @@ final class DoctorSuccessListOfDiagnosedDisease extends DoctorState {
 
 }
 
+final class DoctorSuccessCaseDetails extends DoctorState {
+  final DiagnosedDisease diagnosedDisease;
+
+  const DoctorSuccessCaseDetails({required this.diagnosedDisease});
+}
+
 final class DoctorFailure extends DoctorState {
   final String message;
 

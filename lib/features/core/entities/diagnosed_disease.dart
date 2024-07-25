@@ -1,6 +1,7 @@
 class DiagnosedDisease {
   const DiagnosedDisease({
     required this.diagnosedID,
+    required this.picture,
     required this.diseaseID,
     required this.patientID,
     required this.doctorID,
@@ -17,6 +18,7 @@ class DiagnosedDisease {
   });
 
   final String? diagnosedID;
+  final String picture;
   final int diseaseID;
   final String patientID;
   final String? doctorID;
@@ -34,6 +36,7 @@ class DiagnosedDisease {
   factory DiagnosedDisease.fromJson(Map<String, dynamic> json) {
     return DiagnosedDisease(
       diagnosedID: json['diagnosedID'],
+      picture: json['picture'],
       diseaseID: json['diseaseID'],
       patientID: json['patientID'],
       doctorID: json['doctorID'],
@@ -52,9 +55,46 @@ class DiagnosedDisease {
     );
   }
 
+  DiagnosedDisease copyWith({
+    String? diagnosedID,
+    String? picture,
+    int? diseaseID,
+    String? patientID,
+    String? doctorID,
+    DateTime? dateCreated,
+    DateTime? dateDiagnosed,
+    String? details,
+    String? patientsComment,
+    String? doctorsComment,
+    bool? editedByDoctor,
+    String? prescription,
+    bool? status,
+    String? patientName,
+    String? diseaseName,
+  }) {
+    return DiagnosedDisease(
+      diagnosedID: diagnosedID ?? this.diagnosedID,
+      picture: picture ?? this.picture,
+      diseaseID: diseaseID ?? this.diseaseID,
+      patientID: patientID ?? this.patientID,
+      doctorID: doctorID ?? this.doctorID,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateDiagnosed: dateDiagnosed ?? this.dateDiagnosed,
+      details: details ?? this.details,
+      patientsComment: patientsComment ?? this.patientsComment,
+      doctorsComment: doctorsComment ?? this.doctorsComment,
+      editedByDoctor: editedByDoctor ?? this.editedByDoctor,
+      prescription: prescription ?? this.prescription,
+      status: status ?? this.status,
+      patientName: patientName ?? this.patientName,
+      diseaseName: diseaseName ?? this.diseaseName,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       if (diagnosedID != null) 'diagnosedID': diagnosedID,
+      'picture': picture,
       'diseaseID': diseaseID,
       'patientID': patientID,
       'doctorID': doctorID,

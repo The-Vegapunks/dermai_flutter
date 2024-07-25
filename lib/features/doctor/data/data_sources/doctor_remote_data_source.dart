@@ -1,3 +1,4 @@
+import 'package:dermai/features/auth/data/models/user_model.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
@@ -9,6 +10,9 @@ abstract interface class DoctorRemoteDataSource {
       {required String doctorID, required CasesType casesType});
 
   Future<List<AppointmentModel>> getAppointments({required String doctorID});
+  Future<DiagnosedDiseaseModel> getCaseDetails({required String diagnosedID});
+  Future<DiagnosedDiseaseModel> updateCaseDetails({required DiagnosedDiseaseModel diagnosedDisease});
+  
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
@@ -54,5 +58,37 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
   Future<List<AppointmentModel>> getAppointments({required String doctorID}) async {
     // TODO: implement getAppointments
     throw UnimplementedError();
+  }
+
+  
+  @override
+  Future<DiagnosedDiseaseModel> getCaseDetails({required String diagnosedID}) async {
+    try {
+      final response = await client
+          .from('diagnosedDisease')
+          .select('''*, disease( name ), patient!inner( name )''')
+          .eq('diagnosedID', diagnosedID)
+          .single();
+
+      return DiagnosedDiseaseModel.fromJson(response);
+    } catch (e) {
+      throw const ServerException('An error occurred while the case details');
+    }
+  }
+  
+  @override
+  Future<DiagnosedDiseaseModel> updateCaseDetails({required DiagnosedDiseaseModel diagnosedDisease}) async {
+    try {
+      final response = await client
+          .from('diagnosedDisease')
+          .update(diagnosedDisease.toJson())
+          .eq('diagnosedID', diagnosedDisease.diagnosedID!)
+          .select('''*, disease( name ), patient!inner( name )''')
+          .single();
+
+      return DiagnosedDiseaseModel.fromJson(response);
+    } catch (e) {
+      throw const ServerException('An error occurred while updating the case details');
+    }
   }
 }
