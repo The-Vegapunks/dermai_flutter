@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dermai/features/doctor/presentation/pages/cases_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
@@ -11,46 +12,49 @@ class AppointmentDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
-      body: detailsSection(),
-      backgroundColor: Colors.deepPurple[50],
+      body: detailsSection(context),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     );
   }
 
-  Column detailsSection() {
+  Column detailsSection(BuildContext context) {
     return Column(
       children: [
         docName(),
-        buttons2(),
-        detailsAppt(),
-        SizedBox(
+        buttons2(context),
+        detailsAppt(context),
+        const SizedBox(
           width: 420,
           height: 50,
         ),
-        Container(
-          width: 300,
-          height: 50,
-          // color: Colors.yellow,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.deepPurple[200],
-                    minimumSize: const Size(150, 50))
-                .copyWith(
-                    overlayColor: WidgetStatePropertyAll(
-                        Colors.deepPurple[400])),
-            onPressed: () {},
-            child: Text(
-              "Call",
-              style: TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.w600),
-            ),
-          ),
-        )
+        callButton(context)
       ],
     );
   }
 
-  Container detailsAppt() {
+  Container callButton(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 50,
+      // color: Colors.yellow,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.deepPurple[200],
+                minimumSize: const Size(150, 50))
+            .copyWith(
+                overlayColor:
+                    WidgetStatePropertyAll(Colors.deepPurple[400])),
+        onPressed: () {},
+        child: Text(
+          "Call",
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Container detailsAppt(BuildContext context) {
     return Container(
       width: 365,
       height: 415,
@@ -64,13 +68,13 @@ class AppointmentDetailsPage extends StatelessWidget {
           physicalAppt1(),
           physicalAppt2(),
           addInfo1(),
-          addInfo2(),
+          addInfo2(context),
         ],
       ),
     );
   }
 
-  Center addInfo2() {
+  Center addInfo2(BuildContext context) {
     return Center(
       child: Container(
           alignment: Alignment.center,
@@ -78,7 +82,7 @@ class AppointmentDetailsPage extends StatelessWidget {
           height: 240,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.deepPurple[100],
+              color: Colors.deepPurple[50],
               boxShadow: [
                 BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -97,10 +101,9 @@ class AppointmentDetailsPage extends StatelessWidget {
                     //To retrieve details from DB
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18,
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black),
                     textAlign: TextAlign.justify),
               ),
             ),
@@ -115,8 +118,8 @@ class AppointmentDetailsPage extends StatelessWidget {
         "Additional Information",
         style: TextStyle(
             fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.black),
+            fontWeight: FontWeight.w300,
+            color: Colors.white),
       ),
     );
   }
@@ -131,7 +134,7 @@ class AppointmentDetailsPage extends StatelessWidget {
             height: 45,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.deepPurple[100],
+                color: Colors.deepPurple[50],
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3),
@@ -140,11 +143,11 @@ class AppointmentDetailsPage extends StatelessWidget {
                       offset: const Offset(0, 4),
                       blurStyle: BlurStyle.normal)
                 ]),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15),
+            child: const Padding(
+              padding: EdgeInsets.only(left: 15.0, right: 15),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: const Text(
+                child: Text(
                   "Desforges Medical Cabin 2nd Street DJASJDKLJASLDKLASJKLDLKJ", //To retrieve details from DB
                   style: TextStyle(
                       color: Colors.black,
@@ -163,12 +166,12 @@ class AppointmentDetailsPage extends StatelessWidget {
       textAlign: TextAlign.start,
       style: TextStyle(
           fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: Colors.black),
+          fontWeight: FontWeight.w300,
+          color: Colors.white),
     );
   }
 
-  SizedBox buttons2() {
+  SizedBox buttons2(BuildContext context) {
     return SizedBox(
       // color: Colors.red,
       height: 70,
@@ -179,7 +182,7 @@ class AppointmentDetailsPage extends StatelessWidget {
           ElevatedButton(
               onPressed: () {}, //MUST PROGRAM
               style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
+                      foregroundColor: Colors.white,
                       backgroundColor: Colors.deepPurple[300],
                       minimumSize: const Size(150, 50))
                   .copyWith(
@@ -190,10 +193,11 @@ class AppointmentDetailsPage extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 15, fontWeight: FontWeight.w600),
               )),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.red[400],
+          OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: BorderSide(color: Color(0xFFE53935)),
+                      // backgroundColor: Colors.red[400],
                       minimumSize: const Size(150, 50))
                   .copyWith(
                       overlayColor:
@@ -222,14 +226,14 @@ class AppointmentDetailsPage extends StatelessWidget {
           Text(
             "Dr. Stone Wood", //To retrieve details from DB
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 50,
                 fontWeight: FontWeight.w400),
           ),
           Text(
             "8/07/2024 - 10:00 AM", //To retrieve details from DB
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.w400),
           ),
@@ -242,20 +246,25 @@ class AppointmentDetailsPage extends StatelessWidget {
     return AppBar(
       title: const Text('Appointment Details',
           style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.w500)),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       centerTitle: true,
       leading: backButton(context),
-      actions: [dots()],
+      actions: [dots(context)],
     );
   }
 
-  GestureDetector dots() {
+  GestureDetector dots(BuildContext context) {
     return GestureDetector(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const CasesPage()));
+        },
         child: Container(
             margin: const EdgeInsets.only(right: 15),
             // decoration: BoxDecoration(
@@ -266,7 +275,7 @@ class AppointmentDetailsPage extends StatelessWidget {
             child: const Icon(
               Icons.more_vert,
               size: 20,
-              color: Colors.black,
+              color: Colors.white,
             )));
   }
 
@@ -284,7 +293,7 @@ class AppointmentDetailsPage extends StatelessWidget {
             child: const Icon(
               Icons.arrow_back_ios,
               size: 20,
-              color: Colors.black,
+              color: Colors.white,
             )));
   }
 }
