@@ -25,25 +25,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
         centerTitle: false,
       ),
       body: ListView(children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: GestureDetector(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.deepPurple[50],
-                  borderRadius: BorderRadius.circular(20)),
-              height: 200,
-            ),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const AppointmentDetailsPage()));
-            },
-          ),
-        ),
-        
         const CardExample(),
         const CardExample(),
       ]),
@@ -56,15 +37,15 @@ class CardExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return 
- Center(
+    return Center(
       child: GestureDetector(
-        onTap: () {Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const AppointmentDetailsPage()));
-            },
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const AppointmentDetailsPage()));
+        },
         child: const Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -75,7 +56,6 @@ class CardExample extends StatelessWidget {
                   children: [
                     Text('Oh I am really sick'),
                     Text(''),
-                    
                   ],
                 ),
               ),
