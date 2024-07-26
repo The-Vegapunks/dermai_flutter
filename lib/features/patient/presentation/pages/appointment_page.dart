@@ -7,21 +7,15 @@ class AppointmentPage extends StatefulWidget {
   @override
   State<AppointmentPage> createState() => _AppointmentPageState();
 }
-
-//Block to connect Date and Description box
-//class to fetch and store data in the class
-//call class to display data
-
-/*class _Displaytab extends State<AppointmentPage> {
-  @override
-}*/
+//call card to display data
+//number of cases for that date (to be fetched)
 
 class _AppointmentPageState extends State<AppointmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Date To Insert',
+        title: const Text('Date To Insert',
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 35,
@@ -49,42 +43,46 @@ class _AppointmentPageState extends State<AppointmentPage> {
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            height: 200,
-            color: Colors.deepPurple[50],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            height: 200,
-            color: Colors.deepPurple[50],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            height: 200,
-            color: Colors.deepPurple[50],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            height: 200,
-            color: Colors.deepPurple[50],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            height: 200,
-            color: Colors.deepPurple[50],
-          ),
-        ),
+        
+        const CardExample(),
+        const CardExample(),
       ]),
+    );
+  }
+}
+
+class CardExample extends StatelessWidget {
+  const CardExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return 
+ Center(
+      child: GestureDetector(
+        onTap: () {Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const AppointmentDetailsPage()));
+            },
+        child: const Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text('Doctor Name'),
+                subtitle: Column(
+                  children: [
+                    Text('Oh I am really sick'),
+                    Text(''),
+                    
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
