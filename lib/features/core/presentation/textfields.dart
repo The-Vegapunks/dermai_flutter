@@ -2,16 +2,18 @@
 import 'package:flutter/material.dart';
 
 class UniversalTextField extends StatelessWidget {
-  const UniversalTextField({super.key, required this.labelText, this.icon, required this.onChanged});
+  const UniversalTextField({super.key, required this.labelText, this.icon, required this.onChanged, this.initialValue});
   
   final String labelText;
   final Widget? icon;
   final ValueChanged<String> onChanged;
+  final String? initialValue;
 
   @override
   Widget build(BuildContext context) {
     return  SizedBox(
       child: TextField(
+        controller: TextEditingController(text: initialValue),
         onChanged: onChanged,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),

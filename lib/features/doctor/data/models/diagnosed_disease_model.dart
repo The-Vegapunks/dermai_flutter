@@ -17,6 +17,7 @@ class DiagnosedDiseaseModel extends DiagnosedDisease {
     required super.status,
     required super.patientName,
     required super.diseaseName,
+    required super.diagnosedDiseaseName,
   });
 
   factory DiagnosedDiseaseModel.fromJson(Map<String, dynamic> json) {
@@ -38,6 +39,7 @@ class DiagnosedDiseaseModel extends DiagnosedDisease {
       status: json['status'],
       patientName: json['patient']['name'],
       diseaseName: json['disease']['name'],
+      diagnosedDiseaseName: json['diagnosedDiseaseName'],
     );
   }
 }

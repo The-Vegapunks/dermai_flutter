@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class DoctorRemoteDataSource {
   Future<List<DiagnosedDiseaseModel>> getCases(
-      {required String doctorID, required CasesType casesType});
+      {required String doctorID});
 
   Future<List<AppointmentModel>> getAppointments({required String doctorID});
   Future<DiagnosedDiseaseModel> getCaseDetails({required String diagnosedID});
@@ -21,7 +21,7 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
 
   @override
   Future<List<DiagnosedDiseaseModel>> getCases(
-      {required String doctorID, required CasesType casesType}) async {
+      {required String doctorID}) async {
     try {
       // client.auth.signUp(email: "doctor1@test.io", password: "123456", data: {
       //   'name': "Dr. Sarah Johnson",
@@ -35,14 +35,6 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
       final response = await client
           .from('diagnosedDisease')
           .select('''*, disease( name ), patient!inner( name )''')
-          .isFilter('status', casesType == CasesType.completed)
-          .or(casesType == CasesType.all
-              ? 'doctorID.is.null,doctorID.eq.$doctorID'
-              : casesType == CasesType.current
-                  ? 'doctorID.eq.$doctorID'
-                  : casesType == CasesType.available
-                      ? 'doctorID.is.null'
-                      : 'doctorID.eq.$doctorID')
           .order('doctorID', nullsFirst: true)
           .order('dateCreated', ascending: true);
 

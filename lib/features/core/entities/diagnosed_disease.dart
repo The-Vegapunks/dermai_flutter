@@ -15,6 +15,7 @@ class DiagnosedDisease {
     required this.status,
     required this.patientName,
     required this.diseaseName,
+    required this.diagnosedDiseaseName,
   });
 
   final String? diagnosedID;
@@ -32,6 +33,7 @@ class DiagnosedDisease {
   final bool status;
   final String patientName;
   final String diseaseName;
+  final String diagnosedDiseaseName;
 
   factory DiagnosedDisease.fromJson(Map<String, dynamic> json) {
     return DiagnosedDisease(
@@ -52,6 +54,7 @@ class DiagnosedDisease {
       status: json['status'],
       patientName: json['patient']['name'],
       diseaseName: json['disease']['name'],
+      diagnosedDiseaseName: json['diagnosedDiseaseName'],
     );
   }
 
@@ -71,6 +74,7 @@ class DiagnosedDisease {
     bool? status,
     String? patientName,
     String? diseaseName,
+    String? diagnosedDiseaseName,
   }) {
     return DiagnosedDisease(
       diagnosedID: diagnosedID ?? this.diagnosedID,
@@ -88,6 +92,7 @@ class DiagnosedDisease {
       status: status ?? this.status,
       patientName: patientName ?? this.patientName,
       diseaseName: diseaseName ?? this.diseaseName,
+      diagnosedDiseaseName: diagnosedDiseaseName ?? this.diagnosedDiseaseName,
     );
   }
 
@@ -106,6 +111,7 @@ class DiagnosedDisease {
       'editedByDoctor': editedByDoctor,
       'prescription': prescription,
       'status': status,
+      'diagnosedDiseaseName': diagnosedDiseaseName,
     };
   }
 }

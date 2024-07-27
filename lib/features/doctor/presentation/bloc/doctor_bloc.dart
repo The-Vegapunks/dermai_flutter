@@ -53,6 +53,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
 
     on<DoctorUpdateCase>(
       (event, emit) async {
+        emit(DoctorLoading());
         final failureOrCaseDetails = await _doctorUpdateCaseDetails(
           DoctorUpdateCaseDetailsParams(
             diagnosedDisease: event.diagnosedDisease,

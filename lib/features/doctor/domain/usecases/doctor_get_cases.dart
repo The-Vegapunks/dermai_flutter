@@ -11,7 +11,7 @@ class DoctorGetCases implements UseCase<List<DiagnosedDisease>, DoctorGetCasesPa
 
   @override
   Future<Either<Failure, List<DiagnosedDisease>>> call(DoctorGetCasesParams params) async {
-    return await repository.getCases(doctorID: params.doctorID, casesType: params.casesType);
+    return await repository.getCases(doctorID: params.doctorID);
   }
 }
 

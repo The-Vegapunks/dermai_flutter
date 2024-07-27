@@ -3,8 +3,9 @@ import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart'
 import 'package:flutter/material.dart';
 
 class CaseCard extends StatefulWidget {
-  const CaseCard({super.key, required this.diagnosedDisease});
+  const CaseCard({super.key, required this.diagnosedDisease, required this.onTap});
   final DiagnosedDisease diagnosedDisease;
+  final Function() onTap;
 
   @override
   State<CaseCard> createState() => _CaseCardState();
@@ -16,14 +17,7 @@ class _CaseCardState extends State<CaseCard> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CaseDetailPage(
-              diagnosedDisease: widget.diagnosedDisease,
-            ),
-          ),
-        ),
+        onTap: widget.onTap,
         child: Card(
           child: Container(
             margin: const EdgeInsets.all(16),

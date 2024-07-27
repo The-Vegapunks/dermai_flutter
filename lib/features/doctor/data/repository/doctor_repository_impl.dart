@@ -13,10 +13,10 @@ class DoctorRepositoryImpl implements DoctorRepository {
 
   @override
   Future<Either<Failure, List<DiagnosedDisease>>> getCases(
-      {required String doctorID, required CasesType casesType}) async {
+      {required String doctorID}) async {
     try {
       final diagnosedDiseases = await remoteDataSource.getCases(
-          doctorID: doctorID, casesType: casesType);
+          doctorID: doctorID);
       return right(diagnosedDiseases);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -55,7 +55,8 @@ class DoctorRepositoryImpl implements DoctorRepository {
               prescription: diagnosedDisease.prescription,
               status: diagnosedDisease.status,
               patientName: diagnosedDisease.patientName,
-              diseaseName: diagnosedDisease.diseaseName));
+              diseaseName: diagnosedDisease.diseaseName,
+              diagnosedDiseaseName: diagnosedDisease.diagnosedDiseaseName));
       return right(updatedDiagnosedDisease);
     } on ServerException catch (e) {
       return left(Failure(e.message));

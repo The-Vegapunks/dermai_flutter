@@ -4,6 +4,7 @@ import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/doctor/presentation/components/case_card.dart';
+import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,9 @@ class CasesPage extends StatefulWidget {
 class _CasesPageState extends State<CasesPage>
     with SingleTickerProviderStateMixin {
   List<DiagnosedDisease> _cases = [];
-  var selectedCaseType = CasesType.values[0];
+  List<DiagnosedDisease> _filteredCases = [];
+  var selectedCaseType = CasesType.values[1];
+  late Doctor doctor;
   @override
   void initState() {
     super.initState();
@@ -25,11 +28,38 @@ class _CasesPageState extends State<CasesPage>
   }
 
   Future<void> _fetchDiagnosedDiseases() async {
-    Doctor doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
+    doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
         .user
         .doctor();
     context.read<DoctorBloc>().add(DoctorDiagnosedDisease(
         doctorID: doctor.id, casesType: selectedCaseType));
+  }
+
+  void _handleCaseTypeChange(CasesType casesType) {
+    setState(() {
+      selectedCaseType = casesType;
+      switch (casesType) {
+        case CasesType.all:
+          _filteredCases = _cases;
+          break;
+        case CasesType.available:
+          _filteredCases =
+              _cases.where((element) => element.doctorID == null).toList();
+          break;
+        case CasesType.current:
+          _filteredCases = _cases
+              .where(
+                  (element) => element.doctorID == doctor.id && !element.status)
+              .toList();
+          break;
+        case CasesType.completed:
+          _filteredCases = _cases
+              .where(
+                  (element) => element.doctorID == doctor.id && element.status)
+              .toList();
+          break;
+      }
+    });
   }
 
   @override
@@ -47,6 +77,7 @@ class _CasesPageState extends State<CasesPage>
           if (state is DoctorSuccessListOfDiagnosedDisease) {
             setState(() {
               _cases = state.diagnosedDiseases;
+              _handleCaseTypeChange(selectedCaseType);
             });
           }
         },
@@ -82,7 +113,7 @@ class _CasesPageState extends State<CasesPage>
                                       selectedCaseType =
                                           CasesType.values[index];
                                     });
-                                    _fetchDiagnosedDiseases();
+                                    _handleCaseTypeChange(CasesType.values[index]);
                                   },
                                 ),
                                 SizedBox(
@@ -99,24 +130,39 @@ class _CasesPageState extends State<CasesPage>
                     )
                   : RefreshIndicator(
                       onRefresh: _fetchDiagnosedDiseases,
-                      child: _cases.isEmpty ? const Center(
+                      child: _filteredCases.isEmpty
+                          ? const Center(
                               child: Text('No cases'),
-                            ) : ListView.builder(
-                        itemCount: _cases.length,
-                        padding: const EdgeInsets.all(16),
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              CaseCard(
-                                  diagnosedDisease: _cases[index]),
-                              if (index >= _cases.length)
-                                const SizedBox(
-                                  height: 16,
-                                )
-                            ],
-                          );
-                        },
-                      ),
+                            )
+                          : ListView.builder(
+                              itemCount: _filteredCases.length,
+                              padding: const EdgeInsets.all(16),
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    CaseCard(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CaseDetailPage(
+                                                diagnosedDisease: _filteredCases[index],
+                                              ),
+                                            ),
+                                          ).then((value) {
+                                            _fetchDiagnosedDiseases();
+                                          });
+                                        },
+                                        diagnosedDisease: _filteredCases[index]),
+                                    if (index >= _filteredCases.length)
+                                      const SizedBox(
+                                        height: 16,
+                                      )
+                                  ],
+                                );
+                              },
+                            ),
                     ),
             ),
           );
