@@ -1,11 +1,11 @@
 import 'package:flutter_gemini/flutter_gemini.dart';
 
-class GeminiIntergace {
+class GeminiInterface {
   String textIn;
 
   final gemini = Gemini.instance;
 
-  GeminiIntergace( this.textIn);
+  GeminiInterface( this.textIn);
 
   String? getOutput(){
     String? output = "";
