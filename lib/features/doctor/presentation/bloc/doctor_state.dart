@@ -11,21 +11,41 @@ final class DoctorLoading extends DoctorState {}
 
 final class DoctorSuccess extends DoctorState {}
 
-final class DoctorSuccessListOfDiagnosedDisease extends DoctorState {
-  final List<DiagnosedDisease> diagnosedDiseases;
+final class DoctorSuccessCases extends DoctorState {
+  final List<(DiagnosedDisease, Patient, Disease)> diagnosedDiseases;
 
-  const DoctorSuccessListOfDiagnosedDisease({required this.diagnosedDiseases});
+  const DoctorSuccessCases({required this.diagnosedDiseases});
 
+}
+
+final class DoctorSuccessAppointments extends DoctorState {
+  final List<(Appointment, DiagnosedDisease, Patient, Disease)> appointments;
+
+  const DoctorSuccessAppointments({required this.appointments});
+}
+
+final class DoctorSuccessAvailableSlot extends DoctorState {
+  final List<NeatCleanCalendarEvent> availableSlots;
+
+  const DoctorSuccessAvailableSlot({required this.availableSlots});
 }
 
 final class DoctorSuccessCaseDetails extends DoctorState {
   final DiagnosedDisease diagnosedDisease;
+  final Patient patient;
+  final Disease disease;
 
-  const DoctorSuccessCaseDetails({required this.diagnosedDisease});
+  const DoctorSuccessCaseDetails({required this.diagnosedDisease, required this.patient, required this.disease});
 }
 
 final class DoctorFailure extends DoctorState {
   final String message;
 
   const DoctorFailure({required this.message});
+}
+
+final class DoctorSuccessAppointment extends DoctorState {
+  final (Appointment, DiagnosedDisease, Patient, Disease) response;
+
+  const DoctorSuccessAppointment({required this.response});
 }

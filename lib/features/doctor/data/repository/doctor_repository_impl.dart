@@ -1,10 +1,13 @@
+import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
+import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
+import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:fpdart/src/either.dart';
 
 class DoctorRepositoryImpl implements DoctorRepository {
@@ -12,34 +15,34 @@ class DoctorRepositoryImpl implements DoctorRepository {
   const DoctorRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<DiagnosedDisease>>> getCases(
+  Future<Either<Failure, List<(DiagnosedDisease, Patient, Disease)>>> getCases(
       {required String doctorID}) async {
     try {
-      final diagnosedDiseases = await remoteDataSource.getCases(
+      final response = await remoteDataSource.getCases(
           doctorID: doctorID);
-      return right(diagnosedDiseases);
+      return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, DiagnosedDisease>> getCaseDetails(
+  Future<Either<Failure, (DiagnosedDisease, Patient, Disease)>> getCaseDetails(
       {required String diagnosedID}) async {
     try {
-      final diagnosedDisease =
+      final response =
           await remoteDataSource.getCaseDetails(diagnosedID: diagnosedID);
-      return right(diagnosedDisease);
+      return right(response);
     } on ServerException catch (e) {
       throw left(Failure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, DiagnosedDisease>> updateCase(
+  Future<Either<Failure, (DiagnosedDisease, Patient, Disease)>> updateCase(
       {required DiagnosedDisease diagnosedDisease}) async {
     try {
-      final updatedDiagnosedDisease = await remoteDataSource.updateCaseDetails(
+      final response = await remoteDataSource.updateCaseDetails(
           diagnosedDisease: DiagnosedDiseaseModel(
               diagnosedID: diagnosedDisease.diagnosedID,
               picture: diagnosedDisease.picture,
@@ -54,10 +57,46 @@ class DoctorRepositoryImpl implements DoctorRepository {
               editedByDoctor: diagnosedDisease.editedByDoctor,
               prescription: diagnosedDisease.prescription,
               status: diagnosedDisease.status,
-              patientName: diagnosedDisease.patientName,
-              diseaseName: diagnosedDisease.diseaseName,
               diagnosedDiseaseName: diagnosedDisease.diagnosedDiseaseName));
-      return right(updatedDiagnosedDisease);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<(Appointment, DiagnosedDisease, Patient, Disease)>>> getAppointments({required String doctorID, String? patientID}) async {
+    try {
+      final response = await remoteDataSource.getAppointments(doctorID: doctorID, patientID: patientID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, void>> cancelAppointment({required String appointmentID}) async {
+    try {
+      final response = await remoteDataSource.cancelAppointment(appointmentID: appointmentID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, (Appointment, DiagnosedDisease, Patient, Disease)>> updateAppointment({required Appointment appointment}) async {
+    try {
+      final response = await remoteDataSource.updateAppointment(appointment: AppointmentModel(
+        appointmentID: appointment.appointmentID,
+        dateCreated: appointment.dateCreated,
+        status: appointment.status,
+        comment: appointment.comment,
+        description: appointment.description,
+        diagnosedID: appointment.diagnosedID,
+        isPhysical: appointment.isPhysical,
+      ));
+      return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

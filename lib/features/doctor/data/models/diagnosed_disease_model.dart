@@ -15,8 +15,6 @@ class DiagnosedDiseaseModel extends DiagnosedDisease {
     required super.editedByDoctor,
     required super.prescription,
     required super.status,
-    required super.patientName,
-    required super.diseaseName,
     required super.diagnosedDiseaseName,
   });
 
@@ -37,8 +35,6 @@ class DiagnosedDiseaseModel extends DiagnosedDisease {
       editedByDoctor: json['editedByDoctor'],
       prescription: json['prescription'],
       status: json['status'],
-      patientName: json['patient']['name'],
-      diseaseName: json['disease']['name'],
       diagnosedDiseaseName: json['diagnosedDiseaseName'],
     );
   }

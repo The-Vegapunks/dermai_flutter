@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
+import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,15 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:intl/intl.dart';
 
 class CaseDetailPage extends StatefulWidget {
-  const CaseDetailPage({super.key, required this.diagnosedDisease});
+  const CaseDetailPage(
+      {super.key,
+      required this.diagnosedDisease,
+      required this.patient,
+      required this.disease});
 
   final DiagnosedDisease diagnosedDisease;
+  final Patient patient;
+  final Disease disease;
 
   @override
   State<CaseDetailPage> createState() => _CaseDetailPageState();
@@ -66,137 +74,142 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
           DefaultTabController(
             length: diagnosedDisease.doctorID == doctor.id ? 3 : 1,
             child: Scaffold(
-              floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                  if (diagnosedDisease.doctorID == doctor.id) {
-                  } else {
-                    context.read<DoctorBloc>().add(DoctorUpdateCase(
-                        diagnosedDisease:
-                            diagnosedDisease.copyWith(doctorID: doctor.id)));
-                  }
-                },
-                label: diagnosedDisease.doctorID == doctor.id
-                    ? const Text('Video Call')
-                    : const Text('Take Case'),
-                icon: diagnosedDisease.doctorID == doctor.id
-                    ? const Icon(Icons.video_call)
-                    : const Icon(Icons.add),
-              ),
-              body: NestedScrollView(
-                scrollDirection: Axis.vertical,
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SliverAppBar(
-                    actions: [
-                      if (diagnosedDisease.doctorID == doctor.id)
-                        PopupMenuButton(
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              onTap: () => {
-                                context.read<DoctorBloc>().add(DoctorUpdateCase(
-                                    diagnosedDisease: diagnosedDisease.copyWith(
-                                        status: !diagnosedDisease.status,
-                                        editedByDoctor: true))),
-                                if (diagnosedDisease.status)
-                                  {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Case reopened'),
-                                      ),
-                                    )
-                                  }
-                                else
-                                  {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Case completed'),
-                                      ),
-                                    ),
-                                    Navigator.pop(context)
-                                  }
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(diagnosedDisease.status
-                                      ? Icons.open_in_new
-                                      : Icons.check),
-                                  const SizedBox(width: 8),
-                                  Text(diagnosedDisease.status
-                                      ? 'Reopen case'
-                                      : 'Mark as completed'),
-                                ],
-                              ),
-                            ),
-                            const PopupMenuItem(
-                              child: Row(
-                                children: [
-                                  Icon(Icons.calendar_today),
-                                  SizedBox(width: 8),
-                                  Text('Give an appointment'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                    leading: IconButton(
-                      icon: const Icon(Icons.arrow_back),
+              floatingActionButton: diagnosedDisease.doctorID == null
+                  ? FloatingActionButton.extended(
                       onPressed: () {
-                        Navigator.pop(context);
+                        context.read<DoctorBloc>().add(DoctorUpdateCase(
+                            diagnosedDisease: diagnosedDisease.copyWith(
+                                doctorID: doctor.id)));
                       },
-                      tooltip:
-                          MaterialLocalizations.of(context).backButtonTooltip,
-                    ),
-                    title: const Text('Case Detail'),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: diagnosedDisease.picture,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
+                      label: const Text('Take Case'),
+                      icon: const Icon(Icons.add),
+                    )
+                  : null,
+              body: SafeArea(
+                child: NestedScrollView(
+                  scrollDirection: Axis.vertical,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverAppBar(
+                      actions: [
+                        if (diagnosedDisease.doctorID == doctor.id)
+                          PopupMenuButton(
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                onTap: () => {
+                                  context.read<DoctorBloc>().add(
+                                      DoctorUpdateCase(
+                                          diagnosedDisease:
+                                              diagnosedDisease.copyWith(
+                                                  status:
+                                                      !diagnosedDisease.status,
+                                                  editedByDoctor: true))),
+                                  if (diagnosedDisease.status)
+                                    {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Case reopened'),
+                                        ),
+                                      )
+                                    }
+                                  else
+                                    {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Case completed'),
+                                        ),
+                                      ),
+                                      Navigator.pop(context)
+                                    }
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(diagnosedDisease.status
+                                        ? Icons.open_in_new
+                                        : Icons.check),
+                                    const SizedBox(width: 8),
+                                    Text(diagnosedDisease.status
+                                        ? 'Reopen case'
+                                        : 'Mark as completed'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.calendar_today),
+                                    SizedBox(width: 8),
+                                    Text('Give an appointment'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        tooltip:
+                            MaterialLocalizations.of(context).backButtonTooltip,
+                      ),
+                      title: const Text('Case Detail'),
                     ),
-                  ),
-                  SliverPinnedHeader(
-                    child: Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: TabBar(
-                        tabs: <Widget>[
-                          const Tab(text: 'Details'),
-                          if (diagnosedDisease.doctorID == doctor.id)
-                            const Tab(text: 'Comments'),
-                          if (diagnosedDisease.doctorID == doctor.id)
-                            const Tab(text: 'Prescription'),
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          FadeInImage.memoryNetwork(
+                            placeholder: kTransparentImage,
+                            image: diagnosedDisease.picture,
+                            width: double.infinity,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
                         ],
                       ),
                     ),
-                  )
-                ],
-                body: TabBarView(
-                    physics: diagnosedDisease.doctorID == doctor.id
-                        ? const AlwaysScrollableScrollPhysics()
-                        : const NeverScrollableScrollPhysics(),
-                    children: <Widget>[
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: DetailsSection(
-                            diagnosedDisease: diagnosedDisease, doctor: doctor),
+                    SliverPinnedHeader(
+                      child: Container(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: TabBar(
+                          tabs: <Widget>[
+                            const Tab(text: 'Details'),
+                            if (diagnosedDisease.doctorID == doctor.id)
+                              const Tab(text: 'Comments'),
+                            if (diagnosedDisease.doctorID == doctor.id)
+                              const Tab(text: 'Prescription'),
+                          ],
+                        ),
                       ),
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: CommentSection(
-                            diagnosedDisease: diagnosedDisease, doctor: doctor),
-                      ),
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: PrescriptionSection(
-                            diagnosedDisease: diagnosedDisease, doctor: doctor),
-                      ),
-                    ]),
+                    )
+                  ],
+                  body: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: DetailsSection(
+                              diagnosedDisease: diagnosedDisease,
+                              doctor: doctor,
+                              patient: widget.patient,
+                              disease: widget.disease),
+                        ),
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: CommentSection(
+                              diagnosedDisease: diagnosedDisease,
+                              doctor: doctor),
+                        ),
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: PrescriptionSection(
+                              diagnosedDisease: diagnosedDisease,
+                              doctor: doctor),
+                        ),
+                      ]),
+                ),
               ),
             ),
           ),
@@ -212,8 +225,14 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
 
 class DetailsSection extends StatefulWidget {
   const DetailsSection(
-      {super.key, required this.diagnosedDisease, required this.doctor});
+      {super.key,
+      required this.diagnosedDisease,
+      required this.doctor,
+      required this.patient,
+      required this.disease});
   final DiagnosedDisease diagnosedDisease;
+  final Patient patient;
+  final Disease disease;
   final Doctor doctor;
 
   @override
@@ -235,7 +254,7 @@ class _DetailsSectionState extends State<DetailsSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(widget.diagnosedDisease.patientName,
+              Text(widget.patient.name,
                   style: Theme.of(context).textTheme.titleLarge),
               if (editAIAnalysis)
                 const SizedBox(
@@ -243,10 +262,13 @@ class _DetailsSectionState extends State<DetailsSection> {
                 ),
               if (editAIAnalysis)
                 UniversalTextField(
+                  maxLines: 1,
                   initialValue: widget.diagnosedDisease.editedByDoctor
                       ? widget.diagnosedDisease.diagnosedDiseaseName
-                      : widget.diagnosedDisease.diseaseName,
-                  labelText: 'AI Analysis',
+                      : widget.disease.name,
+                  labelText: widget.diagnosedDisease.editedByDoctor
+                      ? 'Diagnosed Disease'
+                      : 'AI Analysis',
                   onChanged: (value) {
                     setState(() {
                       aiAnalysis = value;
@@ -257,7 +279,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                 Text(
                     widget.diagnosedDisease.editedByDoctor
                         ? 'Patient is diagnosed with ${widget.diagnosedDisease.diagnosedDiseaseName.toLowerCase()}.'
-                        : 'AI Analysis classified the disease as ${widget.diagnosedDisease.diseaseName.toLowerCase()}.',
+                        : 'AI Analysis classified the disease as ${widget.disease.name.toLowerCase()}.',
                     style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 16),
               Text(
@@ -279,7 +301,8 @@ class _DetailsSectionState extends State<DetailsSection> {
                               context.read<DoctorBloc>().add(DoctorUpdateCase(
                                   diagnosedDisease: widget.diagnosedDisease
                                       .copyWith(
-                                          diagnosedDiseaseName: aiAnalysis,
+                                          diagnosedDiseaseName:
+                                              aiAnalysis.trim(),
                                           editedByDoctor: true)))
                             }
                           else
@@ -290,7 +313,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                                     widget.diagnosedDisease.editedByDoctor
                                         ? widget.diagnosedDisease
                                             .diagnosedDiseaseName
-                                        : widget.diagnosedDisease.diseaseName;
+                                        : widget.disease.name;
                               })
                             }
                         },
@@ -331,6 +354,7 @@ class _DetailsSectionState extends State<DetailsSection> {
               const SizedBox(height: 8),
               if (editPreventiveMeasures)
                 UniversalTextField(
+                  maxLines: null,
                   initialValue: widget.diagnosedDisease.details,
                   labelText: 'Preventive Measures',
                   onChanged: (value) {
@@ -358,7 +382,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                               context.read<DoctorBloc>().add(DoctorUpdateCase(
                                   diagnosedDisease: widget.diagnosedDisease
                                       .copyWith(
-                                          details: preventiveMeasures,
+                                          details: preventiveMeasures.trim(),
                                           editedByDoctor: true)))
                             }
                           else
@@ -397,63 +421,69 @@ class _CommentSectionState extends State<CommentSection> {
   String comment = '';
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Doctor\'s Comment',
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          if (editComment)
-            UniversalTextField(
-              initialValue: widget.diagnosedDisease.doctorsComment,
-              labelText: 'Comment',
-              onChanged: (value) {
-                setState(() {
-                  comment = value;
-                });
-              },
-            ),
-          if (!editComment)
-            Text(widget.diagnosedDisease.doctorsComment.isEmpty
-                ? 'No comments added'
-                : widget.diagnosedDisease.doctorsComment),
-          if (widget.diagnosedDisease.doctorID == widget.doctor.id)
-            const SizedBox(
-              height: 16,
-            ),
-          if (widget.diagnosedDisease.doctorID == widget.doctor.id)
-            FilledButton(
-                onPressed: () => {
-                      if (editComment)
-                        {
-                          setState(() {
-                            editComment = false;
-                          }),
-                          context.read<DoctorBloc>().add(DoctorUpdateCase(
-                              diagnosedDisease: widget.diagnosedDisease
-                                  .copyWith(
-                                      doctorsComment: comment,
-                                      editedByDoctor: true)))
-                        }
-                      else
-                        {
-                          setState(() {
-                            editComment = true;
-                            comment = widget.diagnosedDisease.doctorsComment;
-                          })
-                        }
-                    },
-                child: Text(editComment
-                    ? 'Save'
-                    : widget.diagnosedDisease.doctorsComment.isEmpty
-                        ? 'Add Comment'
-                        : 'Edit my comment')),
-        ],
-      ),
-    ));
+    return Column(
+      children: [
+        Card(
+            child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Doctor\'s Comment',
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              if (editComment)
+                UniversalTextField(
+                  maxLines: null,
+                  initialValue: widget.diagnosedDisease.doctorsComment,
+                  labelText: 'Comment',
+                  onChanged: (value) {
+                    setState(() {
+                      comment = value;
+                    });
+                  },
+                ),
+              if (!editComment)
+                Text(widget.diagnosedDisease.doctorsComment.isEmpty
+                    ? 'No comments added'
+                    : widget.diagnosedDisease.doctorsComment),
+              if (widget.diagnosedDisease.doctorID == widget.doctor.id)
+                const SizedBox(
+                  height: 16,
+                ),
+              if (widget.diagnosedDisease.doctorID == widget.doctor.id)
+                FilledButton(
+                    onPressed: () => {
+                          if (editComment)
+                            {
+                              setState(() {
+                                editComment = false;
+                              }),
+                              context.read<DoctorBloc>().add(DoctorUpdateCase(
+                                  diagnosedDisease: widget.diagnosedDisease
+                                      .copyWith(
+                                          doctorsComment: comment.trim(),
+                                          editedByDoctor: true)))
+                            }
+                          else
+                            {
+                              setState(() {
+                                editComment = true;
+                                comment = widget.diagnosedDisease.doctorsComment;
+                              })
+                            }
+                        },
+                    child: Text(editComment
+                        ? 'Save'
+                        : widget.diagnosedDisease.doctorsComment.isEmpty
+                            ? 'Add Comment'
+                            : 'Edit my comment')),
+            ],
+          ),
+        )),
+        const SizedBox(height: 32),
+      ],
+    );
   }
 }
 
@@ -472,61 +502,67 @@ class _PrescriptionSectionState extends State<PrescriptionSection> {
   String prescription = '';
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Prescription', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          if (editPrescription)
-            UniversalTextField(
-              initialValue: widget.diagnosedDisease.prescription,
-              labelText: 'Prescription',
-              onChanged: (value) {
-                setState(() {
-                  prescription = value;
-                });
-              },
-            ),
-          if (!editPrescription)
-            Text(widget.diagnosedDisease.prescription.isEmpty
-                ? 'No prescription given'
-                : widget.diagnosedDisease.prescription),
-          if (widget.diagnosedDisease.doctorID != null)
-            const SizedBox(
-              height: 16,
-            ),
-          if (widget.diagnosedDisease.doctorID != null)
-            FilledButton(
-                onPressed: () => {
-                      if (editPrescription)
-                        {
-                          setState(() {
-                            editPrescription = false;
-                          }),
-                          context.read<DoctorBloc>().add(DoctorUpdateCase(
-                              diagnosedDisease: widget.diagnosedDisease
-                                  .copyWith(
-                                      prescription: prescription,
-                                      editedByDoctor: true)))
-                        }
-                      else
-                        {
-                          setState(() {
-                            editPrescription = true;
-                            prescription = widget.diagnosedDisease.prescription;
-                          })
-                        }
-                    },
-                child: Text(editPrescription
-                    ? 'Save'
-                    : widget.diagnosedDisease.prescription.isEmpty
-                        ? 'Add Prescription'
-                        : 'Edit Prescription')),
-        ],
-      ),
-    ));
+    return Column(
+      children: [
+        Card(
+            child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Prescription', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              if (editPrescription)
+                UniversalTextField(
+                  maxLines: null,
+                  initialValue: widget.diagnosedDisease.prescription,
+                  labelText: 'Prescription',
+                  onChanged: (value) {
+                    setState(() {
+                      prescription = value;
+                    });
+                  },
+                ),
+              if (!editPrescription)
+                Text(widget.diagnosedDisease.prescription.isEmpty
+                    ? 'No prescription given'
+                    : widget.diagnosedDisease.prescription),
+              if (widget.diagnosedDisease.doctorID != null)
+                const SizedBox(
+                  height: 16,
+                ),
+              if (widget.diagnosedDisease.doctorID != null)
+                FilledButton(
+                    onPressed: () => {
+                          if (editPrescription)
+                            {
+                              setState(() {
+                                editPrescription = false;
+                              }),
+                              context.read<DoctorBloc>().add(DoctorUpdateCase(
+                                  diagnosedDisease: widget.diagnosedDisease
+                                      .copyWith(
+                                          prescription: prescription.trim(),
+                                          editedByDoctor: true)))
+                            }
+                          else
+                            {
+                              setState(() {
+                                editPrescription = true;
+                                prescription = widget.diagnosedDisease.prescription;
+                              })
+                            }
+                        },
+                    child: Text(editPrescription
+                        ? 'Save'
+                        : widget.diagnosedDisease.prescription.isEmpty
+                            ? 'Add Prescription'
+                            : 'Edit Prescription')),
+            ],
+          ),
+        )),
+        const SizedBox(height: 32),
+      ],
+    );
   }
 }

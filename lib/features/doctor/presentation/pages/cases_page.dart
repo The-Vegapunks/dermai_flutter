@@ -1,6 +1,8 @@
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
+import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/doctor/presentation/components/case_card.dart';
@@ -17,8 +19,8 @@ class CasesPage extends StatefulWidget {
 
 class _CasesPageState extends State<CasesPage>
     with SingleTickerProviderStateMixin {
-  List<DiagnosedDisease> _cases = [];
-  List<DiagnosedDisease> _filteredCases = [];
+  List<(DiagnosedDisease, Patient, Disease)> _cases = [];
+  List<(DiagnosedDisease, Patient, Disease)> _filteredCases = [];
   var selectedCaseType = CasesType.values[1];
   late Doctor doctor;
   @override
@@ -31,7 +33,7 @@ class _CasesPageState extends State<CasesPage>
     doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
         .user
         .doctor();
-    context.read<DoctorBloc>().add(DoctorDiagnosedDisease(
+    context.read<DoctorBloc>().add(DoctorCases(
         doctorID: doctor.id, casesType: selectedCaseType));
   }
 
@@ -44,18 +46,18 @@ class _CasesPageState extends State<CasesPage>
           break;
         case CasesType.available:
           _filteredCases =
-              _cases.where((element) => element.doctorID == null).toList();
+              _cases.where((element) => element.$1.doctorID == null).toList();
           break;
         case CasesType.current:
           _filteredCases = _cases
               .where(
-                  (element) => element.doctorID == doctor.id && !element.status)
+                  (element) => element.$1.doctorID == doctor.id && !element.$1.status)
               .toList();
           break;
         case CasesType.completed:
           _filteredCases = _cases
               .where(
-                  (element) => element.doctorID == doctor.id && element.status)
+                  (element) => element.$1.doctorID == doctor.id && element.$1.status)
               .toList();
           break;
       }
@@ -74,7 +76,7 @@ class _CasesPageState extends State<CasesPage>
               ),
             );
           }
-          if (state is DoctorSuccessListOfDiagnosedDisease) {
+          if (state is DoctorSuccessCases) {
             setState(() {
               _cases = state.diagnosedDiseases;
               _handleCaseTypeChange(selectedCaseType);
@@ -147,14 +149,19 @@ class _CasesPageState extends State<CasesPage>
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   CaseDetailPage(
-                                                diagnosedDisease: _filteredCases[index],
+                                                diagnosedDisease: _filteredCases[index].$1,
+                                                patient: _filteredCases[index].$2,
+                                                disease: _filteredCases[index].$3,
                                               ),
                                             ),
                                           ).then((value) {
                                             _fetchDiagnosedDiseases();
                                           });
                                         },
-                                        diagnosedDisease: _filteredCases[index]),
+                                        diagnosedDisease: _filteredCases[index].$1,
+                                        disease: _filteredCases[index].$3,
+                                        patient: _filteredCases[index].$2),
+                                        
                                     if (index >= _filteredCases.length)
                                       const SizedBox(
                                         height: 16,

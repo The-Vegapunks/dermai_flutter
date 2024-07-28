@@ -1,6 +1,5 @@
 import 'package:dermai/features/doctor/presentation/pages/cases_page.dart';
 import 'package:dermai/features/doctor/presentation/pages/appointment_page.dart';
-import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
 
 class RootPage extends StatefulWidget {
@@ -15,15 +14,16 @@ class _RootPageState extends State<RootPage> {
   final List<Widget> _screens = [
     const CasesPage(),
     const AppointmentPage(),
-    const ReschedulePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentPageIndex,
-        children: _screens,
+      body: SafeArea(
+        child: IndexedStack(
+          index: currentPageIndex,
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -40,10 +40,6 @@ class _RootPageState extends State<RootPage> {
           NavigationDestination(
             icon: Icon(Icons.calendar_today),
             label: 'Appointment',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_busy),
-            label: 'Reschedule',
           ),
         ],
       ),

@@ -62,6 +62,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: UniversalTextField(
+                        maxLines: 1,
                         labelText: "Full Name",
                         icon: const Icon(Icons.person),
                         onChanged: (value) => {
