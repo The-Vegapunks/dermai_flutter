@@ -12,9 +12,13 @@ import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
 import 'package:dermai/features/doctor/data/repository/doctor_repository_impl.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_details.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart' as usecasecancel;
+import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -93,11 +97,27 @@ void _initAuth() {
   ..registerFactory(
     () => DoctorUpdateCaseDetails(serviceLocator()),
   )
+  ..registerFactory(
+    () => DoctorGetAppointments(serviceLocator()),
+  )
+  ..registerFactory(
+    () => usecasecancel.DoctorCancelAppointment(serviceLocator()),
+  )
+  ..registerFactory(
+    () => DoctorGetAvailableAppointmentSlots(serviceLocator()),
+  )
+  ..registerFactory(
+    () => usecaseupdate.DoctorUpdateAppointment(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => DoctorBloc(
       doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
       doctorGetCaseDetails: serviceLocator<DoctorGetCaseDetails>(),
       doctorUpdateCaseDetails: serviceLocator<DoctorUpdateCaseDetails>(),
+      doctorGetAppointments: serviceLocator<DoctorGetAppointments>(),
+      doctorCancelAppointment: serviceLocator<usecasecancel.DoctorCancelAppointment>(),
+      doctorGetAvailableAppointmentSlots: serviceLocator<DoctorGetAvailableAppointmentSlots>(),
+      doctorUpdateAppointment: serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
     ),
   );
 }

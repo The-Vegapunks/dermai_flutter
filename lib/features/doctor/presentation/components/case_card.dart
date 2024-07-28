@@ -1,10 +1,18 @@
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
-import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart';
+import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:flutter/material.dart';
 
 class CaseCard extends StatefulWidget {
-  const CaseCard({super.key, required this.diagnosedDisease, required this.onTap});
+  const CaseCard(
+      {super.key,
+      required this.diagnosedDisease,
+      required this.disease,
+      required this.patient,
+      required this.onTap});
   final DiagnosedDisease diagnosedDisease;
+  final Patient patient;
+  final Disease disease;
   final Function() onTap;
 
   @override
@@ -25,13 +33,18 @@ class _CaseCardState extends State<CaseCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.diagnosedDisease.patientName,
+                  widget.patient.name,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Row(
                   children: [
                     Text(
-                      widget.diagnosedDisease.diseaseName,
+                      widget.diagnosedDisease.editedByDoctor
+                          ? (widget
+                                  .diagnosedDisease.diagnosedDiseaseName.isEmpty
+                              ? widget.disease.name
+                              : widget.diagnosedDisease.diagnosedDiseaseName)
+                          : widget.disease.name,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(width: 8),
@@ -40,17 +53,20 @@ class _CaseCardState extends State<CaseCard> {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(width: 8),
-                    if (widget.diagnosedDisease.doctorID == null && !widget.diagnosedDisease.status)
+                    if (widget.diagnosedDisease.doctorID == null &&
+                        !widget.diagnosedDisease.status)
                       Text(
                         'Available',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                    if (widget.diagnosedDisease.doctorID != null && !widget.diagnosedDisease.status)
+                    if (widget.diagnosedDisease.doctorID != null &&
+                        !widget.diagnosedDisease.status)
                       Text(
                         'Currently Consulting',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                    if (widget.diagnosedDisease.doctorID != null && widget.diagnosedDisease.status)
+                    if (widget.diagnosedDisease.doctorID != null &&
+                        widget.diagnosedDisease.status)
                       Text(
                         'Completed',
                         style: Theme.of(context).textTheme.titleSmall,

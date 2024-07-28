@@ -15,11 +15,23 @@ class AppointmentModel extends Appointment {
     return AppointmentModel(
       appointmentID: json['appointmentID'],
       dateCreated: DateTime.parse(json['dateCreated']),
-      status: json['status'],
+      status: AppointmentStatus.values.byName(json['status']),
       comment: json['comment'],
       description: json['description'],
       diagnosedID: json['diagnosedID'],
       isPhysical: json['isPhysical'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'appointmentID': appointmentID,
+      'dateCreated': dateCreated.toIso8601String(),
+      'status': status.name,
+      'comment': comment,
+      'description': description,
+      'diagnosedID': diagnosedID,
+      'isPhysical': isPhysical,
+    };
   }
 }
