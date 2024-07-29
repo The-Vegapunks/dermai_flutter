@@ -1,5 +1,6 @@
 import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_page.dart';
+import 'package:dermai/features/patient/presentation/pages/diagnose_page.dart';
 import 'package:dermai/features/patient/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,7 +26,7 @@ class _RootPageState extends State<RootPage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AiPage()));
+                MaterialPageRoute(builder: (context) => DiagnosePage()));
           },
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
