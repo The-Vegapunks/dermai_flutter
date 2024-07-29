@@ -148,6 +148,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         final failureOrAppointments = await _doctorUpdateAppointment(
           usecaseupdate.DoctorUpdateAppointmentParams(
             appointment: event.appointment,
+            insert: event.insert
           ),
         );
         failureOrAppointments.fold(

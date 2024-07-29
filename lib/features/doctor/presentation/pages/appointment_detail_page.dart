@@ -2,6 +2,7 @@ import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/patient.dart';
+import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart';
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
@@ -19,6 +20,10 @@ class AppointmentDetailPage extends StatefulWidget {
 
 class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   late (Appointment, DiagnosedDisease, Patient, Disease) param;
+  bool detailEdit = false;
+  String detail = '';
+  String comment = '';
+  bool commentEdit = false;
   @override
   void initState() {
     setState(() {
@@ -26,12 +31,16 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    
     return BlocConsumer<DoctorBloc, DoctorState>(
       listener: (context, state) {
-        // TODO: implement listener
+        if (state is DoctorSuccessAppointment) {
+          setState(() {
+            param = state.response;
+          });
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -46,6 +55,23 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                     Navigator.pop(context);
                   },
                 ),
+                actions: [
+                  if (param.$1.status == AppointmentStatus.pending)
+                    PopupMenuButton(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          onTap: () {
+                            context.read<DoctorBloc>().add(
+                                DoctorUpdateAppointment(
+                                    appointment: param.$1.copyWith(
+                                        status: AppointmentStatus.followup),
+                                    insert: false));
+                          },
+                          child: const Text('Mark as done'),
+                        ),
+                      ],
+                    ),
+                ],
               ),
               SliverToBoxAdapter(
                 child: Padding(
@@ -76,77 +102,113 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       const SizedBox(height: 32),
                       Row(
                         children: [
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ReschedulePage(
-                                      param: param,
-                                      insert: false,
+                          if (param.$1.status == AppointmentStatus.pending)
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ReschedulePage(
+                                        param: param,
+                                        insert: false,
+                                      ),
                                     ),
-                                  ),
-                                )
-                                    .then((value) {
-                                  setState(() {
-                                    param = value as (Appointment, DiagnosedDisease, Patient, Disease);
+                                  )
+                                      .then((value) {
+                                    setState(() {
+                                      param = value as (
+                                        Appointment,
+                                        DiagnosedDisease,
+                                        Patient,
+                                        Disease
+                                      );
+                                    });
                                   });
-                                });
-                              },
-                              child: const Text('Reschedule'),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
-                                textStyle: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onError),
+                                },
+                                child: const Text('Reschedule'),
                               ),
-                              onPressed: () async {
-                                final result = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Are you sure?'),
-                                    content: const Text(
-                                        'This action will permanently cancel the appointment.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, false);
-                                        },
-                                        child: const Text('No'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, true);
-                                        },
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-
-                                if (result == null || !result || !mounted) {
-                                  return;
-                                }
-                                // ignore: use_build_context_synchronously
-                                context.read<DoctorBloc>().add(
-                                      DoctorCancelAppointment(
-                                        appointmentID: param.$1.appointmentID,
-                                      ),
-                                    );
-
-                                // ignore: use_build_context_synchronously
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Cancel'),
                             ),
-                          ),
+                          if (param.$1.status == AppointmentStatus.followup)
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ReschedulePage(
+                                        param: param,
+                                        insert: true,
+                                      ),
+                                    ),
+                                  ).then((value) {
+                                    setState(() {
+                                      param = value as (
+                                        Appointment,
+                                        DiagnosedDisease,
+                                        Patient,
+                                        Disease
+                                      );
+                                    });
+                                  });
+                                },
+                                child: const Text('Follow Up'),
+                              ),
+                            ),
+                          if (param.$1.status == AppointmentStatus.pending)
+                            const SizedBox(width: 8),
+                          if (param.$1.status == AppointmentStatus.pending)
+                            Expanded(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                  textStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onError),
+                                ),
+                                onPressed: () async {
+                                  final result = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Are you sure?'),
+                                      content: const Text(
+                                          'This action will permanently cancel the appointment.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, true);
+                                          },
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+
+                                  if (result == null || !result || !mounted) {
+                                    return;
+                                  }
+                                  // ignore: use_build_context_synchronously
+                                  context.read<DoctorBloc>().add(
+                                        DoctorCancelAppointment(
+                                          appointmentID:
+                                              param.$1.appointmentID!,
+                                        ),
+                                      );
+
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                            ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -169,12 +231,72 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                   style:
                                       Theme.of(context).textTheme.titleMedium),
                               const SizedBox(height: 8),
-                              Text(
-                                  param.$1.comment.trim().isEmpty
-                                      ? 'No additional information'
-                                      : param.$1.description,
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
+                              if (!detailEdit)
+                                Text(
+                                    param.$1.description.trim().isEmpty
+                                        ? 'No additional information'
+                                        : param.$1.description.trim(),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
+                              if (detailEdit)
+                                UniversalTextField(
+                                  maxLines: null,
+                                  initialValue: param.$1.description.trim(),
+                                  labelText: 'Additional Information',
+                                  onChanged: (value) {
+                                    setState(() {
+                                      detail = value;
+                                    });
+                                  },
+                                ),
+                              if (param.$1.status !=
+                                  AppointmentStatus.completed)
+                                const SizedBox(height: 8),
+                              if (param.$1.status !=
+                                  AppointmentStatus.completed)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: FilledButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          detailEdit = !detailEdit;
+                                        });
+                                        context.read<DoctorBloc>().add(
+                                            DoctorUpdateAppointment(
+                                                appointment: param.$1.copyWith(
+                                                    description: detail),
+                                                insert: false));
+                                      },
+                                      child: detailEdit
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                if (state is! DoctorLoading)
+                                                  const Text(
+                                                      'Save Additional Information')
+                                                else
+                                                  const Text(
+                                                      'Saving Additional Information'),
+                                                if (state is DoctorLoading)
+                                                  const SizedBox(width: 8),
+                                                if (state is DoctorLoading)
+                                                  const SizedBox(
+                                                    width: 16,
+                                                    height: 16,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                                  ),
+                                              ],
+                                            )
+                                          : const Text(
+                                              "Edit Additional Information"),
+                                    )),
+                                  ],
+                                )
                             ],
                           ),
                         ),
@@ -187,16 +309,69 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Comments ',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium),
-                              const SizedBox(height: 8),
-                              Text(
-                                  param.$1.comment.trim().isEmpty
-                                      ? 'No comments'
-                                      : param.$1.comment,
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
+                              if (!commentEdit)
+                                Text(
+                                    param.$1.comment.trim().isEmpty
+                                        ? 'No comment'
+                                        : param.$1.comment.trim(),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
+                              if (commentEdit)
+                                UniversalTextField(
+                                  maxLines: null,
+                                  initialValue: param.$1.comment.trim(),
+                                  labelText: 'Comment',
+                                  onChanged: (value) {
+                                    setState(() {
+                                      comment = value;
+                                    });
+                                  },
+                                ),
+                              if (param.$1.status !=
+                                  AppointmentStatus.completed)
+                                const SizedBox(height: 8),
+                              if (param.$1.status !=
+                                  AppointmentStatus.completed)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: FilledButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          commentEdit = !commentEdit;
+                                        });
+                                        context.read<DoctorBloc>().add(
+                                            DoctorUpdateAppointment(
+                                                appointment: param.$1
+                                                    .copyWith(comment: comment),
+                                                insert: false));
+                                      },
+                                      child: commentEdit
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                if (state is! DoctorLoading)
+                                                  const Text('Save Comment')
+                                                else
+                                                  const Text('Saving Comment'),
+                                                if (state is DoctorLoading)
+                                                  const SizedBox(width: 8),
+                                                if (state is DoctorLoading)
+                                                  const SizedBox(
+                                                    width: 16,
+                                                    height: 16,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                                  ),
+                                              ],
+                                            )
+                                          : const Text("Edit Comment"),
+                                    )),
+                                  ],
+                                )
                             ],
                           ),
                         ),
@@ -206,7 +381,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                   ),
                 ),
               ),
-
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Column(

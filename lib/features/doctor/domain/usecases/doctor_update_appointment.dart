@@ -18,12 +18,13 @@ class DoctorUpdateAppointment
   @override
   Future<Either<Failure, (Appointment, DiagnosedDisease, Patient, Disease)>>
       call(DoctorUpdateAppointmentParams params) async {
-    return await repository.updateAppointment(appointment: params.appointment);
+    return await repository.updateAppointment(appointment: params.appointment, insert: params.insert);
   }
 }
 
 class DoctorUpdateAppointmentParams {
   final Appointment appointment;
+  final bool insert;
 
-  DoctorUpdateAppointmentParams({required this.appointment});
+  DoctorUpdateAppointmentParams({required this.appointment, required this.insert});
 }

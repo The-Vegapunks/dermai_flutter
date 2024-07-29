@@ -23,7 +23,8 @@ abstract interface class DoctorRemoteDataSource {
       {required DiagnosedDiseaseModel diagnosedDisease});
   Future<void> cancelAppointment({required String appointmentID});
   Future<(AppointmentModel, DiagnosedDiseaseModel, PatientModel, DiseaseModel)>
-      updateAppointment({required AppointmentModel appointment});
+      updateAppointment(
+          {required AppointmentModel appointment, required bool insert});
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
@@ -71,18 +72,23 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
             DiagnosedDiseaseModel,
             PatientModel,
             DiseaseModel
-          )>> getAppointments({required String doctorID, String? patientID}) async {
+          )>> getAppointments(
+      {required String doctorID, String? patientID}) async {
     try {
-      final response = patientID == null ? await client
-          .from('appointment')
-          .select('''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
-          .eq('diagnosedDisease.doctorID', doctorID)
-          .order('dateCreated', ascending: true) :
-          await client
-          .from('appointment')
-          .select('''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
-          .or('doctorID.eq.$doctorID, patientID.eq.$patientID', referencedTable: 'diagnosedDisease')
-          .order('dateCreated', ascending: true);
+      final response = patientID == null
+          ? await client
+              .from('appointment')
+              .select(
+                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
+              .eq('diagnosedDisease.doctorID', doctorID)
+              .order('dateCreated', ascending: true)
+          : await client
+              .from('appointment')
+              .select(
+                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
+              .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
+                  referencedTable: 'diagnosedDisease')
+              .order('dateCreated', ascending: true);
       if (response.isEmpty) return [];
       return response
           .map((e) => (
@@ -155,15 +161,25 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
 
   @override
   Future<(AppointmentModel, DiagnosedDiseaseModel, PatientModel, DiseaseModel)>
-      updateAppointment({required AppointmentModel appointment}) async {
+      updateAppointment(
+          {required AppointmentModel appointment, required bool insert}) async {
     try {
-      final response = await client
-          .from('appointment')
-          .update(appointment.toJson())
-          .match({'appointmentID': appointment.appointmentID})
-          .eq('appointmentID', appointment.appointmentID)
-          .select('''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
-          .single();
+      if (insert) {
+        await client.from('appointment').update({
+          'status': 'completed'
+        }).eq('diagnosedID', appointment.diagnosedID);
+      }
+      final response = insert
+          ? await client.from('appointment').insert(appointment.toJson(insert: true)).select(
+              '''*, diagnosedDisease( *, disease( * ), patient( * ) )''').single()
+          : await client
+              .from('appointment')
+              .update(appointment.toJson(insert: false))
+              .match({'appointmentID': appointment.appointmentID!})
+              .eq('appointmentID', appointment.appointmentID!)
+              .select(
+                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
+              .single();
       return (
         AppointmentModel.fromJson(response),
         DiagnosedDiseaseModel.fromJson(response['diagnosedDisease']),
@@ -171,6 +187,7 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
         DiseaseModel.fromJson(response['diagnosedDisease']['disease'])
       );
     } catch (e) {
+      print(e);
       throw const ServerException(
           'An error occurred while updating the appointment');
     }

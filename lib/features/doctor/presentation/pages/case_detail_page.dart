@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
+import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -31,7 +33,6 @@ class CaseDetailPage extends StatefulWidget {
 class _CaseDetailPageState extends State<CaseDetailPage> {
   late DiagnosedDisease diagnosedDisease;
   late Doctor doctor;
-  bool loading = false;
   @override
   void initState() {
     super.initState();
@@ -57,167 +58,180 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
             ),
           );
         }
-        if (state is DoctorLoading) {
-          setState(() {
-            loading = true;
-          });
-        }
         if (state is DoctorSuccessCaseDetails) {
           setState(() {
             diagnosedDisease = state.diagnosedDisease;
-            loading = false;
           });
         }
       },
       builder: (context, state) {
-        return Stack(children: [
-          DefaultTabController(
-            length: diagnosedDisease.doctorID == doctor.id ? 3 : 1,
-            child: Scaffold(
-              floatingActionButton: diagnosedDisease.doctorID == null
-                  ? FloatingActionButton.extended(
-                      onPressed: () {
-                        context.read<DoctorBloc>().add(DoctorUpdateCase(
-                            diagnosedDisease: diagnosedDisease.copyWith(
-                                doctorID: doctor.id)));
-                      },
-                      label: const Text('Take Case'),
-                      icon: const Icon(Icons.add),
-                    )
-                  : null,
-              body: SafeArea(
-                child: NestedScrollView(
-                  scrollDirection: Axis.vertical,
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverAppBar(
-                      actions: [
-                        if (diagnosedDisease.doctorID == doctor.id)
-                          PopupMenuButton(
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                onTap: () => {
-                                  context.read<DoctorBloc>().add(
-                                      DoctorUpdateCase(
-                                          diagnosedDisease:
-                                              diagnosedDisease.copyWith(
-                                                  status:
-                                                      !diagnosedDisease.status,
-                                                  editedByDoctor: true))),
-                                  if (diagnosedDisease.status)
-                                    {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Case reopened'),
-                                        ),
-                                      )
-                                    }
-                                  else
-                                    {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Case completed'),
-                                        ),
+        return DefaultTabController(
+          length: diagnosedDisease.doctorID == doctor.id ? 3 : 1,
+          child: Scaffold(
+            floatingActionButton: diagnosedDisease.doctorID == null
+                ? FloatingActionButton.extended(
+                    onPressed: () {
+                      context.read<DoctorBloc>().add(DoctorUpdateCase(
+                          diagnosedDisease: diagnosedDisease.copyWith(
+                              doctorID: doctor.id)));
+                    },
+                    label: const Text('Take Case'),
+                    icon: const Icon(Icons.add),
+                  )
+                : null,
+            body: SafeArea(
+              child: NestedScrollView(
+                scrollDirection: Axis.vertical,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverAppBar(
+                    actions: [
+                      if (diagnosedDisease.doctorID == doctor.id)
+                        PopupMenuButton(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              onTap: () => {
+                                context.read<DoctorBloc>().add(
+                                    DoctorUpdateCase(
+                                        diagnosedDisease:
+                                            diagnosedDisease.copyWith(
+                                                status:
+                                                    !diagnosedDisease.status,
+                                                editedByDoctor: true))),
+                                if (diagnosedDisease.status)
+                                  {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Case reopened'),
                                       ),
-                                      Navigator.pop(context)
-                                    }
-                                },
-                                child: Row(
-                                  children: [
-                                    Icon(diagnosedDisease.status
-                                        ? Icons.open_in_new
-                                        : Icons.check),
-                                    const SizedBox(width: 8),
-                                    Text(diagnosedDisease.status
-                                        ? 'Reopen case'
-                                        : 'Mark as completed'),
-                                  ],
-                                ),
+                                    )
+                                  }
+                                else
+                                  {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Case completed'),
+                                      ),
+                                    ),
+                                    Navigator.pop(context)
+                                  }
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(diagnosedDisease.status
+                                      ? Icons.open_in_new
+                                      : Icons.check),
+                                  const SizedBox(width: 8),
+                                  Text(diagnosedDisease.status
+                                      ? 'Reopen case'
+                                      : 'Mark as completed'),
+                                ],
                               ),
-                              const PopupMenuItem(
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.calendar_today),
-                                    SizedBox(width: 8),
-                                    Text('Give an appointment'),
-                                  ],
-                                ),
+                            ),
+                            PopupMenuItem(
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.calendar_today),
+                                  SizedBox(width: 8),
+                                  Text('Give an appointment'),
+                                ],
                               ),
-                            ],
-                          ),
-                      ],
-                      leading: IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        tooltip:
-                            MaterialLocalizations.of(context).backButtonTooltip,
-                      ),
-                      title: const Text('Case Detail'),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ReschedulePage(
+                                              param: (
+                                                Appointment(
+                                                    appointmentID: null,
+                                                    dateCreated:
+                                                        DateTime.now(),
+                                                    status: AppointmentStatus
+                                                        .pending,
+                                                    comment: "",
+                                                    description: "",
+                                                    diagnosedID:
+                                                        diagnosedDisease
+                                                            .diagnosedID!,
+                                                    isPhysical: false),
+                                                diagnosedDisease,
+                                                widget.patient,
+                                                widget.disease,
+                                              ),
+                                              insert: true,
+                                            )));
+                              },
+                            ),
+                          ],
+                        ),
+                    ],
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      tooltip:
+                          MaterialLocalizations.of(context).backButtonTooltip,
                     ),
-                    SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          FadeInImage.memoryNetwork(
-                            placeholder: kTransparentImage,
-                            image: diagnosedDisease.picture,
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                          ),
+                    title: const Text('Case Detail'),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: diagnosedDisease.picture,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverPinnedHeader(
+                    child: Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: TabBar(
+                        tabs: <Widget>[
+                          const Tab(text: 'Details'),
+                          if (diagnosedDisease.doctorID == doctor.id)
+                            const Tab(text: 'Comments'),
+                          if (diagnosedDisease.doctorID == doctor.id)
+                            const Tab(text: 'Prescription'),
                         ],
                       ),
                     ),
-                    SliverPinnedHeader(
-                      child: Container(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: TabBar(
-                          tabs: <Widget>[
-                            const Tab(text: 'Details'),
-                            if (diagnosedDisease.doctorID == doctor.id)
-                              const Tab(text: 'Comments'),
-                            if (diagnosedDisease.doctorID == doctor.id)
-                              const Tab(text: 'Prescription'),
-                          ],
-                        ),
+                  )
+                ],
+                body: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: <Widget>[
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: DetailsSection(
+                            diagnosedDisease: diagnosedDisease,
+                            doctor: doctor,
+                            patient: widget.patient,
+                            disease: widget.disease),
                       ),
-                    )
-                  ],
-                  body: TabBarView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: <Widget>[
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: DetailsSection(
-                              diagnosedDisease: diagnosedDisease,
-                              doctor: doctor,
-                              patient: widget.patient,
-                              disease: widget.disease),
-                        ),
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: CommentSection(
-                              diagnosedDisease: diagnosedDisease,
-                              doctor: doctor),
-                        ),
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: PrescriptionSection(
-                              diagnosedDisease: diagnosedDisease,
-                              doctor: doctor),
-                        ),
-                      ]),
-                ),
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: CommentSection(
+                            diagnosedDisease: diagnosedDisease,
+                            doctor: doctor),
+                      ),
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: PrescriptionSection(
+                            diagnosedDisease: diagnosedDisease,
+                            doctor: doctor),
+                      ),
+                    ]),
               ),
             ),
           ),
-          if (loading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
-        ]);
+        );
       },
     );
   }
@@ -469,7 +483,8 @@ class _CommentSectionState extends State<CommentSection> {
                             {
                               setState(() {
                                 editComment = true;
-                                comment = widget.diagnosedDisease.doctorsComment;
+                                comment =
+                                    widget.diagnosedDisease.doctorsComment;
                               })
                             }
                         },
@@ -510,7 +525,8 @@ class _PrescriptionSectionState extends State<PrescriptionSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Prescription', style: Theme.of(context).textTheme.titleMedium),
+              Text('Prescription',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               if (editPrescription)
                 UniversalTextField(
@@ -549,7 +565,8 @@ class _PrescriptionSectionState extends State<PrescriptionSection> {
                             {
                               setState(() {
                                 editPrescription = true;
-                                prescription = widget.diagnosedDisease.prescription;
+                                prescription =
+                                    widget.diagnosedDisease.prescription;
                               })
                             }
                         },

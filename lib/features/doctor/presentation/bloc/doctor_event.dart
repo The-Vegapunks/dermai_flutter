@@ -38,5 +38,6 @@ final class DoctorAvailableSlot extends DoctorEvent {
 
 final class DoctorUpdateAppointment extends DoctorEvent {
   final Appointment appointment;
-  DoctorUpdateAppointment({required this.appointment});
+  final bool insert;
+  DoctorUpdateAppointment({required this.appointment, required this.insert});
 }

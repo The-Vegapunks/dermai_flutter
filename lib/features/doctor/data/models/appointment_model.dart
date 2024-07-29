@@ -23,8 +23,9 @@ class AppointmentModel extends Appointment {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({required bool insert}) {
     return {
+      if (!insert)
       'appointmentID': appointmentID,
       'dateCreated': dateCreated.toIso8601String(),
       'status': status.name,

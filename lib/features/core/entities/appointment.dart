@@ -9,7 +9,7 @@ class Appointment {
     required this.isPhysical,
   });
 
-  final String appointmentID;
+  final String? appointmentID;
   final DateTime dateCreated;
   final AppointmentStatus status;
   final String comment;
@@ -40,8 +40,10 @@ class Appointment {
 
 enum AppointmentStatus {
   pending,
-  accepted,
-  rejected,
+  followup,
   completed,
-  cancelled,
 }
+
+
+
+

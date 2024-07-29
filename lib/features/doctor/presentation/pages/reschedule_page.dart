@@ -28,7 +28,8 @@ class _ReschedulePageState extends State<ReschedulePage> {
     doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
         .user
         .doctor();
-    context.read<DoctorBloc>().add(DoctorAvailableSlot(doctorID: doctor.id, patientID: widget.param.$2.patientID));
+    context.read<DoctorBloc>().add(DoctorAvailableSlot(
+        doctorID: doctor.id, patientID: widget.param.$2.patientID));
     super.initState();
   }
 
@@ -43,6 +44,12 @@ class _ReschedulePageState extends State<ReschedulePage> {
         }
         if (state is DoctorSuccessAppointment) {
           Navigator.pop(context, state.response);
+        }
+        if (state is DoctorFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ));
         }
       },
       builder: (context, state) {
@@ -84,70 +91,168 @@ class _ReschedulePageState extends State<ReschedulePage> {
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: selectedEvents.isEmpty ? Center(
-                    child: Text(
-                      'No available slot for this date',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ) : ListView.builder(
-                    itemCount: selectedEvents.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: GestureDetector(
-                          onTap: () async {
-                            final result = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Reschedule Appointment'),
-                                    content: Text(
-                                        'Confirm to reschedule this appointment to reschedule this appointment to ${DateFormat.yMd().format(selectedEvents[index].startTime)} - ${DateFormat.Hm().format(selectedEvents[index].startTime)}.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, false);
-                                        },
-                                        child: const Text('No'),
+                  child: selectedEvents.isEmpty
+                      ? Center(
+                          child: state is DoctorLoading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  'No available slot for this date',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                        )
+                      : ListView.builder(
+                          itemCount: selectedEvents.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (widget.insert) {
+                                    final result = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title:
+                                            const Text('Schedule Appointment'),
+                                        content: Text(
+                                            'Confirm the schedule for this appointment to ${DateFormat.yMd().format(selectedEvents[index].startTime)} - ${DateFormat.Hm().format(selectedEvents[index].startTime)}.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                            child: const Text('No'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context, true);
+                                            },
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
                                       ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, true);
-                                        },
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
-                                  ),
-                                );
+                                    );
 
-                                if (result == null || !result || !mounted) {
-                                  return;
-                                }
-                                // ignore: use_build_context_synchronously
-                                context.read<DoctorBloc>().add(DoctorUpdateAppointment(
-                                  appointment: widget.param.$1.copyWith(
-                                    dateCreated: selectedEvents[index].startTime,
+                                    if (result == null || !result || !mounted) {
+                                      return;
+                                    }
+
+                                    final resultSheet =
+                                        await showModalBottomSheet<bool>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          height: 128,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                GestureDetector(
+                                                  onTap: () => Navigator.pop(
+                                                      context, true),
+                                                  child: const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                        'Physical Appointment'),
+                                                  ),
+                                                ),
+                                                const Divider(),
+                                                GestureDetector(
+                                                  onTap: () => Navigator.pop(
+                                                      context, false),
+                                                  child: const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                        'Online Appointment'),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+
+                                    if (resultSheet == null || !mounted) {
+                                      return;
+                                    }
+                                    // ignore: use_build_context_synchronously
+                                    context.read<DoctorBloc>().add(
+                                        DoctorUpdateAppointment(
+                                            appointment:
+                                                widget.param.$1.copyWith(
+                                              dateCreated: selectedEvents[index]
+                                                  .startTime,
+                                              isPhysical: resultSheet,
+                                              status: AppointmentStatus.pending,
+                                              comment: '',
+                                              description: '',
+                                            ),
+                                            insert: true));
+                                  } else {
+                                    final result = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text(
+                                            'Reschedule Appointment'),
+                                        content: Text(
+                                            'Confirm to reschedule this appointment to ${DateFormat.yMd().format(selectedEvents[index].startTime)} - ${DateFormat.Hm().format(selectedEvents[index].startTime)}.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                            child: const Text('No'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, true);
+                                            },
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (result == null || !result || !mounted) {
+                                      return;
+                                    }
+                                    // ignore: use_build_context_synchronously
+                                    context.read<DoctorBloc>().add(
+                                        DoctorUpdateAppointment(
+                                            appointment:
+                                                widget.param.$1.copyWith(
+                                              dateCreated: selectedEvents[index]
+                                                  .startTime,
+                                            ),
+                                            insert: false));
+                                  }
+                                },
+                                child: Card(
+                                  child: Container(
+                                    margin: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          DateFormat('hh:mm a').format(
+                                              selectedEvents[index].startTime),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ));
-                          },
-                          child: Card(
-                            child: Container(
-                              margin: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    DateFormat('hh:mm a').format(selectedEvents[index].startTime),
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
               );
             },
