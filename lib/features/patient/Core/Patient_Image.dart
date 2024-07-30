@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:image_picker/image_picker.dart';
@@ -26,14 +27,14 @@ class PatientImage {
 
     var request = http.MultipartRequest("POST", postURi);
 
-    http.Response res = await http.Response.fromStream(request.files.add(http.MultipartFile.fromBytes(
+    request.files.add(http.MultipartFile.fromBytes(
         Filename, File.fromRawPath(imgPath.readAsBytesSync()).readAsBytesSync(),
         contentType: MediaType('image', 'jpeg')));
 
-    request.send().then((response) {
-      if (response.statusCode == 200) print("uploaded!!");
-    }););
+    var response = request.send();
 
-    return res.headers['response'];
+    var responseData = response.asStream();
+
+    return jsonDecode(responseData.toString());
   }
 }
