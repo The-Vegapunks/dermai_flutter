@@ -41,3 +41,5 @@ final class DoctorUpdateAppointment extends DoctorEvent {
   final bool insert;
   DoctorUpdateAppointment({required this.appointment, required this.insert});
 }
+
+final class DoctorSignOut extends DoctorEvent {}

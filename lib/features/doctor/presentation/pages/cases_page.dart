@@ -1,3 +1,4 @@
+import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
@@ -33,8 +34,9 @@ class _CasesPageState extends State<CasesPage>
     doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
         .user
         .doctor();
-    context.read<DoctorBloc>().add(DoctorCases(
-        doctorID: doctor.id, casesType: selectedCaseType));
+    context
+        .read<DoctorBloc>()
+        .add(DoctorCases(doctorID: doctor.id, casesType: selectedCaseType));
   }
 
   void _handleCaseTypeChange(CasesType casesType) {
@@ -50,14 +52,14 @@ class _CasesPageState extends State<CasesPage>
           break;
         case CasesType.current:
           _filteredCases = _cases
-              .where(
-                  (element) => element.$1.doctorID == doctor.id && !element.$1.status)
+              .where((element) =>
+                  element.$1.doctorID == doctor.id && !element.$1.status)
               .toList();
           break;
         case CasesType.completed:
           _filteredCases = _cases
-              .where(
-                  (element) => element.$1.doctorID == doctor.id && element.$1.status)
+              .where((element) =>
+                  element.$1.doctorID == doctor.id && element.$1.status)
               .toList();
           break;
       }
@@ -88,6 +90,50 @@ class _CasesPageState extends State<CasesPage>
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
+                  title: Text(
+                    'Welcome back',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Sign out'),
+                                content: const Text(
+                                    'Are you sure you want to sign out?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      context
+                                          .read<DoctorBloc>()
+                                          .add(DoctorSignOut());
+                                      Navigator.pop(context);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const WelcomePage()));
+                                    },
+                                    child: const Text('Sign out'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.logout)),
+                  ],
+                ),
+                SliverAppBar(
                     floating: true,
                     snap: true,
                     automaticallyImplyLeading: false,
@@ -115,7 +161,8 @@ class _CasesPageState extends State<CasesPage>
                                       selectedCaseType =
                                           CasesType.values[index];
                                     });
-                                    _handleCaseTypeChange(CasesType.values[index]);
+                                    _handleCaseTypeChange(
+                                        CasesType.values[index]);
                                   },
                                 ),
                                 SizedBox(
@@ -149,19 +196,22 @@ class _CasesPageState extends State<CasesPage>
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   CaseDetailPage(
-                                                diagnosedDisease: _filteredCases[index].$1,
-                                                patient: _filteredCases[index].$2,
-                                                disease: _filteredCases[index].$3,
+                                                diagnosedDisease:
+                                                    _filteredCases[index].$1,
+                                                patient:
+                                                    _filteredCases[index].$2,
+                                                disease:
+                                                    _filteredCases[index].$3,
                                               ),
                                             ),
                                           ).then((value) {
                                             _fetchDiagnosedDiseases();
                                           });
                                         },
-                                        diagnosedDisease: _filteredCases[index].$1,
+                                        diagnosedDisease:
+                                            _filteredCases[index].$1,
                                         disease: _filteredCases[index].$3,
                                         patient: _filteredCases[index].$2),
-                                        
                                     if (index >= _filteredCases.length)
                                       const SizedBox(
                                         height: 16,

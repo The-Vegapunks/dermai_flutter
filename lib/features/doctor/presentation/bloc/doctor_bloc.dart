@@ -7,6 +7,7 @@ import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.d
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_sign_out_usecase.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
   final usecasecancel.DoctorCancelAppointment _doctorCancelAppointment;
   final DoctorGetAvailableAppointmentSlots _doctorGetAvailableAppointmentSlots;
   final usecaseupdate.DoctorUpdateAppointment _doctorUpdateAppointment;
+  final DoctorSignOutUsecase _doctorSignOut;
   DoctorBloc({
     required DoctorGetCases doctorGetDiagnosedDiseases,
     required DoctorGetCaseDetails doctorGetCaseDetails,
@@ -32,6 +34,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
     required usecasecancel.DoctorCancelAppointment doctorCancelAppointment,
     required DoctorGetAvailableAppointmentSlots doctorGetAvailableAppointmentSlots,
     required usecaseupdate.DoctorUpdateAppointment doctorUpdateAppointment,
+    required DoctorSignOutUsecase doctorSignOut,
   })  : _doctorGetDiagnosedDiseases = doctorGetDiagnosedDiseases,
         _doctorGetCaseDetails = doctorGetCaseDetails,
         _doctorUpdateCaseDetails = doctorUpdateCaseDetails,
@@ -39,6 +42,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         _doctorCancelAppointment = doctorCancelAppointment,
         _doctorGetAvailableAppointmentSlots = doctorGetAvailableAppointmentSlots,
         _doctorUpdateAppointment = doctorUpdateAppointment,
+        _doctorSignOut = doctorSignOut,
         super(DoctorInitial()) {
     on<DoctorCases>((event, emit) async {
       emit(DoctorLoading());
@@ -156,6 +160,16 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           (response) => emit(DoctorSuccessAppointment(
             response: response,
           )),
+        );
+      },
+    );
+
+    on<DoctorSignOut>(
+      (event, emit) async {
+        final failureOrSuccess = await _doctorSignOut(NoParams());
+        failureOrSuccess.fold(
+          (failure) => emit(DoctorFailure(message: failure.message)),
+          (_) => emit(DoctorSuccessSignOut()),
         );
       },
     );

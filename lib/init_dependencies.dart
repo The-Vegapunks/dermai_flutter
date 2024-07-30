@@ -16,6 +16,7 @@ import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.d
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_sign_out_usecase.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart' as usecasecancel;
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
@@ -135,6 +136,9 @@ void _initAuth() {
   ..registerFactory(
     () => usecaseupdate.DoctorUpdateAppointment(serviceLocator()),
   )
+  ..registerFactory(
+    () => DoctorSignOutUsecase(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => DoctorBloc(
       doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
@@ -144,6 +148,7 @@ void _initAuth() {
       doctorCancelAppointment: serviceLocator<usecasecancel.DoctorCancelAppointment>(),
       doctorGetAvailableAppointmentSlots: serviceLocator<DoctorGetAvailableAppointmentSlots>(),
       doctorUpdateAppointment: serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
+      doctorSignOut: serviceLocator<DoctorSignOutUsecase>(),
     ),
   );
 }

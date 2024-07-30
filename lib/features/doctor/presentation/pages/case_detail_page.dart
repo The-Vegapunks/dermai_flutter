@@ -6,6 +6,7 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
+import 'package:dermai/features/core/presentation/picture_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
@@ -177,16 +178,22 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                     title: const Text('Case Detail'),
                   ),
                   SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: diagnosedDisease.picture,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PicturePage(
+                                      picture: diagnosedDisease.picture,
+                                    )));
+                      },
+                      child: FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image: diagnosedDisease.picture,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   SliverPinnedHeader(

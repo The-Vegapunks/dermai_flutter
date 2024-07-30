@@ -25,6 +25,7 @@ abstract interface class DoctorRemoteDataSource {
   Future<(AppointmentModel, DiagnosedDiseaseModel, PatientModel, DiseaseModel)>
       updateAppointment(
           {required AppointmentModel appointment, required bool insert});
+  Future<void> signOut();
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
@@ -191,5 +192,10 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
       throw const ServerException(
           'An error occurred while updating the appointment');
     }
+  }
+  
+  @override
+  Future<void> signOut() {
+    return client.auth.signOut();
   }
 }

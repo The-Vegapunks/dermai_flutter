@@ -2,6 +2,7 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
+import 'package:dermai/features/core/presentation/picture_page.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -60,16 +61,22 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
                 title: const Text('Case Detail'),
               ),
               SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    FadeInImage.memoryNetwork(
-                      placeholder: kTransparentImage,
-                      image: diagnosedDisease.picture,
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ],
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PicturePage(
+                                  picture: diagnosedDisease.picture,
+                                )));
+                  },
+                  child: FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: diagnosedDisease.picture,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SliverPinnedHeader(

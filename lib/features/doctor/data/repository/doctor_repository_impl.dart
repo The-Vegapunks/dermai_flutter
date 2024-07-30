@@ -110,4 +110,9 @@ class DoctorRepositoryImpl implements DoctorRepository {
       return left(Failure(e.message));
     }
   }
+  
+  @override
+  Future<Either<Failure, void>> signOut() {
+    return remoteDataSource.signOut().then((_) => right(null));
+  }
 }

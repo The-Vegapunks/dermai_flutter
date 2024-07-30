@@ -62,15 +62,6 @@ class _HomePageState extends State<HomePage> {
             isLoading = true;
           });
         }
-        if (state is PatientSuccessSignOut) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You have been signed out'),
-            ),
-          );
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const WelcomePage()));
-        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -78,16 +69,45 @@ class _HomePageState extends State<HomePage> {
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBar(
-                  title: const Text('Welcome back'),
+                  title: Text(
+                    'Welcome back',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   actions: [
                     IconButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Signing out...'),
-                            ),
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Sign out'),
+                                content: const Text(
+                                    'Are you sure you want to sign out?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      context
+                                          .read<PatientBloc>()
+                                          .add(PatientSignOut());
+                                      Navigator.pop(context);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const WelcomePage()));
+                                    },
+                                    child: const Text('Sign out'),
+                                  ),
+                                ],
+                              );
+                            },
                           );
-                          context.read<PatientBloc>().add(PatientSignOut());
                         },
                         icon: const Icon(Icons.logout)),
                   ],

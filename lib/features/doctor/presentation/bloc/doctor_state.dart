@@ -49,3 +49,5 @@ final class DoctorSuccessAppointment extends DoctorState {
 
   const DoctorSuccessAppointment({required this.response});
 }
+
+final class DoctorSuccessSignOut extends DoctorState {}

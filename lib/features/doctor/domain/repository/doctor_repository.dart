@@ -12,4 +12,5 @@ abstract interface class DoctorRepository {
   Future<Either<Failure, List<(Appointment, DiagnosedDisease, Patient, Disease)>>> getAppointments({ required String doctorID, String? patientID});
   Future<Either<Failure, void>> cancelAppointment({ required String appointmentID});
   Future<Either<Failure, (Appointment, DiagnosedDisease, Patient, Disease)>> updateAppointment({ required Appointment appointment, required bool insert});
+  Future<Either<Failure, void>> signOut();
 }
