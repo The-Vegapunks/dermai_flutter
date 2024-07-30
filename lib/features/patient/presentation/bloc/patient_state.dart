@@ -24,3 +24,5 @@ final class PatientSuccessDiagnosedDiseases extends PatientState {
   const PatientSuccessDiagnosedDiseases({required this.diagnosedDiseases});
 
 }
+
+final class PatientSuccessSignOut extends PatientState {}

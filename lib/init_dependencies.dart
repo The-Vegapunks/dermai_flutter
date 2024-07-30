@@ -22,7 +22,9 @@ import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
+import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_sign_out_usecase.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -89,15 +91,19 @@ void _initAuth() {
   ..registerFactory<PatientRemoteDataSource>(
     () => PatientRemoteDataSourceImpl(client: serviceLocator()),
   )
-  ..registerFactory(
+  ..registerFactory<PatientRepository>(
     () => PatientRepositoryImpl(remoteDataSource: serviceLocator()),
   )
   ..registerFactory(
     () => PatientGetDiagnosedDiseases(serviceLocator()),
   )
+  ..registerFactory(
+    () => PatientSignOutUsecase(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => PatientBloc(
       patientGetDiagnosedDiseases: serviceLocator(),
+      patientSignOut: serviceLocator(),
     ),
   );
 

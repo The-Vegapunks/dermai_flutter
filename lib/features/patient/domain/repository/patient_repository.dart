@@ -6,4 +6,5 @@ import 'package:fpdart/fpdart.dart';
 
 abstract interface class PatientRepository {
   Future<Either<Failure, List<(DiagnosedDisease, Disease, Doctor)>>> getDiagnosedDiseases({required String patientID});
+  Future<Either<Failure, void>> signOut();
 }

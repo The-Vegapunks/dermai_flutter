@@ -7,3 +7,5 @@ final class PatientDiagnosedDiseases extends PatientEvent {
   final String patientID;
   PatientDiagnosedDiseases({required this.patientID});
 }
+
+final class PatientSignOut extends PatientEvent {}

@@ -1,5 +1,6 @@
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -7,23 +8,43 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:intl/intl.dart';
 
 class PatientCaseDetailPage extends StatefulWidget {
+  final DiagnosedDisease diagnosedDisease;
+  final Disease disease;
+  final Doctor? doctor;
   const PatientCaseDetailPage(
-      {super.key});
-
+      {super.key,
+      required this.diagnosedDisease,
+      required this.disease,
+      this.doctor});
 
   @override
   State<PatientCaseDetailPage> createState() => _PatientCaseDetailPageState();
 }
 
 class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
-  DiagnosedDisease diagnosedDisease = DiagnosedDisease(diagnosedID:"mfkevmv", picture: "skmddcmldwv", diseaseID: 1234, patientID: "123440", doctorID: "jnwkdnmkc", dateCreated: DateTime.now(), dateDiagnosed: DateTime.now(), details: "fkoefrif", patientsComment: "dkmwdemfomwovmw", doctorsComment: "fkmedkffwvk", editedByDoctor: true, prescription: "dnhycfwnvjfnv", status: true, diagnosedDiseaseName:"uejkffkmrwv");
+  late DiagnosedDisease diagnosedDisease;
+  late Disease disease;
+  late Doctor? doctor;
 
+  @override
+  void initState() {
+    diagnosedDisease = widget.diagnosedDisease;
+    disease = widget.disease;
+    doctor = widget.doctor;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            
+          },
+          child: const Icon(Icons.chat),
+        ),
         body: SafeArea(
           child: NestedScrollView(
             scrollDirection: Axis.vertical,
@@ -54,8 +75,8 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
               SliverPinnedHeader(
                 child: Container(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  child: TabBar(
-                    tabs: const <Widget>[
+                  child: const TabBar(
+                    tabs: <Widget>[
                       Tab(text: 'Details'),
                       Tab(text: 'Comments'),
                       Tab(text: 'Prescription'),
@@ -71,8 +92,8 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
                   padding: const EdgeInsets.all(16),
                   child: DetailsSection(
                     diagnosedDisease: diagnosedDisease,
-                    patient: Patient(email: "effjfsofsnosdv", id: "1243", name: "mfeqofrvom"),
-                    disease: Disease(description: "djcndqc" , diseaseID: 1234 ,name: "fnkefor" ),
+                    disease: disease,
+                    doctor: doctor,
                   ),
                 ),
                 SingleChildScrollView(
@@ -81,7 +102,8 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
                 ),
                 SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
-                  child: PrescriptionSection(diagnosedDisease: diagnosedDisease),
+                  child:
+                      PrescriptionSection(diagnosedDisease: diagnosedDisease),
                 ),
               ],
             ),
@@ -96,11 +118,11 @@ class DetailsSection extends StatelessWidget {
   const DetailsSection(
       {super.key,
       required this.diagnosedDisease,
-      required this.patient,
+      required this.doctor,
       required this.disease});
 
   final DiagnosedDisease diagnosedDisease;
-  final Patient patient;
+  final Doctor? doctor;
   final Disease disease;
 
   @override
@@ -114,7 +136,7 @@ class DetailsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  patient.name,
+                  doctor == null ? 'AI Diagnosis' : doctor!.name,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
@@ -124,28 +146,14 @@ class DetailsSection extends StatelessWidget {
                       : 'AI Analysis classified the disease as ${disease.name.toLowerCase()}.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                if (doctor == null)
+                  Text("No doctor has been assigned to this case yet.",
+                      style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 16),
                 Text(
                   DateFormat.yMMMMEEEEd().format(diagnosedDisease.dateCreated),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Patient\'s Comment',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(diagnosedDisease.patientsComment),
               ],
             ),
           ),
@@ -167,6 +175,23 @@ class DetailsSection extends StatelessWidget {
                 Text(diagnosedDisease.details.isEmpty
                     ? 'No preventive measures given'
                     : diagnosedDisease.details),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'My Comment',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(diagnosedDisease.patientsComment),
               ],
             ),
           ),

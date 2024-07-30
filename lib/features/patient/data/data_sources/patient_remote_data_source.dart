@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class PatientRemoteDataSource {
   Future<List<(DiagnosedDiseaseModel, DiseaseModel, DoctorModel)>> getDiagnosedDiseases({required String patientID});
-
+  Future<void> signOut();
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
@@ -33,6 +33,11 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
     } catch (e) {
       throw const ServerException("An error occurred while fetching data");
     }
+  }
+  
+  @override
+  Future<void> signOut() {
+    return client.auth.signOut();
   }
 
 }

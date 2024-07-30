@@ -20,4 +20,9 @@ class PatientRepositoryImpl implements PatientRepository {
       return left(Failure(e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, void>> signOut() {
+    return remoteDataSource.signOut().then((_) => right(null));
+  }
 }

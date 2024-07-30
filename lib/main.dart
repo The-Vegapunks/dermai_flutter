@@ -33,11 +33,11 @@ void main() async {
       create: (_) => serviceLocator<AuthBloc>(),
     ),
     BlocProvider(
-      create: (_) => serviceLocator<DoctorBloc>(),
+      create: (_) => serviceLocator<PatientBloc>(),
     ),
     BlocProvider(
-      create: (_) => serviceLocator<PatientBloc>(),      
-    )
+      create: (_) => serviceLocator<DoctorBloc>(),
+    ),
   ], child: const MyApp()));
 }
 
