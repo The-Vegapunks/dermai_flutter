@@ -20,6 +20,10 @@ import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_detail
 import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart' as usecasecancel;
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
+import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
+import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
+import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
@@ -80,6 +84,22 @@ void _initAuth() {
         userRecoverPassword: serviceLocator<UserRecoverPassword>(),
       ),
     );
+
+  serviceLocator
+  ..registerFactory<PatientRemoteDataSource>(
+    () => PatientRemoteDataSourceImpl(client: serviceLocator()),
+  )
+  ..registerFactory(
+    () => PatientRepositoryImpl(remoteDataSource: serviceLocator()),
+  )
+  ..registerFactory(
+    () => PatientGetDiagnosedDiseases(serviceLocator()),
+  )
+  ..registerLazySingleton(
+    () => PatientBloc(
+      patientGetDiagnosedDiseases: serviceLocator(),
+    ),
+  );
 
   serviceLocator
   ..registerFactory<DoctorRemoteDataSource>(

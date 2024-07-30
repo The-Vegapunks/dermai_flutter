@@ -141,7 +141,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                         insert: true,
                                       ),
                                     ),
-                                  ).then((value) {
+                                  )
+                                      .then((value) {
                                     setState(() {
                                       param = value as (
                                         Appointment,
@@ -309,6 +310,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text('Comment',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                              const SizedBox(height: 8),
                               if (!commentEdit)
                                 Text(
                                     param.$1.comment.trim().isEmpty
