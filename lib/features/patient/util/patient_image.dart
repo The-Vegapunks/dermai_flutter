@@ -5,19 +5,20 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class PatientImage {
-  late File imgPath;
+  late File image;
   final picker = ImagePicker();
 
   PatientImage();
 
-  void getImageFromGallery(ImageSource source) async {
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    imgPath = File(image!.path);
+  void getImageFromGallery({required Function onImageSelect}) async {
+    final imageWrapper = await picker.pickImage(source: ImageSource.gallery);
+    image = File(imageWrapper!.path);
+    onImageSelect(image);
   }
 
   void getImageFromCamera() async {
-    final image = await picker.pickImage(source: ImageSource.camera);
-    imgPath = File(image!.path);
+    final imageWrapper = await picker.pickImage(source: ImageSource.camera);
+    image = File(imageWrapper!.path);
   }
 
   Future<String?> sendImg(String Filename) async {
@@ -27,7 +28,7 @@ class PatientImage {
     var request = http.MultipartRequest("POST", postURi);
 
     request.files.add(http.MultipartFile.fromBytes(
-        Filename, File.fromRawPath(imgPath.readAsBytesSync()).readAsBytesSync(),
+        Filename, File.fromRawPath(image.readAsBytesSync()).readAsBytesSync(),
         contentType: MediaType('image', 'jpeg')));
 
     var response = request.send();
