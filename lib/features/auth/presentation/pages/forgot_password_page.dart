@@ -1,4 +1,5 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:dermai/features/auth/presentation/pages/otp_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,6 +78,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     context.read<AuthBloc>().add(
                                           AuthForgetPassword(email: _email!.trim()),
                                         );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                            const OTPVerificationScreen()));
                                   }
                                 },
                                 child: Row(
