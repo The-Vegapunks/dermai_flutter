@@ -1,3 +1,7 @@
+import 'package:dermai/features/core/entities/appointment.dart';
+import 'package:dermai/features/core/entities/diagnosed_disease.dart';
+import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:flutter/material.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_details_page.dart';
 
@@ -43,8 +47,33 @@ class CardExample extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      const AppointmentDetailsPage()));
+                  builder: (context) => AppointmentDetailPage(param: (
+                        Appointment(
+                            comment: "",
+                            diagnosedID: "",
+                            description: "",
+                            isPhysical: false,
+                            appointmentID: "",
+                            status: AppointmentStatus.pending,
+                            dateCreated: DateTime.now()),
+                        DiagnosedDisease(
+                            diagnosedID: "",
+                            picture: "",
+                            diseaseID: 1,
+                            patientID: "",
+                            doctorID: "",
+                            dateCreated: DateTime.now(),
+                            dateDiagnosed: DateTime.now(),
+                            details: "",
+                            patientsComment: "",
+                            doctorsComment: "",
+                            editedByDoctor: false,
+                            prescription: "",
+                            status: false,
+                            diagnosedDiseaseName: ""),
+                        Patient(id: "", name: "", email: ""),
+                        const Disease(diseaseID: 1, name: "", description: "")
+                      ))));
         },
         child: const Card(
           child: Column(
