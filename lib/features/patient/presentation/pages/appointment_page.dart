@@ -72,7 +72,8 @@ class CardExample extends StatelessWidget {
                             status: false,
                             diagnosedDiseaseName: ""),
                         Patient(id: "", name: "", email: ""),
-                        const Disease(diseaseID: 1, name: "", description: "")
+                        const Disease(
+                            diseaseID: 1, name: "", description: "")
                       ))));
         },
         child: const Card(
