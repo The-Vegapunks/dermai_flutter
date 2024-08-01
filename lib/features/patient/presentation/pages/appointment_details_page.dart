@@ -307,10 +307,12 @@ class AppointmentDetailPage extends StatefulWidget {
   final (Appointment, DiagnosedDisease, Patient, Disease) param;
 
   @override
-  State<AppointmentDetailPage> createState() => _AppointmentDetailPageState();
+  State<AppointmentDetailPage> createState() =>
+      _AppointmentDetailPageState();
 }
 
-class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
+class _AppointmentDetailPageState
+    extends State<AppointmentDetailPage> {
   late (Appointment, DiagnosedDisease, Patient, Disease) param;
 
   @override
@@ -344,14 +346,17 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                   const SizedBox(height: 32),
                   Align(
                     alignment: Alignment.center,
-                    child: Text(param.$3.name, style: Theme.of(context).textTheme.displaySmall),
+                    child: Text(param.$3.name,
+                        style:
+                            Theme.of(context).textTheme.displaySmall),
                   ),
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.center,
                     child: Text(
                         '${DateFormat.yMd().format(param.$1.dateCreated)} - ${DateFormat.Hm().format(param.$1.dateCreated)}',
-                        style: Theme.of(context).textTheme.titleMedium),
+                        style:
+                            Theme.of(context).textTheme.titleMedium),
                   ),
                   const SizedBox(width: 8),
                   Align(
@@ -359,19 +364,22 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                         param.$1.isPhysical
                             ? 'Physical Appointment for ${param.$2.diagnosedDiseaseName.isEmpty ? param.$4.name : param.$2.diagnosedDiseaseName}'
                             : 'Online Appointment for ${param.$2.diagnosedDiseaseName.isEmpty ? param.$4.name : param.$2.diagnosedDiseaseName}',
-                        style: Theme.of(context).textTheme.bodyMedium),
+                        style:
+                            Theme.of(context).textTheme.bodyMedium),
                   ),
                   const SizedBox(height: 32),
                   Row(
                     children: [
-                      if (param.$1.status == AppointmentStatus.pending)
+                      if (param.$1.status ==
+                          AppointmentStatus.pending)
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context)
                                   .push(
                                 MaterialPageRoute(
-                                  builder: (context) => ReschedulePage(
+                                  builder: (context) =>
+                                      ReschedulePage(
                                     param: param,
                                     insert: false,
                                   ),
@@ -379,7 +387,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                               )
                                   .then((value) {
                                 setState(() {
-                                  param = value as (Appointment, DiagnosedDisease, Patient, Disease);
+                                  param = value as (
+                                    Appointment,
+                                    DiagnosedDisease,
+                                    Patient,
+                                    Disease
+                                  );
                                 });
                               });
                             },
@@ -387,19 +400,25 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                           ),
                         ),
                       const SizedBox(width: 8),
-                      if (param.$1.status == AppointmentStatus.pending)
+                      if (param.$1.status ==
+                          AppointmentStatus.pending)
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.error,
-                              textStyle: TextStyle(color: Theme.of(context).colorScheme.onError),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error,
+                              textStyle: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onError),
                             ),
                             onPressed: () async {
                               final result = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: const Text('Are you sure?'),
-                                  content: const Text('This action will permanently cancel the appointment.'),
+                                  content: const Text(
+                                      'This action will permanently cancel the appointment.'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -417,11 +436,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                 ),
                               );
 
-                              if (result == null || !result || !mounted) {
+                              if (result == null ||
+                                  !result ||
+                                  !mounted) {
                                 return;
                               }
                               // ignore: use_build_context_synchronously
-
 
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
@@ -447,13 +467,18 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Additional Information', style: Theme.of(context).textTheme.titleMedium),
+                          Text('Additional Information',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium),
                           const SizedBox(height: 8),
                           Text(
                               param.$1.description.trim().isEmpty
                                   ? 'No additional information'
                                   : param.$1.description.trim(),
-                              style: Theme.of(context).textTheme.bodyMedium),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium),
                         ],
                       ),
                     ),
@@ -466,11 +491,18 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Comment', style: Theme.of(context).textTheme.titleMedium),
+                          Text('Comment',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium),
                           const SizedBox(height: 8),
                           Text(
-                              param.$1.comment.trim().isEmpty ? 'No comment' : param.$1.comment.trim(),
-                              style: Theme.of(context).textTheme.bodyMedium),
+                              param.$1.comment.trim().isEmpty
+                                  ? 'No comment'
+                                  : param.$1.comment.trim(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium),
                         ],
                       ),
                     ),
@@ -485,4 +517,3 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     );
   }
 }
-
