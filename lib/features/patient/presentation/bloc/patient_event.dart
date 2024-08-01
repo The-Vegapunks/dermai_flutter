@@ -9,3 +9,9 @@ final class PatientDiagnosedDiseases extends PatientEvent {
 }
 
 final class PatientSignOut extends PatientEvent {}
+
+final class PatientAppointments extends PatientEvent {
+  final String patientID;
+  final String? doctorID;
+  PatientAppointments({required this.patientID, this.doctorID});
+}

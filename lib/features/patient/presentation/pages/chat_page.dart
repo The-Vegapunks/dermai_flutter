@@ -1,3 +1,4 @@
+import 'package:dermai/env/env.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -174,42 +175,39 @@ class _ChatPagePatientState extends State<ChatPagePatient> {
   }
 
   void getAnswer() async {
-    // List<Map<String, String>> msg = [];
-    // for (var i = 0; i < _chatHistory.length; i++) {
-    //   msg.add({"content": _chatHistory[i]["message"]});
-    // }
-    // Access your API key as an environment variable (see "Set up your API key" above)
-    final apiKey = Platform.environment['GEMINIKEY'];
-    if (apiKey == null) {
-      print('No \$API_KEY environment variable');
+    List<Map<String, String>> msg = [];
+    for (var i = 0; i < _chatHistory.length; i++) {
+      msg.add({"content": _chatHistory[i]["message"]});
     }
+    // Access your API key as an environment variable (see "Set up your API key" above)
+    const String apiKey = Env.geminiKey;
     // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
     final model = GenerativeModel(
-        model: 'gemini-1.5-flash', apiKey: 'GEMINIKEY');
+        model: 'gemini-1.5-flash', apiKey: apiKey);
     final content = [Content.text(_chatController.text)];
     final response = await model.generateContent(content);
     print(_chatController.text);
     print(response.text);
 
-    // const url =
-    //     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=API KEY";
-    // final uri = Uri.parse(url);
+    const url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=$apiKey";
+    final uri = Uri.parse(url);
 
-    // Map<String, dynamic> request = {
-    //   "contents": [
-    //     {
-    //       "parts": [
-    //         {
-    //           "text": [msg]
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // };
+    Map<String, dynamic> request = {
+      "contents": [
+        {
+          "parts": [
+            {
+              "text": [msg]
+            }
+          ]
+        }
+      ]
+    };
 
-    // final response1 = await http.post(uri, body: jsonEncode(request));
+    final response1 = await http.post(uri, body: jsonEncode(request));
 
-    // final generatedText = response;
+    final generatedText = response;
 
     setState(() {
       _chatHistory.add({

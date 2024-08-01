@@ -1,8 +1,8 @@
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
-import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/picture_page.dart';
+import 'package:dermai/features/patient/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -42,7 +42,10 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ChatPagePatient()));
           },
           child: const Icon(Icons.chat),
         ),

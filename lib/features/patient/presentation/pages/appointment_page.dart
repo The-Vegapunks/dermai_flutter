@@ -1,9 +1,14 @@
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
-import 'package:flutter/material.dart';
+import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_details_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({super.key});
@@ -13,140 +18,173 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
+  Map<DateTime, List<(Appointment, DiagnosedDisease, Doctor, Disease)>>
+      appointments = {};
+  late Patient patient;
+
+  @override
+  void initState() {
+    patient = (context.read<AppUserCubit>().state as AppUserAuthenticated)
+        .user
+        .patient();
+    context.read<PatientBloc>().add(
+          PatientAppointments(patientID: patient.id),
+        );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Appointments'),
-        elevation: 0,
-        centerTitle: false,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: const [
-          Text(
-            'Monday, 8 Jul',
-            style: TextStyle(fontWeight: FontWeight.bold),
+    return BlocConsumer<PatientBloc, PatientState>(
+      listener: (context, state) {
+        if (state is PatientFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+            ),
+          );
+        }
+        if (state is PatientSuccessAppointments) {
+          setState(() {
+            appointments = state.appointments;
+          });
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: ListView.builder(
+            itemCount: appointments.keys.length,
+            itemBuilder: (context, index) {
+              DateTime key = appointments.keys.elementAt(index);
+              return CardExample(date: key, appointments: appointments[key]!, patient: patient);
+            },
           ),
-          SizedBox(height: 8),
-          CardExample(
-            doctorName: 'Dr. Stone',
-            time: '10:00',
-            description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis',
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Tuesday, 9 Jul',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          CardExample(
-            doctorName: 'Dr. Stone',
-            time: '10:00',
-            description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis',
-          ),
-          SizedBox(height: 8),
-          CardExample(
-            doctorName: 'Dr. Doe',
-            time: '13:00',
-            description:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis',
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class CardExample extends StatelessWidget {
-  final String doctorName;
-  final String time;
-  final String description;
-
-  const CardExample({
-    super.key,
-    required this.doctorName,
-    required this.time,
-    required this.description,
-  });
+class CardExample extends StatefulWidget {
+  final List<(Appointment, DiagnosedDisease, Doctor, Disease)> appointments;
+  final DateTime date;
+  final Patient patient;
+  const CardExample(
+      {super.key, required this.date, required this.appointments, required this.patient});
 
   @override
+  State<CardExample> createState() => _CardExampleState();
+}
+
+class _CardExampleState extends State<CardExample> {
+  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AppointmentDetailPage(param: (
-                    Appointment(
-                        comment: "",
-                        diagnosedID: "",
-                        description: "",
-                        isPhysical: false,
-                        appointmentID: "",
-                        status: AppointmentStatus.pending,
-                        dateCreated: DateTime.now()),
-                    DiagnosedDisease(
-                        diagnosedID: "",
-                        picture: "",
-                        diseaseID: 1,
-                        patientID: "",
-                        doctorID: "",
-                        dateCreated: DateTime.now(),
-                        dateDiagnosed: DateTime.now(),
-                        details: "",
-                        patientsComment: "",
-                        doctorsComment: "",
-                        editedByDoctor: false,
-                        prescription: "",
-                        status: false,
-                        diagnosedDiseaseName: ""),
-                    Patient(id: "", name: "", email: ""),
-                    const Disease(diseaseID: 1, name: "", description: "")
-                  )),
-            ),
-          );
-        },
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  doctorName,
-                  style: const TextStyle(
-                    // fontSize: 18,
-                    // fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '"$description"',
-                  // style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    time,
-                    style: const TextStyle(
-                      // fontSize: 16,
-                      // fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            DateFormat.yMMMMd().format(widget.date),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
-      ),
+        ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          shrinkWrap: true,
+          itemCount: widget.appointments.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AppointmentDetailPage(
+                        param: widget.appointments[index]),
+                  ),
+                ).then((_) {
+                  context.read<PatientBloc>().add(
+                        PatientAppointments(patientID: widget.patient.id),
+                      );
+                });
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.appointments[index].$3.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.appointments[index].$1.description,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          DateFormat.Hm().format(
+                              widget.appointments[index].$1.dateCreated),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
+    // Center(
+    //   child: GestureDetector(
+    //     onTap: () {
+    //       Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (context) => AppointmentDetailPage(param: appointment),
+    //         ),
+    //       );
+    //     },
+    //     child: Card(
+    //       shape: RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(16.0),
+    //       ),
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(16.0),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Text(appointment.$3.name),
+    //             const SizedBox(height: 8),
+    //             Text(
+    //               appointment.$1.description,
+    //               maxLines: 3,
+    //               overflow: TextOverflow.ellipsis,
+    //             ),
+    //             const SizedBox(height: 16),
+    //             Align(
+    //               alignment: Alignment.bottomRight,
+    //               child: Text(
+    //                 DateFormat.Hm().format(appointment.$1.dateCreated),
+    //                 style: const TextStyle(
+    //                   color: Colors.grey,
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
@@ -24,5 +25,15 @@ class PatientRepositoryImpl implements PatientRepository {
   @override
   Future<Either<Failure, void>> signOut() {
     return remoteDataSource.signOut().then((_) => right(null));
+  }
+
+  @override
+  Future<Either<Failure, List<(Appointment, DiagnosedDisease, Doctor, Disease)>>> getAppointments({required String patientID, String? doctorID}) async {
+    try {
+      final response = await remoteDataSource.getAppointments(patientID: patientID, doctorID: doctorID);
+      return right(response);
+    } on Exception catch (e) {
+      return left(Failure(e.toString()));
+    }
   }
 }

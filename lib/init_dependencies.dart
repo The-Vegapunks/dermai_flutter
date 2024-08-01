@@ -24,6 +24,7 @@ import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_sign_out_usecase.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
@@ -101,10 +102,14 @@ void _initAuth() {
   ..registerFactory(
     () => PatientSignOutUsecase(serviceLocator()),
   )
+  ..registerFactory(
+    () => PatientGetAppointments(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => PatientBloc(
       patientGetDiagnosedDiseases: serviceLocator(),
       patientSignOut: serviceLocator(),
+      patientGetAppointments: serviceLocator(),
     ),
   );
 

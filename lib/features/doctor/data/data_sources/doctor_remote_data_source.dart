@@ -76,12 +76,14 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
           )>> getAppointments(
       {required String doctorID, String? patientID}) async {
     try {
+      DateTime now = DateTime.now();
       final response = patientID == null
           ? await client
               .from('appointment')
               .select(
                   '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
               .eq('diagnosedDisease.doctorID', doctorID)
+              .gte('dateCreated', DateTime(now.year, now.month, now.day).toIso8601String())
               .order('dateCreated', ascending: true)
           : await client
               .from('appointment')

@@ -25,4 +25,11 @@ final class PatientSuccessDiagnosedDiseases extends PatientState {
 
 }
 
+final class PatientSuccessAppointments extends PatientState {
+  final Map<DateTime, List<(Appointment, DiagnosedDisease, Doctor, Disease)>> appointments;
+
+  const PatientSuccessAppointments({required this.appointments});
+
+}
+
 final class PatientSuccessSignOut extends PatientState {}

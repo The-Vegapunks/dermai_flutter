@@ -120,7 +120,6 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
         onChanged: (value) {
           if (value.length == 1) {
-            // Move focus to next field if not last
             if (index != 5) {
               FocusScope.of(context).nextFocus();
             }
@@ -132,7 +131,7 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
 }
 
 class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {

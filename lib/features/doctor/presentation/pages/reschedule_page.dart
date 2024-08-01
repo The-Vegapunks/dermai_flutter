@@ -11,8 +11,10 @@ import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.
 import 'package:intl/intl.dart';
 
 class ReschedulePage extends StatefulWidget {
-  const ReschedulePage({super.key, required this.param, required this.insert});
-  final (Appointment, DiagnosedDisease, Patient, Disease) param;
+  const ReschedulePage({super.key, required this.insert, required this.appointment, required this.patient, required this.doctor});
+  final Appointment appointment;
+  final Patient patient;
+  final Doctor doctor;
   final bool insert;
 
   @override
@@ -21,15 +23,19 @@ class ReschedulePage extends StatefulWidget {
 
 class _ReschedulePageState extends State<ReschedulePage> {
   List<NeatCleanCalendarEvent> _events = [];
+  late Appointment appointment;
+  late Patient patient;
   late Doctor doctor;
+  late bool insert;
 
   @override
   void initState() {
-    doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
-        .user
-        .doctor();
+    appointment = widget.appointment;
+    patient = widget.patient;
+    doctor = widget.doctor;
+    insert = widget.insert;
     context.read<DoctorBloc>().add(DoctorAvailableSlot(
-        doctorID: doctor.id, patientID: widget.param.$2.patientID));
+        doctorID: doctor.id, patientID: widget.patient.id));
     super.initState();
   }
 
@@ -43,7 +49,7 @@ class _ReschedulePageState extends State<ReschedulePage> {
           });
         }
         if (state is DoctorSuccessAppointment) {
-          Navigator.pop(context, state.response);
+          Navigator.pop(context, (state.response.$1, state.response.$2, state.response.$4));
         }
         if (state is DoctorFailure) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -183,7 +189,7 @@ class _ReschedulePageState extends State<ReschedulePage> {
                                     context.read<DoctorBloc>().add(
                                         DoctorUpdateAppointment(
                                             appointment:
-                                                widget.param.$1.copyWith(
+                                                appointment.copyWith(
                                               dateCreated: selectedEvents[index]
                                                   .startTime,
                                               isPhysical: resultSheet,
@@ -224,7 +230,7 @@ class _ReschedulePageState extends State<ReschedulePage> {
                                     context.read<DoctorBloc>().add(
                                         DoctorUpdateAppointment(
                                             appointment:
-                                                widget.param.$1.copyWith(
+                                                appointment.copyWith(
                                               dateCreated: selectedEvents[index]
                                                   .startTime,
                                             ),

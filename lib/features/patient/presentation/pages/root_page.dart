@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:dermai/features/patient/presentation/pages/appointment_page.dart';
 import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});

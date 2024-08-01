@@ -143,8 +143,7 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ReschedulePage(
-                                              param: (
-                                                Appointment(
+                                              appointment: Appointment(
                                                     appointmentID: null,
                                                     dateCreated:
                                                         DateTime.now(),
@@ -156,10 +155,8 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                                         diagnosedDisease
                                                             .diagnosedID!,
                                                     isPhysical: false),
-                                                diagnosedDisease,
-                                                widget.patient,
-                                                widget.disease,
-                                              ),
+                                              patient: widget.patient,
+                                              doctor: doctor,
                                               insert: true,
                                             )));
                               },

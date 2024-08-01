@@ -1,6 +1,8 @@
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
+import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
@@ -24,8 +26,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   String detail = '';
   String comment = '';
   bool commentEdit = false;
+  late Doctor doctor;
   @override
   void initState() {
+    doctor = (context.read<AppUserCubit>().state as AppUserAuthenticated)
+        .user
+        .doctor();
     setState(() {
       param = widget.param;
     });
@@ -110,19 +116,21 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                       .push(
                                     MaterialPageRoute(
                                       builder: (context) => ReschedulePage(
-                                        param: param,
+                                        appointment: param.$1,
+                                        patient: param.$3,
+                                        doctor: doctor,
                                         insert: false,
                                       ),
                                     ),
                                   )
                                       .then((value) {
                                     setState(() {
-                                      param = value as (
+                                      var res = value as (
                                         Appointment,
                                         DiagnosedDisease,
-                                        Patient,
                                         Disease
                                       );
+                                      param = (res.$1, res.$2, param.$3, res.$3);
                                     });
                                   });
                                 },
@@ -137,19 +145,21 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                       .push(
                                     MaterialPageRoute(
                                       builder: (context) => ReschedulePage(
-                                        param: param,
+                                        appointment: param.$1,
+                                        patient: param.$3,
+                                        doctor: doctor,
                                         insert: true,
                                       ),
                                     ),
                                   )
                                       .then((value) {
                                     setState(() {
-                                      param = value as (
+                                      var res = value as (
                                         Appointment,
                                         DiagnosedDisease,
-                                        Patient,
                                         Disease
                                       );
+                                      param = (res.$1, res.$2, param.$3, res.$3);
                                     });
                                   });
                                 },
@@ -162,13 +172,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                             Expanded(
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.error,
-                                  textStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onError),
-                                ),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.error,
+                              ),
                                 onPressed: () async {
                                   final result = await showDialog<bool>(
                                     context: context,
