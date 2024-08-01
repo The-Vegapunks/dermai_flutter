@@ -55,6 +55,7 @@ dependencies:
   image_picker: ^1.1.2
   flutter_neat_and_clean_calendar: ^0.3.19+41
   photo_view: ^0.15.0
+  google_generative_ai: ^0.4.3
 
 dev_dependencies:
   flutter_test:

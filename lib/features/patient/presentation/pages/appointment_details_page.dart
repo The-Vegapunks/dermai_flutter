@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:dermai/features/doctor/presentation/pages/cases_page.dart';
+import 'package:dermai/features/patient/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 
 class AppointmentDetailsPage extends StatelessWidget {
+  //todo: cannot convert to stateful
   const AppointmentDetailsPage({super.key});
 
   @override
@@ -180,7 +182,13 @@ class AppointmentDetailsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-              onPressed: () {}, //MUST PROGRAM
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const ChatPagePatient()));
+              }, //MUST PROGRAM
               style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.deepPurple[300],
