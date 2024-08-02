@@ -9,7 +9,8 @@ class DoctorModel extends Doctor {
     required super.dateJoined,
   });
 
-  factory DoctorModel.fromJson(Map<String, dynamic> json) {
+  factory DoctorModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return DoctorModel(id: '', name: '', email: '', address: '', dateJoined: DateTime.now());
     return DoctorModel(
       id: json['doctorID'],
       name: json['name'],

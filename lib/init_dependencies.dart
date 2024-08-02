@@ -24,9 +24,11 @@ import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_sign_out_usecase.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_submit_case.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -38,7 +40,9 @@ Future<void> initDependencies() async {
   final supabase = await Supabase.initialize(
       url: Env.superbaseUrl, anonKey: Env.superbaseAnonKey);
   Gemini.init(apiKey: Env.geminiKey);
+  final gemini = Gemini.instance;
   serviceLocator.registerLazySingleton(() => supabase.client);
+  serviceLocator.registerLazySingleton(() => gemini);
   serviceLocator.registerLazySingleton(() => AppUserCubit());
   _initAuth();
 }
@@ -91,7 +95,7 @@ void _initAuth() {
 
   serviceLocator
   ..registerFactory<PatientRemoteDataSource>(
-    () => PatientRemoteDataSourceImpl(client: serviceLocator()),
+    () => PatientRemoteDataSourceImpl(client: serviceLocator(), gemini: serviceLocator()),
   )
   ..registerFactory<PatientRepository>(
     () => PatientRepositoryImpl(remoteDataSource: serviceLocator()),
@@ -105,11 +109,19 @@ void _initAuth() {
   ..registerFactory(
     () => PatientGetAppointments(serviceLocator()),
   )
+  ..registerFactory(
+    () => PatientSubmitCase(serviceLocator()),
+  )
+  ..registerFactory(
+    () => PatientCancelAppointment(serviceLocator())
+  )
   ..registerLazySingleton(
     () => PatientBloc(
       patientGetDiagnosedDiseases: serviceLocator(),
       patientSignOut: serviceLocator(),
       patientGetAppointments: serviceLocator(),
+      patientSubmitCase: serviceLocator(),
+      patientCancelAppointment: serviceLocator()
     ),
   );
 

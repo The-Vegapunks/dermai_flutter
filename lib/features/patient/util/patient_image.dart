@@ -33,6 +33,8 @@ class PatientImage {
 
     var response = request.send();
 
+    
+
     var responseData = response.asStream();
 
     return jsonDecode(responseData.toString());

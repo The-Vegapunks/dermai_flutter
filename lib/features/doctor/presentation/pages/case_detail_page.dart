@@ -73,8 +73,8 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                 ? FloatingActionButton.extended(
                     onPressed: () {
                       context.read<DoctorBloc>().add(DoctorUpdateCase(
-                          diagnosedDisease: diagnosedDisease.copyWith(
-                              doctorID: doctor.id)));
+                          diagnosedDisease:
+                              diagnosedDisease.copyWith(doctorID: doctor.id)));
                     },
                     label: const Text('Take Case'),
                     icon: const Icon(Icons.add),
@@ -91,17 +91,13 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                           itemBuilder: (context) => [
                             PopupMenuItem(
                               onTap: () => {
-                                context.read<DoctorBloc>().add(
-                                    DoctorUpdateCase(
-                                        diagnosedDisease:
-                                            diagnosedDisease.copyWith(
-                                                status:
-                                                    !diagnosedDisease.status,
-                                                editedByDoctor: true))),
+                                context.read<DoctorBloc>().add(DoctorUpdateCase(
+                                    diagnosedDisease: diagnosedDisease.copyWith(
+                                        status: !diagnosedDisease.status,
+                                        editedByDoctor: true))),
                                 if (diagnosedDisease.status)
                                   {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Case reopened'),
                                       ),
@@ -109,8 +105,7 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                   }
                                 else
                                   {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Case completed'),
                                       ),
@@ -144,21 +139,22 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                     MaterialPageRoute(
                                         builder: (context) => ReschedulePage(
                                               appointment: Appointment(
-                                                    appointmentID: null,
-                                                    dateCreated:
-                                                        DateTime.now(),
-                                                    status: AppointmentStatus
-                                                        .pending,
-                                                    comment: "",
-                                                    description: "",
-                                                    diagnosedID:
-                                                        diagnosedDisease
-                                                            .diagnosedID!,
-                                                    isPhysical: false),
+                                                  appointmentID: null,
+                                                  dateCreated: DateTime.now(),
+                                                  status:
+                                                      AppointmentStatus.pending,
+                                                  comment: "",
+                                                  description: "",
+                                                  diagnosedID: diagnosedDisease
+                                                      .diagnosedID!,
+                                                  isPhysical: false),
                                               patient: widget.patient,
                                               doctor: doctor,
                                               insert: true,
-                                            )));
+                                            ))).then((value) {
+                                  context.read<DoctorBloc>().add(
+                                      DoctorAppointments(doctorID: doctor.id));
+                                });
                               },
                             ),
                           ],
@@ -222,14 +218,12 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                       SingleChildScrollView(
                         padding: const EdgeInsets.all(16),
                         child: CommentSection(
-                            diagnosedDisease: diagnosedDisease,
-                            doctor: doctor),
+                            diagnosedDisease: diagnosedDisease, doctor: doctor),
                       ),
                       SingleChildScrollView(
                         padding: const EdgeInsets.all(16),
                         child: PrescriptionSection(
-                            diagnosedDisease: diagnosedDisease,
-                            doctor: doctor),
+                            diagnosedDisease: diagnosedDisease, doctor: doctor),
                       ),
                     ]),
               ),

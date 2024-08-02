@@ -1,6 +1,6 @@
 class DiagnosedDisease {
   const DiagnosedDisease({
-    required this.diagnosedID,
+    this.diagnosedID,
     required this.picture,
     required this.diseaseID,
     required this.patientID,

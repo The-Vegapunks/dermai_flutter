@@ -13,5 +13,18 @@ final class PatientSignOut extends PatientEvent {}
 final class PatientAppointments extends PatientEvent {
   final String patientID;
   final String? doctorID;
-  PatientAppointments({required this.patientID, this.doctorID});
+  final String? diagnosedID;
+  PatientAppointments({required this.patientID, this.doctorID, this.diagnosedID});
+}
+
+final class PatientCancelAppointmentEvent extends PatientEvent {
+  final String appointmentID;
+
+  PatientCancelAppointmentEvent({required this.appointmentID});
+}
+
+final class PatientSubmitCaseEvent extends PatientEvent {
+  final String imagePath;
+  final String patientComment;
+  PatientSubmitCaseEvent({required this.imagePath, required this.patientComment});
 }

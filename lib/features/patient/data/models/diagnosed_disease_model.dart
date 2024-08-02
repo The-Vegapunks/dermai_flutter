@@ -2,7 +2,7 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 
 class DiagnosedDiseaseModel extends DiagnosedDisease {
   DiagnosedDiseaseModel({
-    required super.diagnosedID,
+    super.diagnosedID,
     required super.picture,
     required super.diseaseID,
     required super.patientID,

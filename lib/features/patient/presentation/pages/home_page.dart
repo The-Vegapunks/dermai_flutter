@@ -5,6 +5,7 @@ import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
+import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/patient_case_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<(DiagnosedDisease, Disease, Doctor?)> diagnosedDiseases = [];
   late Patient patient;
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -44,33 +44,39 @@ class _HomePageState extends State<HomePage> {
         if (state is PatientSuccessDiagnosedDiseases) {
           setState(() {
             diagnosedDiseases = state.diagnosedDiseases;
-            isLoading = false;
           });
         }
         if (state is PatientFailure) {
-          setState(() {
-            isLoading = false;
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
             ),
           );
         }
-        if (state is PatientLoading) {
-          setState(() {
-            isLoading = true;
-          });
-        }
       },
       builder: (context, state) {
         return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const AIPage()))
+                  .then((value) {
+                context
+                    .read<PatientBloc>()
+                    .add(PatientDiagnosedDiseases(patientID: patient.id));
+              });
+            },
+            child: const Icon(Icons.add),
+          ),
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBar(
+                  floating: true,
+                  pinned: false,
+                  snap: true,
                   title: Text(
-                    'Welcome back',
+                    'DermAI',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   actions: [
@@ -114,19 +120,36 @@ class _HomePageState extends State<HomePage> {
                 )
               ];
             },
-            body: isLoading
+            body: state is PatientInitial
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : ListView.builder(
+                : (diagnosedDiseases.isEmpty ? const Center(
+                    child: Text(textAlign: TextAlign.center,'No diseases diagnosed yet.\nClick on the + button to diagnose a disease.'),
+                ) : ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemCount: diagnosedDiseases.length,
                     itemBuilder: (context, index) {
                       return DiagnosisCard(
                         diagnosedDisease: diagnosedDiseases[index],
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PatientCaseDetailPage(
+                                      diagnosedDisease:
+                                          diagnosedDiseases[index].$1,
+                                      disease: diagnosedDiseases[index].$2,
+                                      doctor: diagnosedDiseases[index]
+                                          .$3))).then((value) {
+                            context.read<PatientBloc>().add(
+                                PatientDiagnosedDiseases(
+                                    patientID: patient.id));
+                          });
+                        },
                       );
                     },
-                  ),
+                  )),
           ),
         );
       },
@@ -136,20 +159,16 @@ class _HomePageState extends State<HomePage> {
 
 class DiagnosisCard extends StatelessWidget {
   final (DiagnosedDisease, Disease, Doctor?) diagnosedDisease;
+  final Function onTap;
 
-  const DiagnosisCard({super.key, required this.diagnosedDisease});
+  const DiagnosisCard(
+      {super.key, required this.diagnosedDisease, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => PatientCaseDetailPage(
-                    diagnosedDisease: diagnosedDisease.$1,
-                    disease: diagnosedDisease.$2,
-                    doctor: diagnosedDisease.$3)));
+        onTap();
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16.0),

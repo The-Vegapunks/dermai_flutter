@@ -1,5 +1,4 @@
 import 'package:dermai/features/patient/presentation/pages/appointment_page.dart';
-import 'package:dermai/features/patient/presentation/pages/ai_page.dart';
 import 'package:dermai/features/patient/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -20,15 +19,6 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: currentPageIndex == 0
-            ? FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const AIPage()));
-                },
-                child: const Icon(Icons.add),
-              )
-            : null,
         body: SafeArea(
           child: IndexedStack(
             index: currentPageIndex,

@@ -17,13 +17,14 @@ class PatientGetAppointments implements UseCase<List<(Appointment, DiagnosedDise
   @override
   Future<Either<Failure, List<(Appointment, DiagnosedDisease, Doctor, Disease)>>>
       call(PatientGetAppointmentsParams params) async {
-    return await repository.getAppointments(patientID: params.patientID, doctorID: params.doctorID);
+    return await repository.getAppointments(patientID: params.patientID, doctorID: params.doctorID, diagnosedID: params.diagnosedID);
   }
 }
 
 class PatientGetAppointmentsParams {
   final String patientID;
   final String? doctorID;
+  final String? diagnosedID;
 
-  PatientGetAppointmentsParams({required this.patientID, this.doctorID});
+  PatientGetAppointmentsParams({required this.patientID, this.doctorID, required this.diagnosedID});
 }

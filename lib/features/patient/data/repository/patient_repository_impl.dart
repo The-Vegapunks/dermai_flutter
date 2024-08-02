@@ -2,6 +2,7 @@ import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
@@ -13,27 +14,57 @@ class PatientRepositoryImpl implements PatientRepository {
   const PatientRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<(DiagnosedDisease, Disease, Doctor)>>> getDiagnosedDiseases({required String patientID}) async {
+  Future<Either<Failure, List<(DiagnosedDisease, Disease, Doctor?)>>>
+      getDiagnosedDiseases({required String patientID}) async {
     try {
-      final response = await remoteDataSource.getDiagnosedDiseases(patientID: patientID);
+      final response =
+          await remoteDataSource.getDiagnosedDiseases(patientID: patientID);
       return right(response);
-    } on Exception catch (e) {
-      return left(Failure(e.toString()));
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, void>> signOut() {
     return remoteDataSource.signOut().then((_) => right(null));
   }
 
   @override
-  Future<Either<Failure, List<(Appointment, DiagnosedDisease, Doctor, Disease)>>> getAppointments({required String patientID, String? doctorID}) async {
+  Future<
+          Either<Failure,
+              List<(Appointment, DiagnosedDisease, Doctor, Disease)>>>
+      getAppointments({required String patientID, String? doctorID, String? diagnosedID}) async {
     try {
-      final response = await remoteDataSource.getAppointments(patientID: patientID, doctorID: doctorID);
+      final response = await remoteDataSource.getAppointments(
+          patientID: patientID, doctorID: doctorID, diagnosedID: diagnosedID);
       return right(response);
-    } on Exception catch (e) {
-      return left(Failure(e.toString()));
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> cancelAppointment(
+      {required String appointmentID}) async {
+    try {
+      final response = await remoteDataSource.cancelAppointment(
+          appointmentID: appointmentID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, (DiagnosedDisease, Disease)>> submitCase(
+      {required String imagePath, required String patientComment}) async {
+    try {
+      final response = await remoteDataSource.submitCase(
+          imagePath: imagePath, patientComment: patientComment);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
     }
   }
 }

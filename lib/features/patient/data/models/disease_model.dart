@@ -11,7 +11,7 @@ class DiseaseModel extends Disease {
     return DiseaseModel(
       diseaseID: json['diseaseID'],
       name: json['name'],
-      description: json['description'],
+      description: json['description'] ?? '',
     );
   }
 }

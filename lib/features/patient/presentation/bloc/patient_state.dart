@@ -19,7 +19,7 @@ final class PatientFailure extends PatientState {
 }
 
 final class PatientSuccessDiagnosedDiseases extends PatientState {
-  final List<(DiagnosedDisease, Disease, Doctor)> diagnosedDiseases;
+  final List<(DiagnosedDisease, Disease, Doctor?)> diagnosedDiseases;
 
   const PatientSuccessDiagnosedDiseases({required this.diagnosedDiseases});
 
@@ -30,6 +30,15 @@ final class PatientSuccessAppointments extends PatientState {
 
   const PatientSuccessAppointments({required this.appointments});
 
+}
+
+final class PatientSuccessCancelAppointment extends PatientState {}
+
+final class PatientSuccessSubmitCase extends PatientState {
+  final DiagnosedDisease diagnosedDisease;
+  final Disease disease;
+
+  const PatientSuccessSubmitCase({required this.diagnosedDisease, required this.disease});
 }
 
 final class PatientSuccessSignOut extends PatientState {}

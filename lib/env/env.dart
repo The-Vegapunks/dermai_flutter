@@ -10,4 +10,6 @@ abstract class Env {
     static const String superbaseAnonKey = _Env.superbaseAnonKey;
     @EnviedField(varName: 'GEMINIKEY')
     static const String geminiKey = _Env.geminiKey;
+    @EnviedField(varName: 'DISEASECLASSIFIERURL')
+    static const String diseaseClassifierUrl = _Env.diseaseClassifierUrl;
 }

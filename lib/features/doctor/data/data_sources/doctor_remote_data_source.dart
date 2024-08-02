@@ -81,14 +81,14 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
           ? await client
               .from('appointment')
               .select(
-                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
+                  '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
               .eq('diagnosedDisease.doctorID', doctorID)
               .gte('dateCreated', DateTime(now.year, now.month, now.day).toIso8601String())
               .order('dateCreated', ascending: true)
           : await client
               .from('appointment')
               .select(
-                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''')
+                  '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
               .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
                   referencedTable: 'diagnosedDisease')
               .order('dateCreated', ascending: true);
@@ -190,7 +190,6 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
         DiseaseModel.fromJson(response['diagnosedDisease']['disease'])
       );
     } catch (e) {
-      print(e);
       throw const ServerException(
           'An error occurred while updating the appointment');
     }

@@ -1,9 +1,14 @@
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/picture_page.dart';
+import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
+import 'package:dermai/features/patient/presentation/pages/appointment_history.dart';
 import 'package:dermai/features/patient/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:intl/intl.dart';
@@ -26,9 +31,13 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
   late DiagnosedDisease diagnosedDisease;
   late Disease disease;
   late Doctor? doctor;
+  late Patient patient;
 
   @override
   void initState() {
+    patient = (context.read<AppUserCubit>().state as AppUserAuthenticated)
+        .user
+        .patient();
     diagnosedDisease = widget.diagnosedDisease;
     disease = widget.disease;
     doctor = widget.doctor;
@@ -104,6 +113,7 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
                     diagnosedDisease: diagnosedDisease,
                     disease: disease,
                     doctor: doctor,
+                    patient: patient,
                   ),
                 ),
                 SingleChildScrollView(
@@ -129,11 +139,13 @@ class DetailsSection extends StatelessWidget {
       {super.key,
       required this.diagnosedDisease,
       required this.doctor,
-      required this.disease});
+      required this.disease,
+      required this.patient});
 
   final DiagnosedDisease diagnosedDisease;
   final Doctor? doctor;
   final Disease disease;
+  final Patient patient;
 
   @override
   Widget build(BuildContext context) {
@@ -205,6 +217,28 @@ class DetailsSection extends StatelessWidget {
               ],
             ),
           ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AppointmentHistory(
+                                diagnosedID: diagnosedDisease.diagnosedID!,
+                              ))).then((value) {
+                    context.read<PatientBloc>().add(
+                          PatientAppointments(patientID: patient.id),
+                        );
+                  });
+                },
+                child: const Text('Appointment History'),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 32),
       ],

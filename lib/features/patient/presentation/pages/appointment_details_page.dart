@@ -5,6 +5,7 @@ import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
+import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:dermai/features/patient/presentation/pages/patient_case_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,7 +143,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                 return;
                               }
                               // ignore: use_build_context_synchronously
-
+                              context.read<PatientBloc>().add(
+                                    PatientCancelAppointmentEvent(
+                                      appointmentID: param.$1.appointmentID!,
+                                    ),
+                                  );
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                             },
@@ -225,37 +230,36 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               ),
             ),
           ),
-                        SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(children: [
+              const Expanded(child: SizedBox(height: 16)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
                   children: [
-                    const Expanded(child: SizedBox(height: 16)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PatientCaseDetailPage(
-                                      diagnosedDisease: param.$2,
-                                      doctor: param.$3,
-                                      disease: param.$4,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: const Text('View Case Details'),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PatientCaseDetailPage(
+                                diagnosedDisease: param.$2,
+                                doctor: param.$3,
+                                disease: param.$4,
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
+                        child: const Text('View Case Details'),
                       ),
                     ),
-                    const SizedBox(height: 32),
-        ]),
-        ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+            ]),
+          ),
         ]),
       ),
     );
