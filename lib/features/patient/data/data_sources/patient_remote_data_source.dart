@@ -96,7 +96,6 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
               .from('appointment')
               .select(
                   '''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
-              .eq('diagnosedDisease.patientID', patientID)
               .eq('diagnosedID', diagnosedID)
               .order('dateCreated', ascending: true)) : (doctorID == null
           ? await client
@@ -110,7 +109,7 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
               .order('dateCreated', ascending: true)
           : await client
               .from('appointment')
-              .select('''*, diagnosedDisease( *, disease( * ), doctor( * ) )''')
+              .select('''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
               .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
                   referencedTable: 'diagnosedDisease')
               .order('dateCreated', ascending: true));

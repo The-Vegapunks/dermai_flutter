@@ -67,10 +67,10 @@ class DoctorRepositoryImpl implements DoctorRepository {
   Future<
           Either<Failure,
               List<(Appointment, DiagnosedDisease, Patient, Disease)>>>
-      getAppointments({required String doctorID, String? patientID}) async {
+      getAppointments({required String doctorID, String? patientID, String? diagnosedID}) async {
     try {
       final response = await remoteDataSource.getAppointments(
-          doctorID: doctorID, patientID: patientID);
+          doctorID: doctorID, patientID: patientID, diagnosedID: diagnosedID);
       return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));

@@ -91,7 +91,7 @@ class _CasesPageState extends State<CasesPage>
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
                   title: Text(
-                    'Welcome back',
+                    'DermAI',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   actions: [

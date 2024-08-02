@@ -22,7 +22,8 @@ final class DoctorUpdateCase extends DoctorEvent {
 final class DoctorAppointments extends DoctorEvent {
   final String doctorID;
   final String? patientID;
-  DoctorAppointments({required this.doctorID, this.patientID});
+  final String? diagnosedID;
+  DoctorAppointments({required this.doctorID, this.patientID, this.diagnosedID});
 }
 
 final class DoctorCancelAppointment extends DoctorEvent {

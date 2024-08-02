@@ -16,7 +16,7 @@ abstract interface class DoctorRemoteDataSource {
             DiagnosedDiseaseModel,
             PatientModel,
             DiseaseModel
-          )>> getAppointments({required String doctorID, String? patientID});
+          )>> getAppointments({required String doctorID, String? patientID, String? diagnosedID});
   Future<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)> getCaseDetails(
       {required String diagnosedID});
   Future<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)> updateCaseDetails(
@@ -74,10 +74,15 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
             PatientModel,
             DiseaseModel
           )>> getAppointments(
-      {required String doctorID, String? patientID}) async {
+      {required String doctorID, String? patientID, String? diagnosedID}) async {
     try {
       DateTime now = DateTime.now();
-      final response = patientID == null
+      final response = diagnosedID != null ? await client
+              .from('appointment')
+              .select(
+                  '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
+              .eq('diagnosedDisease.diagnosedID', diagnosedID)
+              .order('dateCreated', ascending: true) : (patientID == null
           ? await client
               .from('appointment')
               .select(
@@ -91,7 +96,7 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
                   '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
               .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
                   referencedTable: 'diagnosedDisease')
-              .order('dateCreated', ascending: true);
+              .order('dateCreated', ascending: true));
       if (response.isEmpty) return [];
       return response
           .map((e) => (

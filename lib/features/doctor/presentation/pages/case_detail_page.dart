@@ -9,6 +9,7 @@ import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/core/presentation/picture_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
+import 'package:dermai/features/doctor/presentation/pages/appointment_history_page.dart';
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -412,6 +413,29 @@ class _DetailsSectionState extends State<DetailsSection> {
             ],
           ),
         )),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AppointmentHistoryPage(
+                                diagnosedID:
+                                    widget.diagnosedDisease.diagnosedID!,
+                              ))).then((value) {
+                    context.read<DoctorBloc>().add(
+                          DoctorAppointments(doctorID: widget.doctor.id),
+                        );
+                  });
+                },
+                child: const Text('Appointment History'),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 32),
       ],
     );

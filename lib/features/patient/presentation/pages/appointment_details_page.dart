@@ -80,7 +80,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                     children: [
                       if (param.$1.status == AppointmentStatus.pending)
                         Expanded(
-                          child: ElevatedButton(
+                          child: FilledButton(
                             onPressed: () {
                               Navigator.of(context)
                                   .push(
@@ -157,12 +157,15 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Call'),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: const Text('Call'),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   if (param.$1.isPhysical)

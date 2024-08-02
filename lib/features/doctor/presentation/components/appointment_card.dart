@@ -1,24 +1,19 @@
 import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
-import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
-import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
-import 'package:dermai/features/patient/presentation/pages/appointment_details_page.dart';
+import 'package:dermai/features/doctor/presentation/pages/appointment_detail_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentCard extends StatefulWidget {
-  final List<(Appointment, DiagnosedDisease, Doctor, Disease)> appointments;
+  final List<(Appointment, DiagnosedDisease, Patient, Disease)> appointments;
   final DateTime date;
-  final Patient patient;
   final Function onTap;
   const AppointmentCard(
       {super.key,
       required this.date,
       required this.appointments,
-      required this.patient,
       required this.onTap});
 
   @override

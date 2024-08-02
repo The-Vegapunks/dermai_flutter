@@ -91,7 +91,7 @@ class _AIPageState extends State<AIPage> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: FilledButton.icon(
+                                  child: ElevatedButton.icon(
                                     onPressed: () {
                                       showModalBottomSheet<bool>(
                                         context: context,

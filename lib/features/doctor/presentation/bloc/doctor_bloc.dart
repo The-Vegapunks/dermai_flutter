@@ -102,6 +102,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         final failureOrAppointments = await _doctorGetAppointments(
           DoctorGetAppointmentsParams(
             doctorID: event.doctorID,
+            diagnosedID: event.diagnosedID,
           ),
         );
         failureOrAppointments.fold(
