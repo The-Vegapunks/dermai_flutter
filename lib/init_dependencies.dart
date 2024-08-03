@@ -27,6 +27,8 @@ import 'package:dermai/features/patient/domain/repository/patient_repository.dar
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_send_message.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_sign_out_usecase.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_submit_case.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
@@ -115,13 +117,21 @@ void _initAuth() {
   ..registerFactory(
     () => PatientCancelAppointment(serviceLocator())
   )
+  ..registerFactory(
+    () => PatientSendMessage(serviceLocator()),
+  )
+  ..registerFactory(
+    () => PatientGetMessages(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => PatientBloc(
       patientGetDiagnosedDiseases: serviceLocator(),
       patientSignOut: serviceLocator(),
       patientGetAppointments: serviceLocator(),
       patientSubmitCase: serviceLocator(),
-      patientCancelAppointment: serviceLocator()
+      patientCancelAppointment: serviceLocator(),
+      patientGetMessages: serviceLocator(),
+      patientSendMessage: serviceLocator(),
     ),
   );
 

@@ -2,9 +2,12 @@ import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/entities/message.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_send_message.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_sign_out_usecase.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_submit_case.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,8 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
   final PatientGetAppointments _patientGetAppointments;
   final PatientSubmitCase _patientSubmitCase;
   final PatientCancelAppointment _patientCancelAppointment;
+  final PatientSendMessage _patientSendMessage;
+  final PatientGetMessages _patientGetMessages;
 
   PatientBloc({
     required PatientGetDiagnosedDiseases patientGetDiagnosedDiseases,
@@ -28,11 +33,15 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
     required PatientGetAppointments patientGetAppointments,
     required PatientSubmitCase patientSubmitCase,
     required PatientCancelAppointment patientCancelAppointment,
+    required PatientSendMessage patientSendMessage,
+    required PatientGetMessages patientGetMessages,
   })  : _patientGetDiagnosedDiseases = patientGetDiagnosedDiseases,
         _patientSignOut = patientSignOut,
         _patientGetAppointments = patientGetAppointments,
         _patientSubmitCase = patientSubmitCase,
         _patientCancelAppointment = patientCancelAppointment,
+        _patientSendMessage = patientSendMessage,
+        _patientGetMessages = patientGetMessages,
         super(PatientInitial()) {
     on<PatientDiagnosedDiseases>((event, emit) async {
       emit(PatientLoading());
@@ -62,10 +71,9 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
 
       final failureOrAppointments = await _patientGetAppointments(
         PatientGetAppointmentsParams(
-          patientID: event.patientID,
-          doctorID: event.doctorID,
-          diagnosedID: event.diagnosedID
-        ),
+            patientID: event.patientID,
+            doctorID: event.doctorID,
+            diagnosedID: event.diagnosedID),
       );
       failureOrAppointments.fold(
         (failure) => emit(PatientFailure(message: failure.message)),
@@ -104,6 +112,29 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         (failure) => emit(PatientFailure(message: failure.message)),
         (response) => emit(PatientSuccessCancelAppointment()),
       );
+    });
+
+    on<PatientSendMessageEvent>((event, emit) async {
+      emit(PatientTyping());
+      final failureOrSuccess = await _patientSendMessage(
+        PatientSendMessageParams(
+          diagnosedID: event.diagnosedID,
+          diseaseName: event.diseaseName,
+          previousMessages: event.previousMessages,
+        ),
+      );
+      failureOrSuccess.fold(
+        (failure) => emit(PatientFailure(message: failure.message)),
+        (_) => emit(PatientTyping()),
+      );
+    });
+
+    on<PatientListenMessages>((event, emit) async {
+      emit(PatientTyping());
+      await for (final messages in _patientGetMessages(
+          PatientGetMessagesParams(diagnosedID: event.diagnosedID))) {
+        emit(PatientSuccessGetMessages(messages: messages));
+      }
     });
   }
 }

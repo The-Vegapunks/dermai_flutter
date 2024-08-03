@@ -28,3 +28,15 @@ final class PatientSubmitCaseEvent extends PatientEvent {
   final String patientComment;
   PatientSubmitCaseEvent({required this.imagePath, required this.patientComment});
 }
+
+final class PatientListenMessages extends PatientEvent {
+  final String diagnosedID;
+  PatientListenMessages({required this.diagnosedID});
+}
+
+final class PatientSendMessageEvent extends PatientEvent {
+  final String diagnosedID;
+  final String diseaseName;
+  final List<Message> previousMessages;
+  PatientSendMessageEvent({required this.diagnosedID, required this.diseaseName, required this.previousMessages});
+}

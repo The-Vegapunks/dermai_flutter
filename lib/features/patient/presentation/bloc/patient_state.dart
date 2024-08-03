@@ -9,6 +9,10 @@ final class PatientInitial extends PatientState {}
 
 final class PatientLoading extends PatientState {}
 
+final class PatientSending extends PatientState {}
+
+final class PatientTyping extends PatientState {}
+
 final class PatientSuccess extends PatientState {}
 
 final class PatientFailure extends PatientState {
@@ -42,3 +46,9 @@ final class PatientSuccessSubmitCase extends PatientState {
 }
 
 final class PatientSuccessSignOut extends PatientState {}
+
+final class PatientSuccessGetMessages extends PatientState {
+  final List<Message> messages;
+
+  const PatientSuccessGetMessages({required this.messages});
+}

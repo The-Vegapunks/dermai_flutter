@@ -7,6 +7,7 @@ import 'package:dermai/features/core/presentation/picture_page.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:dermai/features/patient/presentation/pages/appointment_history.dart';
 import 'package:dermai/features/patient/presentation/pages/chat_page.dart';
+import 'package:dermai/features/patient/presentation/pages/temp_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -51,10 +52,16 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => const ChatPagePatient()));
+
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const ChatPagePatient()));
+                  builder: (context) => TempChatPage(diagnosedID: diagnosedDisease.diagnosedID!, diseaseName: diagnosedDisease.diagnosedDiseaseName.isEmpty ? disease.name : diagnosedDisease.diagnosedDiseaseName, initialMessage: diagnosedDisease.details),
+                ));
           },
           child: const Icon(Icons.chat),
         ),

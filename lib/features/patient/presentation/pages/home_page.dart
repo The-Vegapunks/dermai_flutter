@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                 )
               ];
             },
-            body: state is PatientInitial
+            body: state is PatientInitial || (state is PatientLoading && diagnosedDiseases.isEmpty)
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )

@@ -26,9 +26,15 @@ abstract interface class PatientRemoteDataSource {
             DiagnosedDiseaseModel,
             DoctorModel,
             DiseaseModel
-          )>> getAppointments({required String patientID, String? doctorID, String? diagnosedID});
+          )>> getAppointments(
+      {required String patientID, String? doctorID, String? diagnosedID});
   Future<(DiagnosedDiseaseModel, DiseaseModel)> submitCase(
       {required String imagePath, required String patientComment});
+  Stream<List<MessageModel>> getMessages({required String diagnosedID});
+  Future<void> sendMessage(
+      {required String diagnosedID,
+      required String diseaseName,
+      required List<MessageModel> previousMessages});
   Future<void> signOut();
 }
 
@@ -89,30 +95,35 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
             DoctorModel,
             DiseaseModel
           )>> getAppointments(
-      {required String patientID, String? doctorID, String? diagnosedID}) async {
+      {required String patientID,
+      String? doctorID,
+      String? diagnosedID}) async {
     try {
       DateTime now = DateTime.now();
-      final response = diagnosedID != null ? (await client
+      final response = diagnosedID != null
+          ? (await client
               .from('appointment')
               .select(
                   '''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
               .eq('diagnosedID', diagnosedID)
-              .order('dateCreated', ascending: true)) : (doctorID == null
-          ? await client
-              .from('appointment')
-              .select(
-                  '''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
-              .eq('diagnosedDisease.patientID', patientID)
-              .gte('dateCreated',
-                  DateTime(now.year, now.month, now.day).toIso8601String())
-              .eq('status', AppointmentStatus.pending.name)
-              .order('dateCreated', ascending: true)
-          : await client
-              .from('appointment')
-              .select('''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
-              .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
-                  referencedTable: 'diagnosedDisease')
-              .order('dateCreated', ascending: true));
+              .order('dateCreated', ascending: true))
+          : (doctorID == null
+              ? await client
+                  .from('appointment')
+                  .select(
+                      '''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
+                  .eq('diagnosedDisease.patientID', patientID)
+                  .gte('dateCreated',
+                      DateTime(now.year, now.month, now.day).toIso8601String())
+                  .eq('status', AppointmentStatus.pending.name)
+                  .order('dateCreated', ascending: true)
+              : await client
+                  .from('appointment')
+                  .select(
+                      '''*, diagnosedDisease!inner( *, disease( * ), doctor( * ) )''')
+                  .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
+                      referencedTable: 'diagnosedDisease')
+                  .order('dateCreated', ascending: true));
 
       if (response.isEmpty) return [];
       return response
@@ -157,7 +168,7 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
           .getPublicUrl('$patientID/${now.toIso8601String()}.jpeg');
 
       final ans = await gemini.text(
-          'I have been diagnosed with ${response['disease']}, I know that you cannot provide me medical advice but just provide me with some preventive measures in form of a list only. Do not include title and do not use markdown and do not include any symbols.');
+          'I have been diagnosed with ${response['disease']}. I understand you can\'t provide medical advice, but could you list some preventive measures? Please provide the list without any titles, symbols, or markdown.');
 
       final insertedData = await client
           .from('diagnosedDisease')
@@ -195,6 +206,64 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
       return (diagnosedDisease, disease);
     } catch (e) {
       throw const ServerException("An error occurred while submitting case");
+    }
+  }
+
+  @override
+  Stream<List<MessageModel>> getMessages({required String diagnosedID}) {
+    return client
+        .from('message')
+        .stream(primaryKey: ['diagnosedID'])
+        .eq('diagnosedID', diagnosedID)
+        .order('dateTime', ascending: false)
+        .asyncMap((event) async {
+          return event.map((e) => MessageModel.fromJson(e)).toList();
+        });
+  }
+
+  @override
+  Future<void> sendMessage(
+      {required String diagnosedID,
+      required String diseaseName,
+      required List<MessageModel> previousMessages}) async {
+    try {
+      final previousMessagesWithInitialPrompt = [
+        MessageModel(
+            message:
+                'I have been diagnosed with $diseaseName. I understand you can\'t provide medical advice, but could you list some preventive measures? Please provide the list without any titles, symbols, or markdown.',
+            dateTime: previousMessages.first.dateTime,
+            diagnosedID: diagnosedID,
+            isGenerated: true,
+            messageID: ''),
+        ...previousMessages.reversed
+      ];
+      final chats = previousMessagesWithInitialPrompt
+          .map((e) => Content(
+              role: e.isGenerated ? 'model' : 'user',
+              parts: [Parts(text: e.message)]))
+          .toList();
+      final geminiResponse = await gemini.chat(chats);
+
+      if (geminiResponse == null ||
+          geminiResponse.content == null ||
+          geminiResponse.content!.parts == null ||
+          geminiResponse.content!.parts!.isEmpty ||
+          geminiResponse.content!.parts!.last.text == null) {
+        throw const ServerException("An error occurred while sending message");
+      }
+      final geminiDateTime = DateTime.now();
+      await client.from('message').insert([
+        previousMessages.first.toJson(),
+        MessageModel(
+                message: geminiResponse.content!.parts!.last.text!,
+                dateTime: geminiDateTime,
+                diagnosedID: diagnosedID,
+                isGenerated: true,
+                messageID: '')
+            .toJson()
+      ]);
+    } catch (e) {
+      throw const ServerException("An error occurred while sending message");
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:dermai/features/patient/presentation/pages/root_page.dart'
 import 'package:dermai/features/doctor/presentation/pages/root_page.dart'
     as doctor;
 import 'package:dermai/init_dependencies.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -60,42 +61,47 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'DermAI',
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.purple, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
-      home: BlocSelector<AppUserCubit, AppUserState, AppUserState>(
-        selector: (state) {
-          return state;
-        },
-        builder: (context, state) {
-          if (state is AppUserInitial) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          } else if (state is AppUserAuthenticated) {
-            final user = state.user;
-            if (user.isDoctor) {
-              return const doctor.RootPage();
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'DermAI',
+        themeMode: ThemeMode.system,
+        theme: ThemeData(
+          colorScheme:
+              lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.purple),
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          colorScheme: darkDynamic ??
+              ColorScheme.fromSeed(
+                  seedColor: Colors.purple, brightness: Brightness.dark),
+          useMaterial3: true,
+        ),
+        home: BlocSelector<AppUserCubit, AppUserState, AppUserState>(
+          selector: (state) {
+            return state;
+          },
+          builder: (context, state) {
+            if (state is AppUserInitial) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (state is AppUserAuthenticated) {
+              final user = state.user;
+              if (user.isDoctor) {
+                return const doctor.RootPage();
+              } else {
+                return const patient.RootPage();
+              }
             } else {
-              return const patient.RootPage();
+              return const WelcomePage();
             }
-          } else {
-            return const WelcomePage();
-          }
-        },
-      ),
-    );
+          },
+        ),
+      );
+    });
   }
 }

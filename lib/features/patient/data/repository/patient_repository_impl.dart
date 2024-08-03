@@ -2,9 +2,11 @@ import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
+import 'package:dermai/features/core/entities/message.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
+import 'package:dermai/features/patient/data/models/message_model.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
 import 'package:fpdart/src/either.dart';
 
@@ -34,7 +36,10 @@ class PatientRepositoryImpl implements PatientRepository {
   Future<
           Either<Failure,
               List<(Appointment, DiagnosedDisease, Doctor, Disease)>>>
-      getAppointments({required String patientID, String? doctorID, String? diagnosedID}) async {
+      getAppointments(
+          {required String patientID,
+          String? doctorID,
+          String? diagnosedID}) async {
     try {
       final response = await remoteDataSource.getAppointments(
           patientID: patientID, doctorID: doctorID, diagnosedID: diagnosedID);
@@ -62,6 +67,35 @@ class PatientRepositoryImpl implements PatientRepository {
     try {
       final response = await remoteDataSource.submitCase(
           imagePath: imagePath, patientComment: patientComment);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Stream<List<Message>> getMessages(
+      {required String diagnosedID}) {
+    return remoteDataSource.getMessages(diagnosedID: diagnosedID);
+  }
+
+  @override
+  Future<Either<Failure, void>> sendMessage(
+      {required String diagnosedID,
+      required String diseaseName,
+      required List<Message> previousMessages}) async {
+    try {
+      final response = await remoteDataSource.sendMessage(
+          diagnosedID: diagnosedID,
+          diseaseName: diseaseName,
+          previousMessages: previousMessages
+              .map((e) => MessageModel(
+                  messageID: e.messageID,
+                  message: e.message,
+                  dateTime: e.dateTime,
+                  isGenerated: e.isGenerated,
+                  diagnosedID: diagnosedID))
+              .toList());
       return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));
