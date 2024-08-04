@@ -130,7 +130,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                         DiagnosedDisease,
                                         Disease
                                       );
-                                      param = (res.$1, res.$2, param.$3, res.$3);
+                                      param =
+                                          (res.$1, res.$2, param.$3, res.$3);
                                     });
                                   });
                                 },
@@ -159,7 +160,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                                         DiagnosedDisease,
                                         Disease
                                       );
-                                      param = (res.$1, res.$2, param.$3, res.$3);
+                                      param =
+                                          (res.$1, res.$2, param.$3, res.$3);
                                     });
                                   });
                                 },
@@ -172,9 +174,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                             Expanded(
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
-                              ),
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                ),
                                 onPressed: () async {
                                   final result = await showDialog<bool>(
                                     context: context,
@@ -218,14 +220,19 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Call'),
+                      if (param.$1.status == AppointmentStatus.pending)
+                        const SizedBox(height: 8),
+                      if (param.$1.status == AppointmentStatus.pending)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: const Text('Call'),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
                       const SizedBox(height: 16),
                       Card(
                         child: Container(

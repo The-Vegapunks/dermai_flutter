@@ -1,7 +1,4 @@
-import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/appointment.dart';
-import 'package:dermai/features/core/entities/diagnosed_disease.dart';
-import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
@@ -144,9 +141,10 @@ class _ReschedulePageState extends State<ReschedulePage> {
 
                                     final resultSheet =
                                         await showModalBottomSheet<bool>(
+                                      // ignore: use_build_context_synchronously
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return Container(
+                                        return SizedBox(
                                           height: 128,
                                           child: Center(
                                             child: Column(

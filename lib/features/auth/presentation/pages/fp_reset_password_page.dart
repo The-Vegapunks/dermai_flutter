@@ -11,10 +11,8 @@ class FpResetPasswordPage extends StatefulWidget {
 class _FpResetPasswordPageState extends State<FpResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
-    final String _email = widget.email;
-    var _password = '';
-    var _confirmPassword = '';
-    var _token = '';
+    final String email = widget.email;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reset Password'),
@@ -23,7 +21,7 @@ class _FpResetPasswordPageState extends State<FpResetPasswordPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Reset Password for $_email'),
+            Text('Reset Password for $email'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

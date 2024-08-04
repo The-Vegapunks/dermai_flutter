@@ -156,7 +156,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                         ),
                     ],
                   ),
+                  if (param.$1.status == AppointmentStatus.pending)
+                    const SizedBox(height: 8),
                   const SizedBox(height: 8),
+                  if (param.$1.status == AppointmentStatus.pending)
+                    const SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(

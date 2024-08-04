@@ -48,12 +48,13 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
           builder: (context) => const FpResetPasswordPage(email: "Poshan@test.io"),
         ),
       );
-    } else {
-      // Handle incorrect OTP scenario
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect OTP')),
-      );
-    }
+    } 
+    // else {
+    //   // Handle incorrect OTP scenario
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Incorrect OTP')),
+    //   );
+    // }
   }
 
   @override
