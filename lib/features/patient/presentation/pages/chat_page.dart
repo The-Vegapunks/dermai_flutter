@@ -90,7 +90,7 @@ class _ChatPageState extends State<ChatPage> {
                     receivedMessageBodyTextStyle: Theme.of(context).textTheme.bodyMedium!,
                     receivedMessageBodyBoldTextStyle: Theme.of(context).textTheme.bodyLarge!,
                     sentMessageBodyTextStyle: Theme.of(context).textTheme.bodyMedium!,
-                    sentMessageBodyBoldTextStyle: Theme.of(context).textTheme.bodyLarge!
+                    sentMessageBodyBoldTextStyle: Theme.of(context).textTheme.bodyLarge!,
                   ),
                   onSendPressed: (text) => {
                         setState(() {
