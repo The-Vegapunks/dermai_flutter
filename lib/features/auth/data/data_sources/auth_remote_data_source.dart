@@ -53,6 +53,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               'doctorID',
               response.user!.id,
             );
+        final streamClient = stream.StreamVideo(Env.streamAPIKey,
+            user: stream.User.guest(
+                userId: response.user!.id,
+                name: response.user!.userMetadata!['name']));
+        await streamClient.connect();
         return UserModel.fromJsonDoctor(userData.first);
       } else {
         final userData = await client.from('patient').select().eq(

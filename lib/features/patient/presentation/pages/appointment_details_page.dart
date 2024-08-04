@@ -178,26 +178,27 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                             ),
                         ],
                       ),
-                      if (param.$1.status == AppointmentStatus.pending && !param.$1.isPhysical)
+                      if (param.$1.status == AppointmentStatus.pending &&
+                          !param.$1.isPhysical)
                         const SizedBox(height: 8),
                       const SizedBox(height: 8),
-                      if (param.$1.status == AppointmentStatus.pending && !param.$1.isPhysical)
-                        const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context.read<PatientBloc>().add(
-                                    PatientCallDoctorEvent(
-                                        appointmentID:
-                                            param.$1.appointmentID!));
-                              },
-                              child: const Text('Call'),
+                      if (param.$1.status == AppointmentStatus.pending &&
+                          !param.$1.isPhysical)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  context.read<PatientBloc>().add(
+                                      PatientCallDoctorEvent(
+                                          appointmentID:
+                                              param.$1.appointmentID!));
+                                },
+                                child: const Text('Call'),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                       const SizedBox(height: 16),
                       if (param.$1.isPhysical)
                         Card(
