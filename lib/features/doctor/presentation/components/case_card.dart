@@ -45,31 +45,32 @@ class _CaseCardState extends State<CaseCard> {
                               ? widget.disease.name
                               : widget.diagnosedDisease.diagnosedDiseaseName)
                           : widget.disease.name,
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '|',
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                     const SizedBox(width: 8),
                     if (widget.diagnosedDisease.doctorID == null &&
                         !widget.diagnosedDisease.status)
                       Text(
                         'Available',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.labelSmall,
+                        
                       ),
                     if (widget.diagnosedDisease.doctorID != null &&
                         !widget.diagnosedDisease.status)
                       Text(
                         'Currently Consulting',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
                     if (widget.diagnosedDisease.doctorID != null &&
                         widget.diagnosedDisease.status)
                       Text(
                         'Completed',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
                   ],
                 ),
