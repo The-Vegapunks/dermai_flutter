@@ -59,7 +59,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               'patientID',
               response.user!.id,
             );
-        final streamClient = stream.StreamVideo(Env.streamPublicKey,
+        final streamClient = stream.StreamVideo(Env.streamAPIKey,
             user: stream.User.guest(
                 userId: response.user!.id,
                 name: response.user!.userMetadata!['name']));
@@ -92,7 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             'patientID',
             response.user!.id,
           );
-      final streamClient = stream.StreamVideo(Env.streamPublicKey,
+      final streamClient = stream.StreamVideo(Env.streamAPIKey,
           user: stream.User.guest(
               userId: response.user!.id,
               name: response.user!.userMetadata!['name']));

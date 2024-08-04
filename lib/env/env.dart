@@ -12,8 +12,6 @@ abstract class Env {
     static const String geminiKey = _Env.geminiKey;
     @EnviedField(varName: 'DISEASECLASSIFIERURL')
     static const String diseaseClassifierUrl = _Env.diseaseClassifierUrl;
-    @EnviedField(varName: 'STREAMPUBLICKEY')
-    static const String streamPublicKey = _Env.streamPublicKey;
-    @EnviedField(varName: 'STREAMSECRETKEY')
-    static const String streamSecretKey = _Env.streamSecretKey;
+    @EnviedField(varName: 'STREAMAPIKEY')
+    static const String streamAPIKey = _Env.streamAPIKey;
 }

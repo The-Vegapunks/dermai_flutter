@@ -45,3 +45,7 @@ final class PatientCallDoctorEvent extends PatientEvent {
   PatientCallDoctorEvent({required this.appointmentID});
 }
 
+final class PatientDeleteDiagnosedDiseaseEvent extends PatientEvent {
+  final String diagnosedID;
+  PatientDeleteDiagnosedDiseaseEvent({required this.diagnosedID});
+}

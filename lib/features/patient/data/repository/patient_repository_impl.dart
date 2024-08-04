@@ -113,4 +113,14 @@ class PatientRepositoryImpl implements PatientRepository {
       return left(Failure(e.message));
     }
   }
+  
+  @override
+  Future<Either<Failure, void>> deleteDiagnosedDisease({required String diagnosedID}) async {
+    try {
+      final response = await remoteDataSource.deleteDiagnosedDisease(diagnosedID: diagnosedID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

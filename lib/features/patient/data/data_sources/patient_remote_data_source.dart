@@ -38,6 +38,7 @@ abstract interface class PatientRemoteDataSource {
       required List<MessageModel> previousMessages});
   Future<void> signOut();
   Future<stream.Call> callDoctor({required String appointmentID});
+  Future<void> deleteDiagnosedDisease({required String diagnosedID});
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
@@ -284,6 +285,18 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
       ]);
     } catch (e) {
       throw const ServerException("An error occurred while sending message");
+    }
+  }
+  
+  @override
+  Future<void> deleteDiagnosedDisease({required String diagnosedID}) async {
+    try {
+      await client
+          .from('diagnosedDisease')
+          .delete()
+          .eq('diagnosedID', diagnosedID);
+    } catch (e) {
+      throw const ServerException("An error occurred while deleting disease");
     }
   }
 }

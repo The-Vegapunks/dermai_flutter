@@ -5,6 +5,7 @@ import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/message.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_call_doctor.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_delete_diagnosed_disease.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
@@ -29,6 +30,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
   final PatientSendMessage _patientSendMessage;
   final PatientGetMessages _patientGetMessages;
   final PatientCallDoctor _patientCallDoctor;
+  final PatientDeleteDiagnosedDisease _patientDeleteDiagnosedDisease;
 
   PatientBloc({
     required PatientGetDiagnosedDiseases patientGetDiagnosedDiseases,
@@ -39,6 +41,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
     required PatientSendMessage patientSendMessage,
     required PatientGetMessages patientGetMessages,
     required PatientCallDoctor patientCallDoctor,
+    required PatientDeleteDiagnosedDisease patientDeleteDiagnosedDisease,
   })  : _patientGetDiagnosedDiseases = patientGetDiagnosedDiseases,
         _patientSignOut = patientSignOut,
         _patientGetAppointments = patientGetAppointments,
@@ -47,6 +50,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         _patientSendMessage = patientSendMessage,
         _patientGetMessages = patientGetMessages,
         _patientCallDoctor = patientCallDoctor,
+        _patientDeleteDiagnosedDisease = patientDeleteDiagnosedDisease,
         super(PatientInitial()) {
     on<PatientDiagnosedDiseases>((event, emit) async {
       emit(PatientLoading());
@@ -152,6 +156,18 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         (failure) => emit(PatientFailure(message: failure.message)),
         (response) => emit(PatientSuccessCallDoctor(call: response)),
       ); 
+    });
+
+    on<PatientDeleteDiagnosedDiseaseEvent>((event, emit) async {
+      final failureOrSuccess = await _patientDeleteDiagnosedDisease(
+        PatientDeleteDiagnosedDiseaseParams(
+          diagnosedID: event.diagnosedID,
+        ),
+      );
+      failureOrSuccess.fold(
+        (failure) => emit(PatientFailure(message: failure.message)),
+        (_) => emit(PatientSuccessDeleteDiagnosedDisease()),
+      );
     });
   }
 }

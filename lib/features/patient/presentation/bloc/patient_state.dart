@@ -57,3 +57,5 @@ final class PatientSuccessCallDoctor extends PatientState {
 
   const PatientSuccessCallDoctor({required this.call});
 }
+
+final class PatientSuccessDeleteDiagnosedDisease extends PatientState {}

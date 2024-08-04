@@ -27,4 +27,5 @@ abstract interface class PatientRepository {
   Future<Either<Failure, void>> signOut();
 
   Future<Either<Failure, stream.Call>> callDoctor({required String appointmentID});
+  Future<Either<Failure, void>> deleteDiagnosedDisease({required String diagnosedID});
 }

@@ -29,6 +29,7 @@ import 'package:dermai/features/patient/data/repository/patient_repository_impl.
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_call_doctor.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_delete_diagnosed_disease.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
@@ -49,7 +50,7 @@ Future<void> initDependencies() async {
   Gemini.init(apiKey: Env.geminiKey);
   final gemini = Gemini.instance;
   if (supabase.client.auth.currentUser != null) {
-    final streamClient = stream.StreamVideo(Env.streamPublicKey,
+    final streamClient = stream.StreamVideo(Env.streamAPIKey,
         user: stream.User.guest(
             userId: supabase.client.auth.currentUser!.id,
             name: supabase.client.auth.currentUser?.userMetadata?['name']));
@@ -138,6 +139,9 @@ void _initAuth() {
     ..registerFactory(
       () => PatientCallDoctor(serviceLocator()),
     )
+    ..registerFactory(
+      () => PatientDeleteDiagnosedDisease(serviceLocator()),
+    )
     ..registerLazySingleton(
       () => PatientBloc(
         patientGetDiagnosedDiseases: serviceLocator(),
@@ -148,6 +152,7 @@ void _initAuth() {
         patientGetMessages: serviceLocator(),
         patientSendMessage: serviceLocator(),
         patientCallDoctor: serviceLocator(),
+        patientDeleteDiagnosedDisease: serviceLocator(),
       ),
     );
 

@@ -46,100 +46,151 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => const ChatPagePatient()));
-
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                      diagnosedID: diagnosedDisease.diagnosedID!,
-                      diseaseName: diagnosedDisease.diagnosedDiseaseName.isEmpty
-                          ? disease.name
-                          : diagnosedDisease.diagnosedDiseaseName,
-                      initialMessage: diagnosedDisease.details),
-                ));
-          },
-          child: const Icon(Icons.chat),
-        ),
-        body: SafeArea(
-          child: NestedScrollView(
-            scrollDirection: Axis.vertical,
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverAppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                ),
-                title: const Text('Case Detail'),
-              ),
-              SliverToBoxAdapter(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PicturePage(
-                                  picture: diagnosedDisease.picture,
-                                )));
-                  },
-                  child: CachedNetworkImage(
-                    imageUrl: diagnosedDisease.picture,
-                    height: 200,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-              SliverPinnedHeader(
-                child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: const TabBar(
-                    tabs: <Widget>[
-                      Tab(text: 'Details'),
-                      Tab(text: 'Comments'),
-                      Tab(text: 'Prescription'),
+    return BlocConsumer<PatientBloc, PatientState>(
+      listener: (context, state) {
+        if (state is PatientFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+            ),
+          );
+        }
+        if (state is PatientSuccessDeleteDiagnosedDisease) {
+          context.read<PatientBloc>().add(
+                PatientAppointments(patientID: patient.id),
+              );
+          Navigator.pop(context);
+        }
+      },
+      builder: (context, state) {
+        return DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                          diagnosedID: diagnosedDisease.diagnosedID!,
+                          diseaseName:
+                              diagnosedDisease.diagnosedDiseaseName.isEmpty
+                                  ? disease.name
+                                  : diagnosedDisease.diagnosedDiseaseName,
+                          initialMessage: diagnosedDisease.details),
+                    ));
+              },
+              child: const Icon(Icons.chat),
+            ),
+            body: SafeArea(
+              child: NestedScrollView(
+                scrollDirection: Axis.vertical,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverAppBar(
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      tooltip:
+                          MaterialLocalizations.of(context).backButtonTooltip,
+                    ),
+                    title: const Text('Case Detail'),
+                    actions: [
+                      IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Delete Case'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this case?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        context.read<PatientBloc>().add(
+                                              PatientDeleteDiagnosedDiseaseEvent(
+                                                  diagnosedID: diagnosedDisease
+                                                      .diagnosedID!),
+                                            );
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          })
                     ],
                   ),
-                ),
-              )
-            ],
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: DetailsSection(
-                    diagnosedDisease: diagnosedDisease,
-                    disease: disease,
-                    doctor: doctor,
-                    patient: patient,
+                  SliverToBoxAdapter(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PicturePage(
+                                      picture: diagnosedDisease.picture,
+                                    )));
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: diagnosedDisease.picture,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
                   ),
+                  SliverPinnedHeader(
+                    child: Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: const TabBar(
+                        tabs: <Widget>[
+                          Tab(text: 'Details'),
+                          Tab(text: 'Comments'),
+                          Tab(text: 'Prescription'),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+                body: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: <Widget>[
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: DetailsSection(
+                        diagnosedDisease: diagnosedDisease,
+                        disease: disease,
+                        doctor: doctor,
+                        patient: patient,
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: CommentSection(diagnosedDisease: diagnosedDisease),
+                    ),
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: PrescriptionSection(
+                          diagnosedDisease: diagnosedDisease),
+                    ),
+                  ],
                 ),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: CommentSection(diagnosedDisease: diagnosedDisease),
-                ),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child:
-                      PrescriptionSection(diagnosedDisease: diagnosedDisease),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
