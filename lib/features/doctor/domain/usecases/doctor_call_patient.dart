@@ -11,13 +11,12 @@ class DoctorCallPatient implements UseCase<stream.Call, DoctorCallPatientParams>
 
   @override
   Future<Either<Failure, stream.Call>> call(DoctorCallPatientParams params) async {
-    return await repository.callPatient(patientID: params.patientID, appointmentID: params.appointmentID);
+    return await repository.callPatient(appointmentID: params.appointmentID);
   }
 }
 
 class DoctorCallPatientParams {
-  final String patientID;
   final String appointmentID;
 
-  DoctorCallPatientParams({required this.patientID, required this.appointmentID});
+  DoctorCallPatientParams({required this.appointmentID});
 }

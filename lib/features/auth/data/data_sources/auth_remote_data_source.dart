@@ -1,8 +1,10 @@
 import 'dart:collection';
 
+import 'package:dermai/env/env.dart';
 import 'package:dermai/features/auth/data/models/user_model.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stream_video_flutter/stream_video_flutter.dart' as stream;
 
 abstract interface class AuthRemoteDataSource {
   Session? get session;
@@ -12,7 +14,8 @@ abstract interface class AuthRemoteDataSource {
       {required String name, required String email, required String password});
   Future<String> forgotPassword({required String email});
   Future<UserModel?> getCurrentUserData();
-  Future<UserModel> verifyOTPForRecovery({required String email, required String password, required String token});
+  Future<UserModel> verifyOTPForRecovery(
+      {required String email, required String password, required String token});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -46,7 +49,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       if (response.user!.userMetadata!['isDoctor'] == true) {
-        
         final userData = await client.from('doctor').select().eq(
               'doctorID',
               response.user!.id,
@@ -57,6 +59,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               'patientID',
               response.user!.id,
             );
+        stream.StreamVideo.reset(disconnect: true);
+        final streamClient = stream.StreamVideo(Env.streamPublicKey,
+            user: stream.User.guest(
+                userId: response.user!.id,
+                name: response.user!.userMetadata!['name']));
+        await streamClient.connect();
         return UserModel.fromJsonPatient(userData.first);
       }
     } on AuthException catch (e) {
@@ -85,6 +93,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             'patientID',
             response.user!.id,
           );
+      stream.StreamVideo.reset(disconnect: true);
+      final streamClient = stream.StreamVideo(Env.streamPublicKey,
+          user: stream.User.guest(
+              userId: response.user!.id,
+              name: response.user!.userMetadata!['name']));
+      await streamClient.connect();
       return UserModel.fromJsonPatient(userData.first);
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -120,20 +134,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException(e.toString());
     }
   }
-  
+
   @override
-  Future<UserModel> verifyOTPForRecovery({required String email, required String password, required String token}) async {
+  Future<UserModel> verifyOTPForRecovery(
+      {required String email,
+      required String password,
+      required String token}) async {
     try {
-      final verifyOTP = await client.auth.verifyOTP(email: email, tokenHash: token, type: OtpType.recovery);
-      
+      final verifyOTP = await client.auth
+          .verifyOTP(email: email, tokenHash: token, type: OtpType.recovery);
+
       if (verifyOTP.user == null) {
         throw const ServerException('An error occurred while verifying OTP');
       }
 
-      final response = await client.auth.updateUser(UserAttributes(password: password));
+      final response =
+          await client.auth.updateUser(UserAttributes(password: password));
 
       if (response.user == null) {
-        throw const ServerException('An error occurred while updating password');
+        throw const ServerException(
+            'An error occurred while updating password');
       }
 
       if (response.user!.userMetadata!['isDoctor'] == true) {
@@ -155,6 +175,4 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException(e.toString());
     }
   }
-  
-
 }

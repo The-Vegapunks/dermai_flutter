@@ -15,5 +15,5 @@ abstract interface class DoctorRepository {
   Future<Either<Failure, (Appointment, DiagnosedDisease, Patient, Disease)>> updateAppointment({ required Appointment appointment, required bool insert});
   Future<Either<Failure, void>> signOut();
   Future<Either<Failure, void>> connectStream({required String id, required String name});
-  Future<Either<Failure, stream.Call>> callPatient({required String patientID, required String appointmentID});
+  Future<Either<Failure, stream.Call>> callPatient({required String appointmentID});
 }

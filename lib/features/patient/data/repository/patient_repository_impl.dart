@@ -104,10 +104,10 @@ class PatientRepositoryImpl implements PatientRepository {
 
   @override
   Future<Either<Failure, Call>> callDoctor(
-      {required String doctorID, required String appointmentID}) async {
+      {required String appointmentID}) async {
     try {
-      final response = await remoteDataSource.callDoctor(
-          doctorID: doctorID, appointmentID: appointmentID);
+      final response =
+          await remoteDataSource.callDoctor(appointmentID: appointmentID);
       return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));

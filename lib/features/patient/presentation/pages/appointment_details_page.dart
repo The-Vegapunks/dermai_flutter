@@ -181,10 +181,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                             ),
                         ],
                       ),
-                      if (param.$1.status == AppointmentStatus.pending)
+                      if (param.$1.status == AppointmentStatus.pending && !param.$1.isPhysical)
                         const SizedBox(height: 8),
                       const SizedBox(height: 8),
-                      if (param.$1.status == AppointmentStatus.pending)
+                      if (param.$1.status == AppointmentStatus.pending && !param.$1.isPhysical)
                         const SizedBox(height: 8),
                       Row(
                         children: [
@@ -193,7 +193,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                               onPressed: () {
                                 context.read<PatientBloc>().add(
                                     PatientCallDoctorEvent(
-                                        doctorID: param.$3.id,
                                         appointmentID:
                                             param.$1.appointmentID!));
                               },

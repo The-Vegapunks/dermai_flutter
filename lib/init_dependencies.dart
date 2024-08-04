@@ -20,8 +20,10 @@ import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.d
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_sign_out_usecase.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_details.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart' as usecasecancel;
-import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
+import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart'
+    as usecasecancel;
+import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart'
+    as usecaseupdate;
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
@@ -39,6 +41,7 @@ import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:stream_video_flutter/stream_video_flutter.dart' as stream;
 
 final serviceLocator = GetIt.instance;
 
@@ -47,6 +50,21 @@ Future<void> initDependencies() async {
       url: Env.superbaseUrl, anonKey: Env.superbaseAnonKey);
   Gemini.init(apiKey: Env.geminiKey);
   final gemini = Gemini.instance;
+  if (supabase.client.auth.currentUser != null) {
+    final streamClient = stream.StreamVideo(Env.streamPublicKey,
+        user: stream.User.guest(
+            userId: supabase.client.auth.currentUser!.id,
+            name: supabase.client.auth.currentUser?.userMetadata?['name']));
+    await streamClient.connect();
+  } else {
+    final streamClient = stream.StreamVideo(Env.streamPublicKey,
+        user: stream.User.guest(
+            userId: supabase.client.auth.currentUser?.id ??
+                DateTime.now().microsecondsSinceEpoch.toString(),
+            name: supabase.client.auth.currentUser?.userMetadata?['name'] ??
+                'placeholder'));
+    await streamClient.connect();
+  }
 
   serviceLocator.registerLazySingleton(() => supabase.client);
   serviceLocator.registerLazySingleton(() => gemini);
@@ -101,102 +119,104 @@ void _initAuth() {
     );
 
   serviceLocator
-  ..registerFactory<PatientRemoteDataSource>(
-    () => PatientRemoteDataSourceImpl(client: serviceLocator(), gemini: serviceLocator()),
-  )
-  ..registerFactory<PatientRepository>(
-    () => PatientRepositoryImpl(remoteDataSource: serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientGetDiagnosedDiseases(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientSignOutUsecase(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientGetAppointments(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientSubmitCase(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientCancelAppointment(serviceLocator())
-  )
-  ..registerFactory(
-    () => PatientSendMessage(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientGetMessages(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientConnectStream(serviceLocator()),
-  )
-  ..registerFactory(
-    () => PatientCallDoctor(serviceLocator()),
-  )
-  ..registerLazySingleton(
-    () => PatientBloc(
-      patientGetDiagnosedDiseases: serviceLocator(),
-      patientSignOut: serviceLocator(),
-      patientGetAppointments: serviceLocator(),
-      patientSubmitCase: serviceLocator(),
-      patientCancelAppointment: serviceLocator(),
-      patientGetMessages: serviceLocator(),
-      patientSendMessage: serviceLocator(),
-      patientConnectStream: serviceLocator(),
-      patientCallDoctor: serviceLocator(),
-    ),
-  );
+    ..registerFactory<PatientRemoteDataSource>(
+      () => PatientRemoteDataSourceImpl(
+          client: serviceLocator(), gemini: serviceLocator()),
+    )
+    ..registerFactory<PatientRepository>(
+      () => PatientRepositoryImpl(remoteDataSource: serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientGetDiagnosedDiseases(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientSignOutUsecase(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientGetAppointments(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientSubmitCase(serviceLocator()),
+    )
+    ..registerFactory(() => PatientCancelAppointment(serviceLocator()))
+    ..registerFactory(
+      () => PatientSendMessage(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientGetMessages(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientConnectStream(serviceLocator()),
+    )
+    ..registerFactory(
+      () => PatientCallDoctor(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => PatientBloc(
+        patientGetDiagnosedDiseases: serviceLocator(),
+        patientSignOut: serviceLocator(),
+        patientGetAppointments: serviceLocator(),
+        patientSubmitCase: serviceLocator(),
+        patientCancelAppointment: serviceLocator(),
+        patientGetMessages: serviceLocator(),
+        patientSendMessage: serviceLocator(),
+        patientConnectStream: serviceLocator(),
+        patientCallDoctor: serviceLocator(),
+      ),
+    );
 
   serviceLocator
-  ..registerFactory<DoctorRemoteDataSource>(
-    () => DoctorRemoteDataSourceImpl(client: serviceLocator()),
-  )
-  ..registerFactory<DoctorRepository>(
-    () => DoctorRepositoryImpl(remoteDataSource: serviceLocator()),
-  )
-  ..registerFactory<DoctorGetCases>(
-    () => DoctorGetCases(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorGetCaseDetails(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorUpdateCaseDetails(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorGetAppointments(serviceLocator()),
-  )
-  ..registerFactory(
-    () => usecasecancel.DoctorCancelAppointment(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorGetAvailableAppointmentSlots(serviceLocator()),
-  )
-  ..registerFactory(
-    () => usecaseupdate.DoctorUpdateAppointment(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorSignOutUsecase(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorConnectStream(serviceLocator()),
-  )
-  ..registerFactory(
-    () => DoctorCallPatient(serviceLocator()),
-  )
-  ..registerLazySingleton(
-    () => DoctorBloc(
-      doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
-      doctorGetCaseDetails: serviceLocator<DoctorGetCaseDetails>(),
-      doctorUpdateCaseDetails: serviceLocator<DoctorUpdateCaseDetails>(),
-      doctorGetAppointments: serviceLocator<DoctorGetAppointments>(),
-      doctorCancelAppointment: serviceLocator<usecasecancel.DoctorCancelAppointment>(),
-      doctorGetAvailableAppointmentSlots: serviceLocator<DoctorGetAvailableAppointmentSlots>(),
-      doctorUpdateAppointment: serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
-      doctorSignOut: serviceLocator<DoctorSignOutUsecase>(),
-      doctorConnectStream: serviceLocator<DoctorConnectStream>(),
-      doctorCallPatient: serviceLocator<DoctorCallPatient>(),
-    ),
-  );
+    ..registerFactory<DoctorRemoteDataSource>(
+      () => DoctorRemoteDataSourceImpl(client: serviceLocator()),
+    )
+    ..registerFactory<DoctorRepository>(
+      () => DoctorRepositoryImpl(remoteDataSource: serviceLocator()),
+    )
+    ..registerFactory<DoctorGetCases>(
+      () => DoctorGetCases(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorGetCaseDetails(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorUpdateCaseDetails(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorGetAppointments(serviceLocator()),
+    )
+    ..registerFactory(
+      () => usecasecancel.DoctorCancelAppointment(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorGetAvailableAppointmentSlots(serviceLocator()),
+    )
+    ..registerFactory(
+      () => usecaseupdate.DoctorUpdateAppointment(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorSignOutUsecase(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorConnectStream(serviceLocator()),
+    )
+    ..registerFactory(
+      () => DoctorCallPatient(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => DoctorBloc(
+        doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
+        doctorGetCaseDetails: serviceLocator<DoctorGetCaseDetails>(),
+        doctorUpdateCaseDetails: serviceLocator<DoctorUpdateCaseDetails>(),
+        doctorGetAppointments: serviceLocator<DoctorGetAppointments>(),
+        doctorCancelAppointment:
+            serviceLocator<usecasecancel.DoctorCancelAppointment>(),
+        doctorGetAvailableAppointmentSlots:
+            serviceLocator<DoctorGetAvailableAppointmentSlots>(),
+        doctorUpdateAppointment:
+            serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
+        doctorSignOut: serviceLocator<DoctorSignOutUsecase>(),
+        doctorConnectStream: serviceLocator<DoctorConnectStream>(),
+        doctorCallPatient: serviceLocator<DoctorCallPatient>(),
+      ),
+    );
 }

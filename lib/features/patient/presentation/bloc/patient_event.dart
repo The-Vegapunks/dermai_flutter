@@ -48,8 +48,7 @@ final class PatientConnectStreamEvent extends PatientEvent {
 }
 
 final class PatientCallDoctorEvent extends PatientEvent {
-  final String doctorID;
   final String appointmentID;
-  PatientCallDoctorEvent({required this.doctorID, required this.appointmentID});
+  PatientCallDoctorEvent({required this.appointmentID});
 }
 

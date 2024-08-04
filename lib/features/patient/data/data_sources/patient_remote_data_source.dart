@@ -38,42 +38,46 @@ abstract interface class PatientRemoteDataSource {
       required List<MessageModel> previousMessages});
   Future<void> signOut();
   Future<void> connectStream({required String id, required String name});
-  Future<stream.Call> callDoctor({required String doctorID, required String appointmentID});
+  Future<stream.Call> callDoctor(
+      {required String appointmentID});
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
   final SupabaseClient client;
   final Gemini gemini;
   PatientRemoteDataSourceImpl({required this.client, required this.gemini});
+  
 
-  late final stream.StreamVideo streamClient;
   @override
   Future<void> connectStream({required String id, required String name}) async {
-    streamClient = stream.StreamVideo(Env.streamSecretKey,
-        options: const stream.StreamVideoOptions(autoConnect: false),
-        user: stream.User.guest(userId: id, name: name));
-    
-    final result = await streamClient.connect();
-    if (result.isFailure) {
-      throw const ServerException('An error occurred while connecting to the stream');
-    }
+    // if (streamClient == null) {
+    //   streamClient = stream.StreamVideo(Env.streamSecretKey,
+    //       options: const stream.StreamVideoOptions(autoConnect: false),
+    //       user: stream.User.guest(userId: id, name: name));
+
+    //   final result = await streamClient!.connect();
+    //   if (result.isFailure) {
+    //     throw const ServerException(
+    //         'An error occurred while connecting to the stream');
+    //   }
+    // }
   }
 
   @override
-  Future<stream.Call> callDoctor({required String doctorID, required String appointmentID}) async {
+  Future<stream.Call> callDoctor(
+      {required String appointmentID}) async {
     try {
       final call = stream.StreamVideo.instance.makeCall(
           id: appointmentID, callType: stream.StreamCallType.defaultType());
-      final result = await call.getOrCreate(memberIds: [doctorID]);
+      final result = await call.getOrCreate();
       if (result.isSuccess) {
         return call;
       } else {
         throw const ServerException(
-            'An error occurred while calling the Doctor');
+            'An error occurred while calling the doctor');
       }
     } catch (e) {
-      throw const ServerException(
-          'An error occurred while calling the Doctor');
+      throw const ServerException('An error occurred while calling the doctor');
     }
   }
 

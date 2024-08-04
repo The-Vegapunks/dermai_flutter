@@ -200,7 +200,6 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
 
       final failureOrSuccess = await _doctorCallPatient(
         DoctorCallPatientParams(
-          patientID: event.patientID,
           appointmentID: event.appointmentID,
         ),
       );
