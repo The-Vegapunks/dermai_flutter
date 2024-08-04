@@ -9,6 +9,7 @@ import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
 import 'package:fpdart/src/either.dart';
+import 'package:stream_video/src/call/call.dart';
 
 class DoctorRepositoryImpl implements DoctorRepository {
   final DoctorRemoteDataSource remoteDataSource;
@@ -114,5 +115,25 @@ class DoctorRepositoryImpl implements DoctorRepository {
   @override
   Future<Either<Failure, void>> signOut() {
     return remoteDataSource.signOut().then((_) => right(null));
+  }
+
+  @override
+  Future<Either<Failure, Call>> callPatient({required String patientID, required String appointmentID}) async {
+    try {
+      final response = await remoteDataSource.callPatient(patientID: patientID, appointmentID: appointmentID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> connectStream({required String id, required String name}) async {
+    try {
+      final response = await remoteDataSource.connectStream(id: id, name: name);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
   }
 }

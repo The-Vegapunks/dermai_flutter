@@ -40,3 +40,16 @@ final class PatientSendMessageEvent extends PatientEvent {
   final List<Message> previousMessages;
   PatientSendMessageEvent({required this.diagnosedID, required this.diseaseName, required this.previousMessages});
 }
+
+final class PatientConnectStreamEvent extends PatientEvent {
+  final String id;
+  final String name;
+  PatientConnectStreamEvent({required this.id, required this.name});
+}
+
+final class PatientCallDoctorEvent extends PatientEvent {
+  final String doctorID;
+  final String appointmentID;
+  PatientCallDoctorEvent({required this.doctorID, required this.appointmentID});
+}
+

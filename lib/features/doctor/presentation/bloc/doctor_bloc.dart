@@ -2,17 +2,22 @@ import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/patient.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart' as usecasecancel;
+import 'package:dermai/features/doctor/domain/usecases/doctor_call_patient.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart'
+    as usecasecancel;
+import 'package:dermai/features/doctor/domain/usecases/doctor_connect_stream.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_cases.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_sign_out_usecase.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_update_case_details.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart' as usecaseupdate;
+import 'package:dermai/features/doctor/domain/usecases/doctor_update_appointment.dart'
+    as usecaseupdate;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
+import 'package:stream_video_flutter/stream_video_flutter.dart';
 
 part 'doctor_event.dart';
 part 'doctor_state.dart';
@@ -26,23 +31,31 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
   final DoctorGetAvailableAppointmentSlots _doctorGetAvailableAppointmentSlots;
   final usecaseupdate.DoctorUpdateAppointment _doctorUpdateAppointment;
   final DoctorSignOutUsecase _doctorSignOut;
+  final DoctorConnectStream _doctorConnectStream;
+  final DoctorCallPatient _doctorCallPatient;
   DoctorBloc({
     required DoctorGetCases doctorGetDiagnosedDiseases,
     required DoctorGetCaseDetails doctorGetCaseDetails,
     required DoctorUpdateCaseDetails doctorUpdateCaseDetails,
     required DoctorGetAppointments doctorGetAppointments,
     required usecasecancel.DoctorCancelAppointment doctorCancelAppointment,
-    required DoctorGetAvailableAppointmentSlots doctorGetAvailableAppointmentSlots,
+    required DoctorGetAvailableAppointmentSlots
+        doctorGetAvailableAppointmentSlots,
     required usecaseupdate.DoctorUpdateAppointment doctorUpdateAppointment,
     required DoctorSignOutUsecase doctorSignOut,
+    required DoctorConnectStream doctorConnectStream,
+    required DoctorCallPatient doctorCallPatient,
   })  : _doctorGetDiagnosedDiseases = doctorGetDiagnosedDiseases,
         _doctorGetCaseDetails = doctorGetCaseDetails,
         _doctorUpdateCaseDetails = doctorUpdateCaseDetails,
         _doctorGetAppointments = doctorGetAppointments,
         _doctorCancelAppointment = doctorCancelAppointment,
-        _doctorGetAvailableAppointmentSlots = doctorGetAvailableAppointmentSlots,
+        _doctorGetAvailableAppointmentSlots =
+            doctorGetAvailableAppointmentSlots,
         _doctorUpdateAppointment = doctorUpdateAppointment,
         _doctorSignOut = doctorSignOut,
+        _doctorConnectStream = doctorConnectStream,
+        _doctorCallPatient = doctorCallPatient,
         super(DoctorInitial()) {
     on<DoctorCases>((event, emit) async {
       emit(DoctorLoading());
@@ -55,8 +68,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
       );
       failureOrDiseases.fold(
         (failure) => emit(DoctorFailure(message: failure.message)),
-        (response) => emit(DoctorSuccessCases(
-            diagnosedDiseases: response)),
+        (response) => emit(DoctorSuccessCases(diagnosedDiseases: response)),
       );
     });
     on<DoctorCaseDetails>(
@@ -152,9 +164,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         emit(DoctorLoading());
         final failureOrAppointments = await _doctorUpdateAppointment(
           usecaseupdate.DoctorUpdateAppointmentParams(
-            appointment: event.appointment,
-            insert: event.insert
-          ),
+              appointment: event.appointment, insert: event.insert),
         );
         failureOrAppointments.fold(
           (failure) => emit(DoctorFailure(message: failure.message)),
@@ -174,5 +184,30 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         );
       },
     );
+
+    on<DoctorConnectStreamEvent>(
+      (event, emit) async {
+        final successOrFailure = await _doctorConnectStream(
+          DoctorConnectStreamParams(id: event.id, name: event.name));
+      successOrFailure.fold(
+        (failure) => emit(DoctorSuccess()),
+        (_) => emit(DoctorSuccess()),
+      );
+      },
+    );
+
+    on<DoctorCallPatientEvent>((event, emit) async {
+
+      final failureOrSuccess = await _doctorCallPatient(
+        DoctorCallPatientParams(
+          patientID: event.patientID,
+          appointmentID: event.appointmentID,
+        ),
+      );
+      failureOrSuccess.fold(
+        (failure) => emit(DoctorFailure(message: failure.message)),
+        (response) => emit(DoctorSuccessCallPatient(call: response)),
+      ); 
+    });
   }
 }

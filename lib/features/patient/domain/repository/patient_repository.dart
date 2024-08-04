@@ -5,6 +5,7 @@ import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/message.dart';
 import 'package:dermai/features/core/error/failure.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:stream_video_flutter/stream_video_flutter.dart' as stream;
 
 abstract interface class PatientRepository {
   Future<Either<Failure, List<(DiagnosedDisease, Disease, Doctor?)>>>
@@ -24,4 +25,7 @@ abstract interface class PatientRepository {
       required List<Message> previousMessages});
   Stream<List<Message>> getMessages({required String diagnosedID});
   Future<Either<Failure, void>> signOut();
+
+  Future<Either<Failure, void>> connectStream({required String id, required String name});
+  Future<Either<Failure, stream.Call>> callDoctor({required String doctorID, required String appointmentID});
 }

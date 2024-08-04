@@ -4,6 +4,7 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/patient.dart';
+import 'package:dermai/features/core/presentation/call_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/doctor/presentation/pages/case_detail_page.dart';
@@ -35,6 +36,9 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     setState(() {
       param = widget.param;
     });
+    context
+        .read<DoctorBloc>()
+        .add(DoctorConnectStreamEvent(id: doctor.id, name: doctor.name));
     super.initState();
   }
 
@@ -46,6 +50,21 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           setState(() {
             param = state.response;
           });
+        }
+        if (state is DoctorSuccessCallPatient) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CallPage(call: state.call),
+            ),
+          );
+        }
+        if (state is DoctorFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -227,7 +246,15 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.read<DoctorBloc>().add(
+                                        DoctorCallPatientEvent(
+                                          patientID: param.$3.id,
+                                          appointmentID:
+                                              param.$1.appointmentID!,
+                                        ),
+                                      );
+                                },
                                 child: const Text('Call'),
                               ),
                             ),

@@ -3,7 +3,9 @@ import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
 import 'package:dermai/features/core/entities/doctor.dart';
 import 'package:dermai/features/core/entities/message.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_call_doctor.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_connect_stream.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
@@ -14,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import "package:collection/collection.dart";
+import 'package:stream_video_flutter/stream_video_flutter.dart';
 
 part 'patient_event.dart';
 part 'patient_state.dart';
@@ -26,6 +29,8 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
   final PatientCancelAppointment _patientCancelAppointment;
   final PatientSendMessage _patientSendMessage;
   final PatientGetMessages _patientGetMessages;
+  final PatientConnectStream _patientConnectStream;
+  final PatientCallDoctor _patientCallDoctor;
 
   PatientBloc({
     required PatientGetDiagnosedDiseases patientGetDiagnosedDiseases,
@@ -35,6 +40,8 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
     required PatientCancelAppointment patientCancelAppointment,
     required PatientSendMessage patientSendMessage,
     required PatientGetMessages patientGetMessages,
+    required PatientConnectStream patientConnectStream,
+    required PatientCallDoctor patientCallDoctor,
   })  : _patientGetDiagnosedDiseases = patientGetDiagnosedDiseases,
         _patientSignOut = patientSignOut,
         _patientGetAppointments = patientGetAppointments,
@@ -42,6 +49,8 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         _patientCancelAppointment = patientCancelAppointment,
         _patientSendMessage = patientSendMessage,
         _patientGetMessages = patientGetMessages,
+        _patientConnectStream = patientConnectStream,
+        _patientCallDoctor = patientCallDoctor,
         super(PatientInitial()) {
     on<PatientDiagnosedDiseases>((event, emit) async {
       emit(PatientLoading());
@@ -135,6 +144,27 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
           PatientGetMessagesParams(diagnosedID: event.diagnosedID))) {
         emit(PatientSuccessGetMessages(messages: messages));
       }
+    });
+    on<PatientConnectStreamEvent>((event, emit) async {
+      final successOrFailure = await _patientConnectStream(
+          PatientConnectStreamParams(id: event.id, name: event.name));
+      successOrFailure.fold(
+        (failure) => emit(PatientFailure(message: failure.message)),
+        (_) => emit(PatientSuccess()),
+      );
+    });
+
+    on<PatientCallDoctorEvent>((event, emit) async {
+      final failureOrSuccess = await _patientCallDoctor(
+        PatientCallDoctorParams(
+          doctorID: event.doctorID,
+          appointmentID: event.appointmentID,
+        ),
+      );
+      failureOrSuccess.fold(
+        (failure) => emit(PatientFailure(message: failure.message)),
+        (response) => emit(PatientSuccessCallDoctor(call: response)),
+      ); 
     });
   }
 }

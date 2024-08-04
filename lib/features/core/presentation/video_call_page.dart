@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:stream_video_flutter/stream_video_flutter.dart';
-import 'package:dermai/features/core/presentation/Call_screen.dart';
+import 'package:dermai/features/core/presentation/call_page.dart';
 
 
 class VideoCallPage extends StatelessWidget {
@@ -32,7 +32,7 @@ class VideoCallPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CallScreen(call: call),
+                  builder: (context) => CallPage(call: call),
                 ),
               );
             } catch (e) {

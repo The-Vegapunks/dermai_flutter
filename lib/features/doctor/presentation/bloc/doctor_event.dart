@@ -44,3 +44,15 @@ final class DoctorUpdateAppointment extends DoctorEvent {
 }
 
 final class DoctorSignOut extends DoctorEvent {}
+
+final class DoctorConnectStreamEvent extends DoctorEvent {
+  final String id;
+  final String name;
+  DoctorConnectStreamEvent({required this.id, required this.name});
+}
+
+final class DoctorCallPatientEvent extends DoctorEvent {
+  final String patientID;
+  final String appointmentID;
+  DoctorCallPatientEvent({required this.patientID, required this.appointmentID});
+}

@@ -12,6 +12,8 @@ import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_source.dart';
 import 'package:dermai/features/doctor/data/repository/doctor_repository_impl.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_call_patient.dart';
+import 'package:dermai/features/doctor/domain/usecases/doctor_connect_stream.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
@@ -24,7 +26,9 @@ import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/data/data_sources/patient_remote_data_source.dart';
 import 'package:dermai/features/patient/data/repository/patient_repository_impl.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_call_doctor.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
+import 'package:dermai/features/patient/domain/usecases/patient_connect_stream.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
@@ -43,6 +47,7 @@ Future<void> initDependencies() async {
       url: Env.superbaseUrl, anonKey: Env.superbaseAnonKey);
   Gemini.init(apiKey: Env.geminiKey);
   final gemini = Gemini.instance;
+
   serviceLocator.registerLazySingleton(() => supabase.client);
   serviceLocator.registerLazySingleton(() => gemini);
   serviceLocator.registerLazySingleton(() => AppUserCubit());
@@ -123,6 +128,12 @@ void _initAuth() {
   ..registerFactory(
     () => PatientGetMessages(serviceLocator()),
   )
+  ..registerFactory(
+    () => PatientConnectStream(serviceLocator()),
+  )
+  ..registerFactory(
+    () => PatientCallDoctor(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => PatientBloc(
       patientGetDiagnosedDiseases: serviceLocator(),
@@ -132,6 +143,8 @@ void _initAuth() {
       patientCancelAppointment: serviceLocator(),
       patientGetMessages: serviceLocator(),
       patientSendMessage: serviceLocator(),
+      patientConnectStream: serviceLocator(),
+      patientCallDoctor: serviceLocator(),
     ),
   );
 
@@ -166,6 +179,12 @@ void _initAuth() {
   ..registerFactory(
     () => DoctorSignOutUsecase(serviceLocator()),
   )
+  ..registerFactory(
+    () => DoctorConnectStream(serviceLocator()),
+  )
+  ..registerFactory(
+    () => DoctorCallPatient(serviceLocator()),
+  )
   ..registerLazySingleton(
     () => DoctorBloc(
       doctorGetDiagnosedDiseases: serviceLocator<DoctorGetCases>(),
@@ -176,6 +195,8 @@ void _initAuth() {
       doctorGetAvailableAppointmentSlots: serviceLocator<DoctorGetAvailableAppointmentSlots>(),
       doctorUpdateAppointment: serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
       doctorSignOut: serviceLocator<DoctorSignOutUsecase>(),
+      doctorConnectStream: serviceLocator<DoctorConnectStream>(),
+      doctorCallPatient: serviceLocator<DoctorCallPatient>(),
     ),
   );
 }

@@ -9,6 +9,7 @@ import 'package:dermai/features/patient/data/data_sources/patient_remote_data_so
 import 'package:dermai/features/patient/data/models/message_model.dart';
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
 import 'package:fpdart/src/either.dart';
+import 'package:stream_video/src/call/call.dart';
 
 class PatientRepositoryImpl implements PatientRepository {
   final PatientRemoteDataSource remoteDataSource;
@@ -74,8 +75,7 @@ class PatientRepositoryImpl implements PatientRepository {
   }
 
   @override
-  Stream<List<Message>> getMessages(
-      {required String diagnosedID}) {
+  Stream<List<Message>> getMessages({required String diagnosedID}) {
     return remoteDataSource.getMessages(diagnosedID: diagnosedID);
   }
 
@@ -96,6 +96,29 @@ class PatientRepositoryImpl implements PatientRepository {
                   isGenerated: e.isGenerated,
                   diagnosedID: diagnosedID))
               .toList());
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Call>> callDoctor(
+      {required String doctorID, required String appointmentID}) async {
+    try {
+      final response = await remoteDataSource.callDoctor(
+          doctorID: doctorID, appointmentID: appointmentID);
+      return right(response);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> connectStream(
+      {required String id, required String name}) async {
+    try {
+      final response = await remoteDataSource.connectStream(id: id, name: name);
       return right(response);
     } on ServerException catch (e) {
       return left(Failure(e.message));

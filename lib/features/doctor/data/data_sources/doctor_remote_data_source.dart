@@ -1,9 +1,11 @@
+import 'package:dermai/env/env.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
 import 'package:dermai/features/doctor/data/models/disease_model.dart';
 import 'package:dermai/features/doctor/data/models/patient_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stream_video_flutter/stream_video_flutter.dart' as stream;
 
 abstract interface class DoctorRemoteDataSource {
   Future<List<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)>> getCases(
@@ -16,7 +18,8 @@ abstract interface class DoctorRemoteDataSource {
             DiagnosedDiseaseModel,
             PatientModel,
             DiseaseModel
-          )>> getAppointments({required String doctorID, String? patientID, String? diagnosedID});
+          )>> getAppointments(
+      {required String doctorID, String? patientID, String? diagnosedID});
   Future<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)> getCaseDetails(
       {required String diagnosedID});
   Future<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)> updateCaseDetails(
@@ -26,11 +29,44 @@ abstract interface class DoctorRemoteDataSource {
       updateAppointment(
           {required AppointmentModel appointment, required bool insert});
   Future<void> signOut();
+  Future<void> connectStream({required String id, required String name});
+  Future<stream.Call> callPatient({required String patientID, required String appointmentID});
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
   final SupabaseClient client;
   DoctorRemoteDataSourceImpl({required this.client});
+  late final stream.StreamVideo streamClient;
+
+  @override
+  Future<void> connectStream({required String id, required String name}) async {
+    streamClient = stream.StreamVideo(Env.streamSecretKey,
+        options: const stream.StreamVideoOptions(autoConnect: false),
+        user: stream.User.guest(userId: id, name: name));
+    final result = await streamClient.connect();
+    if (result.isFailure) {
+      throw const ServerException('An error occurred while connecting to the stream');
+    }
+  }
+
+  @override
+  Future<stream.Call> callPatient(
+      {required String patientID, required String appointmentID}) async {
+    try {
+      final call = stream.StreamVideo.instance.makeCall(
+          id: appointmentID, callType: stream.StreamCallType.defaultType());
+      final result = await call.getOrCreate(memberIds: [patientID]);
+      if (result.isSuccess) {
+        return call;
+      } else {
+        throw const ServerException(
+            'An error occurred while calling the patient');
+      }
+    } catch (e) {
+      throw const ServerException(
+          'An error occurred while calling the patient');
+    }
+  }
 
   @override
   Future<List<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)>> getCases(
@@ -74,29 +110,34 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
             PatientModel,
             DiseaseModel
           )>> getAppointments(
-      {required String doctorID, String? patientID, String? diagnosedID}) async {
+      {required String doctorID,
+      String? patientID,
+      String? diagnosedID}) async {
     try {
       DateTime now = DateTime.now();
-      final response = diagnosedID != null ? await client
-              .from('appointment')
-              .select(
-                  '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
-              .eq('diagnosedDisease.diagnosedID', diagnosedID)
-              .order('dateCreated', ascending: true) : (patientID == null
+      final response = diagnosedID != null
           ? await client
               .from('appointment')
               .select(
                   '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
-              .eq('diagnosedDisease.doctorID', doctorID)
-              .gte('dateCreated', DateTime(now.year, now.month, now.day).toIso8601String())
+              .eq('diagnosedDisease.diagnosedID', diagnosedID)
               .order('dateCreated', ascending: true)
-          : await client
-              .from('appointment')
-              .select(
-                  '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
-              .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
-                  referencedTable: 'diagnosedDisease')
-              .order('dateCreated', ascending: true));
+          : (patientID == null
+              ? await client
+                  .from('appointment')
+                  .select(
+                      '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
+                  .eq('diagnosedDisease.doctorID', doctorID)
+                  .gte('dateCreated',
+                      DateTime(now.year, now.month, now.day).toIso8601String())
+                  .order('dateCreated', ascending: true)
+              : await client
+                  .from('appointment')
+                  .select(
+                      '''*, diagnosedDisease!inner( *, disease( * ), patient( * ) )''')
+                  .or('doctorID.eq.$doctorID, patientID.eq.$patientID',
+                      referencedTable: 'diagnosedDisease')
+                  .order('dateCreated', ascending: true));
       if (response.isEmpty) return [];
       return response
           .map((e) => (
@@ -173,13 +214,15 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
           {required AppointmentModel appointment, required bool insert}) async {
     try {
       if (insert) {
-        await client.from('appointment').update({
-          'status': 'completed'
-        }).eq('diagnosedID', appointment.diagnosedID);
+        await client.from('appointment').update({'status': 'completed'}).eq(
+            'diagnosedID', appointment.diagnosedID);
       }
       final response = insert
-          ? await client.from('appointment').insert(appointment.toJson(insert: true)).select(
-              '''*, diagnosedDisease( *, disease( * ), patient( * ) )''').single()
+          ? await client
+              .from('appointment')
+              .insert(appointment.toJson(insert: true))
+              .select(
+                  '''*, diagnosedDisease( *, disease( * ), patient( * ) )''').single()
           : await client
               .from('appointment')
               .update(appointment.toJson(insert: false))
@@ -199,7 +242,7 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
           'An error occurred while updating the appointment');
     }
   }
-  
+
   @override
   Future<void> signOut() {
     return client.auth.signOut();

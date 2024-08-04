@@ -51,3 +51,9 @@ final class DoctorSuccessAppointment extends DoctorState {
 }
 
 final class DoctorSuccessSignOut extends DoctorState {}
+
+final class DoctorSuccessCallPatient extends DoctorState {
+  final Call call;
+
+  const DoctorSuccessCallPatient({required this.call});
+}
