@@ -26,6 +26,5 @@ abstract interface class PatientRepository {
   Stream<List<Message>> getMessages({required String diagnosedID});
   Future<Either<Failure, void>> signOut();
 
-  Future<Either<Failure, void>> connectStream({required String id, required String name});
   Future<Either<Failure, stream.Call>> callDoctor({required String appointmentID});
 }

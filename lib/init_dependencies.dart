@@ -13,7 +13,6 @@ import 'package:dermai/features/doctor/data/data_sources/doctor_remote_data_sour
 import 'package:dermai/features/doctor/data/repository/doctor_repository_impl.dart';
 import 'package:dermai/features/doctor/domain/repository/doctor_repository.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_call_patient.dart';
-import 'package:dermai/features/doctor/domain/usecases/doctor_connect_stream.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
@@ -30,7 +29,6 @@ import 'package:dermai/features/patient/data/repository/patient_repository_impl.
 import 'package:dermai/features/patient/domain/repository/patient_repository.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_call_doctor.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_cancel_appointment.dart';
-import 'package:dermai/features/patient/domain/usecases/patient_connect_stream.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_appointments.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_diagnosed_diseases.dart';
 import 'package:dermai/features/patient/domain/usecases/patient_get_messages.dart';
@@ -55,14 +53,6 @@ Future<void> initDependencies() async {
         user: stream.User.guest(
             userId: supabase.client.auth.currentUser!.id,
             name: supabase.client.auth.currentUser?.userMetadata?['name']));
-    await streamClient.connect();
-  } else {
-    final streamClient = stream.StreamVideo(Env.streamPublicKey,
-        user: stream.User.guest(
-            userId: supabase.client.auth.currentUser?.id ??
-                DateTime.now().microsecondsSinceEpoch.toString(),
-            name: supabase.client.auth.currentUser?.userMetadata?['name'] ??
-                'placeholder'));
     await streamClient.connect();
   }
 
@@ -146,9 +136,6 @@ void _initAuth() {
       () => PatientGetMessages(serviceLocator()),
     )
     ..registerFactory(
-      () => PatientConnectStream(serviceLocator()),
-    )
-    ..registerFactory(
       () => PatientCallDoctor(serviceLocator()),
     )
     ..registerLazySingleton(
@@ -160,7 +147,6 @@ void _initAuth() {
         patientCancelAppointment: serviceLocator(),
         patientGetMessages: serviceLocator(),
         patientSendMessage: serviceLocator(),
-        patientConnectStream: serviceLocator(),
         patientCallDoctor: serviceLocator(),
       ),
     );
@@ -197,9 +183,6 @@ void _initAuth() {
       () => DoctorSignOutUsecase(serviceLocator()),
     )
     ..registerFactory(
-      () => DoctorConnectStream(serviceLocator()),
-    )
-    ..registerFactory(
       () => DoctorCallPatient(serviceLocator()),
     )
     ..registerLazySingleton(
@@ -215,7 +198,6 @@ void _initAuth() {
         doctorUpdateAppointment:
             serviceLocator<usecaseupdate.DoctorUpdateAppointment>(),
         doctorSignOut: serviceLocator<DoctorSignOutUsecase>(),
-        doctorConnectStream: serviceLocator<DoctorConnectStream>(),
         doctorCallPatient: serviceLocator<DoctorCallPatient>(),
       ),
     );

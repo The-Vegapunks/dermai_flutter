@@ -113,15 +113,4 @@ class PatientRepositoryImpl implements PatientRepository {
       return left(Failure(e.message));
     }
   }
-
-  @override
-  Future<Either<Failure, void>> connectStream(
-      {required String id, required String name}) async {
-    try {
-      final response = await remoteDataSource.connectStream(id: id, name: name);
-      return right(response);
-    } on ServerException catch (e) {
-      return left(Failure(e.message));
-    }
-  }
 }

@@ -74,11 +74,12 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage> {
                   ),
                 ];
               },
-              body: state is DoctorLoading
+              body: (state is DoctorInitial ||
+                      (state is DoctorLoading && appointments.isEmpty))
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : (appointments.keys.isEmpty
+                  : ((appointments.keys.isEmpty && state is! DoctorLoading)
                       ? const Center(
                           child: Text('No Appointments'),
                         )

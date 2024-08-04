@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
@@ -120,36 +121,43 @@ class _HomePageState extends State<HomePage> {
                 )
               ];
             },
-            body: state is PatientInitial || (state is PatientLoading && diagnosedDiseases.isEmpty)
+            body: state is PatientInitial ||
+                    (state is PatientLoading && diagnosedDiseases.isEmpty)
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : (diagnosedDiseases.isEmpty ? const Center(
-                    child: Text(textAlign: TextAlign.center,'No diseases diagnosed yet.\nClick on the + button to diagnose a disease.'),
-                ) : ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: diagnosedDiseases.length,
-                    itemBuilder: (context, index) {
-                      return DiagnosisCard(
-                        diagnosedDisease: diagnosedDiseases[index],
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PatientCaseDetailPage(
-                                      diagnosedDisease:
-                                          diagnosedDiseases[index].$1,
-                                      disease: diagnosedDiseases[index].$2,
-                                      doctor: diagnosedDiseases[index]
-                                          .$3))).then((value) {
-                            context.read<PatientBloc>().add(
-                                PatientDiagnosedDiseases(
-                                    patientID: patient.id));
-                          });
+                : ((state is! PatientLoading && diagnosedDiseases.isEmpty)
+                    ? const Center(
+                        child: Text(
+                            textAlign: TextAlign.center,
+                            'No diseases diagnosed yet.\nClick on the + button to diagnose a disease.'),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: diagnosedDiseases.length,
+                        itemBuilder: (context, index) {
+                          return DiagnosisCard(
+                            diagnosedDisease: diagnosedDiseases[index],
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PatientCaseDetailPage(
+                                              diagnosedDisease:
+                                                  diagnosedDiseases[index].$1,
+                                              disease:
+                                                  diagnosedDiseases[index].$2,
+                                              doctor: diagnosedDiseases[index]
+                                                  .$3))).then((value) {
+                                context.read<PatientBloc>().add(
+                                    PatientDiagnosedDiseases(
+                                        patientID: patient.id));
+                              });
+                            },
+                          );
                         },
-                      );
-                    },
-                  )),
+                      )),
           ),
         );
       },
@@ -180,11 +188,11 @@ class DiagnosisCard extends StatelessWidget {
                 topLeft: Radius.circular(12.0),
                 topRight: Radius.circular(12.0),
               ),
-              child: Image.network(
-                diagnosedDisease.$1.picture,
+              child: CachedNetworkImage(
+                imageUrl: diagnosedDisease.$1.picture,
+                height: 192.0,
                 fit: BoxFit.cover,
                 width: double.infinity,
-                height: 192.0,
               ),
             ),
             Padding(

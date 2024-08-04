@@ -37,35 +37,16 @@ abstract interface class PatientRemoteDataSource {
       required String diseaseName,
       required List<MessageModel> previousMessages});
   Future<void> signOut();
-  Future<void> connectStream({required String id, required String name});
-  Future<stream.Call> callDoctor(
-      {required String appointmentID});
+  Future<stream.Call> callDoctor({required String appointmentID});
 }
 
 class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
   final SupabaseClient client;
   final Gemini gemini;
   PatientRemoteDataSourceImpl({required this.client, required this.gemini});
-  
 
   @override
-  Future<void> connectStream({required String id, required String name}) async {
-    // if (streamClient == null) {
-    //   streamClient = stream.StreamVideo(Env.streamSecretKey,
-    //       options: const stream.StreamVideoOptions(autoConnect: false),
-    //       user: stream.User.guest(userId: id, name: name));
-
-    //   final result = await streamClient!.connect();
-    //   if (result.isFailure) {
-    //     throw const ServerException(
-    //         'An error occurred while connecting to the stream');
-    //   }
-    // }
-  }
-
-  @override
-  Future<stream.Call> callDoctor(
-      {required String appointmentID}) async {
+  Future<stream.Call> callDoctor({required String appointmentID}) async {
     try {
       final call = stream.StreamVideo.instance.makeCall(
           id: appointmentID, callType: stream.StreamCallType.defaultType());
@@ -107,8 +88,9 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
   }
 
   @override
-  Future<void> signOut() {
-    return client.auth.signOut();
+  Future<void> signOut() async {
+    await stream.StreamVideo.reset(disconnect: true);
+    return await client.auth.signOut();
   }
 
   @override

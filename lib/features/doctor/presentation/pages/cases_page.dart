@@ -173,13 +173,13 @@ class _CasesPageState extends State<CasesPage>
                           }),
                     )),
               ],
-              body: state is DoctorLoading
+              body: state is DoctorInitial || (state is DoctorLoading && _cases.isEmpty)
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : RefreshIndicator(
                       onRefresh: _fetchDiagnosedDiseases,
-                      child: _filteredCases.isEmpty
+                      child: _filteredCases.isEmpty && state is! DoctorLoading
                           ? const Center(
                               child: Text('No cases'),
                             )

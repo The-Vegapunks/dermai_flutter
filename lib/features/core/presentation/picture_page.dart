@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -17,7 +18,7 @@ class PicturePage extends StatelessWidget {
           ),
         ),
         body: PhotoView(
-          imageProvider: NetworkImage(picture),
+          imageProvider: CachedNetworkImageProvider(picture),
           backgroundDecoration: BoxDecoration(color: Theme.of(context).canvasColor),
         ));
   }

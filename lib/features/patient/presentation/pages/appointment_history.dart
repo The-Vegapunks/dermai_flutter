@@ -69,11 +69,12 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                 )
               ];
             },
-            body: state is PatientLoading
+            body: (state is PatientInitial ||
+                    (state is PatientLoading && appointments.isEmpty))
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : (appointments.keys.isEmpty
+                : ((appointments.keys.isEmpty && state is! PatientLoading)
                     ? const Center(
                         child: Text('No Appointments'),
                       )

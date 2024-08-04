@@ -1,4 +1,3 @@
-import 'package:dermai/env/env.dart';
 import 'package:dermai/features/core/error/exception.dart';
 import 'package:dermai/features/doctor/data/models/appointment_model.dart';
 import 'package:dermai/features/doctor/data/models/diagnosed_disease_model.dart';
@@ -29,24 +28,15 @@ abstract interface class DoctorRemoteDataSource {
       updateAppointment(
           {required AppointmentModel appointment, required bool insert});
   Future<void> signOut();
-  Future<void> connectStream({required String id, required String name});
-  Future<stream.Call> callPatient(
-      {required String appointmentID});
+  Future<stream.Call> callPatient({required String appointmentID});
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
   final SupabaseClient client;
   DoctorRemoteDataSourceImpl({required this.client});
-  
 
   @override
-  Future<void> connectStream({required String id, required String name}) async {
-    
-  }
-
-  @override
-  Future<stream.Call> callPatient(
-      {required String appointmentID}) async {
+  Future<stream.Call> callPatient({required String appointmentID}) async {
     try {
       final call = stream.StreamVideo.instance.makeCall(
           id: appointmentID, callType: stream.StreamCallType.defaultType());
@@ -209,8 +199,11 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
           {required AppointmentModel appointment, required bool insert}) async {
     try {
       if (insert) {
-        await client.from('appointment').update({'status': 'completed'}).eq(
-            'diagnosedID', appointment.diagnosedID);
+        await client
+            .from('appointment')
+            .update({'status': 'completed'})
+            .eq('diagnosedID', appointment.diagnosedID)
+            .lt('dateCreated', appointment.dateCreated.toIso8601String());
       }
       final response = insert
           ? await client
@@ -239,7 +232,8 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
   }
 
   @override
-  Future<void> signOut() {
-    return client.auth.signOut();
+  Future<void> signOut() async {
+    await stream.StreamVideo.reset(disconnect: true);
+    return await client.auth.signOut();
   }
 }

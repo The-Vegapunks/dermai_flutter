@@ -1,6 +1,7 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/core/presentation/theme.dart';
 import 'package:dermai/features/doctor/presentation/bloc/doctor_bloc.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart'
@@ -63,6 +64,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      if (lightDynamic != null && darkDynamic != null) {
+        (lightDynamic, darkDynamic) =
+            generateDynamicColorSchemes(lightDynamic, darkDynamic);
+      }
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'DermAI',

@@ -58,6 +58,7 @@ dependencies:
   google_generative_ai: ^0.4.3
   flutter_chat_ui: ^1.6.14
   dynamic_color: ^1.7.0
+  cached_network_image: ^3.4.0
 
 dev_dependencies:
   flutter_test:

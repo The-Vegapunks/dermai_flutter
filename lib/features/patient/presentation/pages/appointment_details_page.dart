@@ -32,9 +32,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     setState(() {
       param = widget.param;
     });
-    context
-        .read<PatientBloc>()
-        .add(PatientConnectStreamEvent(id: patient.id, name: patient.name));
     super.initState();
   }
 

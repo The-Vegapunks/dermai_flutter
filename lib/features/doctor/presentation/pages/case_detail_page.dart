@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/appointment.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
@@ -11,7 +12,6 @@ import 'package:dermai/features/doctor/presentation/pages/appointment_history_pa
 import 'package:dermai/features/doctor/presentation/pages/reschedule_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:intl/intl.dart';
 
@@ -78,7 +78,33 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                     label: const Text('Take Case'),
                     icon: const Icon(Icons.add),
                   )
-                : null,
+                : (!diagnosedDisease.status ? FloatingActionButton.extended(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReschedulePage(
+                                    appointment: Appointment(
+                                        appointmentID: null,
+                                        dateCreated: DateTime.now(),
+                                        status: AppointmentStatus.pending,
+                                        comment: "",
+                                        description: "",
+                                        diagnosedID:
+                                            diagnosedDisease.diagnosedID!,
+                                        isPhysical: false),
+                                    patient: widget.patient,
+                                    doctor: doctor,
+                                    insert: true,
+                                  ))).then((value) {
+                        context
+                            .read<DoctorBloc>()
+                            .add(DoctorAppointments(doctorID: doctor.id));
+                      });
+                    },
+                    label: const Text('Give Appointment'),
+                    icon: const Icon(Icons.calendar_today),
+                  ) : null),
             body: SafeArea(
               child: NestedScrollView(
                 scrollDirection: Axis.vertical,
@@ -124,38 +150,6 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                 ],
                               ),
                             ),
-                            PopupMenuItem(
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.calendar_today),
-                                  SizedBox(width: 8),
-                                  Text('Give an appointment'),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ReschedulePage(
-                                              appointment: Appointment(
-                                                  appointmentID: null,
-                                                  dateCreated: DateTime.now(),
-                                                  status:
-                                                      AppointmentStatus.pending,
-                                                  comment: "",
-                                                  description: "",
-                                                  diagnosedID: diagnosedDisease
-                                                      .diagnosedID!,
-                                                  isPhysical: false),
-                                              patient: widget.patient,
-                                              doctor: doctor,
-                                              insert: true,
-                                            ))).then((value) {
-                                  context.read<DoctorBloc>().add(
-                                      DoctorAppointments(doctorID: doctor.id));
-                                });
-                              },
-                            ),
                           ],
                         ),
                     ],
@@ -179,12 +173,11 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
                                       picture: diagnosedDisease.picture,
                                     )));
                       },
-                      child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image: diagnosedDisease.picture,
-                        width: double.infinity,
+                      child: CachedNetworkImage(
+                        imageUrl: diagnosedDisease.picture,
                         height: 200,
                         fit: BoxFit.cover,
+                        width: double.infinity,
                       ),
                     ),
                   ),

@@ -5,7 +5,6 @@ import 'package:dermai/features/core/entities/patient.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_call_patient.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_cancel_appointment.dart'
     as usecasecancel;
-import 'package:dermai/features/doctor/domain/usecases/doctor_connect_stream.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_appointments.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_available_appointment_slots.dart';
 import 'package:dermai/features/doctor/domain/usecases/doctor_get_case_details.dart';
@@ -31,7 +30,6 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
   final DoctorGetAvailableAppointmentSlots _doctorGetAvailableAppointmentSlots;
   final usecaseupdate.DoctorUpdateAppointment _doctorUpdateAppointment;
   final DoctorSignOutUsecase _doctorSignOut;
-  final DoctorConnectStream _doctorConnectStream;
   final DoctorCallPatient _doctorCallPatient;
   DoctorBloc({
     required DoctorGetCases doctorGetDiagnosedDiseases,
@@ -43,7 +41,6 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         doctorGetAvailableAppointmentSlots,
     required usecaseupdate.DoctorUpdateAppointment doctorUpdateAppointment,
     required DoctorSignOutUsecase doctorSignOut,
-    required DoctorConnectStream doctorConnectStream,
     required DoctorCallPatient doctorCallPatient,
   })  : _doctorGetDiagnosedDiseases = doctorGetDiagnosedDiseases,
         _doctorGetCaseDetails = doctorGetCaseDetails,
@@ -54,7 +51,6 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
             doctorGetAvailableAppointmentSlots,
         _doctorUpdateAppointment = doctorUpdateAppointment,
         _doctorSignOut = doctorSignOut,
-        _doctorConnectStream = doctorConnectStream,
         _doctorCallPatient = doctorCallPatient,
         super(DoctorInitial()) {
     on<DoctorCases>((event, emit) async {
@@ -182,17 +178,6 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           (failure) => emit(DoctorFailure(message: failure.message)),
           (_) => emit(DoctorSuccessSignOut()),
         );
-      },
-    );
-
-    on<DoctorConnectStreamEvent>(
-      (event, emit) async {
-        final successOrFailure = await _doctorConnectStream(
-          DoctorConnectStreamParams(id: event.id, name: event.name));
-      successOrFailure.fold(
-        (failure) => emit(DoctorSuccess()),
-        (_) => emit(DoctorSuccess()),
-      );
       },
     );
 

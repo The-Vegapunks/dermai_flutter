@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
 import 'package:dermai/features/core/entities/disease.dart';
@@ -9,7 +10,6 @@ import 'package:dermai/features/patient/presentation/pages/appointment_history.d
 import 'package:dermai/features/patient/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +59,12 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatPage(diagnosedID: diagnosedDisease.diagnosedID!, diseaseName: diagnosedDisease.diagnosedDiseaseName.isEmpty ? disease.name : diagnosedDisease.diagnosedDiseaseName, initialMessage: diagnosedDisease.details),
+                  builder: (context) => ChatPage(
+                      diagnosedID: diagnosedDisease.diagnosedID!,
+                      diseaseName: diagnosedDisease.diagnosedDiseaseName.isEmpty
+                          ? disease.name
+                          : diagnosedDisease.diagnosedDiseaseName,
+                      initialMessage: diagnosedDisease.details),
                 ));
           },
           child: const Icon(Icons.chat),
@@ -88,12 +93,11 @@ class _PatientCaseDetailPageState extends State<PatientCaseDetailPage> {
                                   picture: diagnosedDisease.picture,
                                 )));
                   },
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: diagnosedDisease.picture,
-                    width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: diagnosedDisease.picture,
                     height: 200,
                     fit: BoxFit.cover,
+                    width: double.infinity,
                   ),
                 ),
               ),
