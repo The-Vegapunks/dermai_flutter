@@ -1,4 +1,6 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:dermai/features/core/presentation/privacy_policy.dart';
+import 'package:dermai/features/core/presentation/terms_conditions.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:dermai/features/patient/presentation/pages/root_page.dart';
 import 'package:flutter/gestures.dart';
@@ -52,8 +54,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    tooltip:
-                        MaterialLocalizations.of(context).backButtonTooltip,
+                    tooltip: MaterialLocalizations.of(context)
+                        .backButtonTooltip,
                   ),
                   title: const Text('Sign Up'),
                 ),
@@ -61,7 +63,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(children: [
                     const SizedBox(height: 32),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: UniversalTextField(
                         maxLines: 1,
                         labelText: "Full Name",
@@ -75,13 +78,15 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(height: 16),
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16),
                         child: EmailTextField(
                           onChanged: (value) => {_email = value},
                         )),
                     const SizedBox(height: 16),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: ObscuredTextField(
                         labelText: 'Password',
                         icon: const Icon(Icons.lock_outline),
@@ -90,16 +95,19 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     const SizedBox(height: 16),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: ObscuredTextField(
                         labelText: 'Confirm Password',
                         icon: const Icon(Icons.lock),
-                        onChanged: (value) => {_confirmPassword = value},
+                        onChanged: (value) =>
+                            {_confirmPassword = value},
                       ),
                     ),
                     const SizedBox(height: 16),
                     Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      margin:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -113,10 +121,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           Flexible(
                             child: RichText(
                               text: TextSpan(
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium,
                                 children: <TextSpan>[
                                   const TextSpan(
-                                      text: 'By joining, you agree to our '),
+                                      text:
+                                          'By joining, you agree to our '),
                                   TextSpan(
                                       text: 'Terms of Service',
                                       style: Theme.of(context)
@@ -125,11 +136,25 @@ class _SignUpPageState extends State<SignUpPage> {
                                           ?.copyWith(
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .primary),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          // todo
-                                        }),
+                                                  .primary)
+                                          .copyWith(
+                                              decoration:
+                                                  TextDecoration
+                                                      .underline,
+                                              decorationColor:
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                      recognizer:
+                                          TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder:
+                                                          (context) =>
+                                                              const TermsConditions()));
+                                            }),
                                   const TextSpan(text: ' and '),
                                   TextSpan(
                                       text: 'Privacy Policy',
@@ -139,11 +164,25 @@ class _SignUpPageState extends State<SignUpPage> {
                                           ?.copyWith(
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .primary),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          // todo
-                                        }),
+                                                  .primary)
+                                          .copyWith(
+                                              decoration:
+                                                  TextDecoration
+                                                      .underline,
+                                              decorationColor:
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                      recognizer:
+                                          TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder:
+                                                          (context) =>
+                                                              const PrivacyPolicy()));
+                                            }),
                                   const TextSpan(text: '.'),
                                 ],
                               ),
@@ -157,7 +196,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
                         const Expanded(child: SizedBox(height: 16)),
@@ -166,18 +206,21 @@ class _SignUpPageState extends State<SignUpPage> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (_isPrivacyPolicyChecked == true) {
+                                  if (_isPrivacyPolicyChecked ==
+                                      true) {
                                     if (_validateInputs()) {
                                       context
                                           .read<AuthBloc>()
                                           .add(AuthSignUpEvent(
                                             name: _name!.trim(),
                                             email: _email!.trim(),
-                                            password: _password!.trim(),
+                                            password:
+                                                _password!.trim(),
                                           ));
                                     }
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                             'Please agree to the Terms of Service and Privacy Policy.'),
@@ -186,7 +229,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   }
                                 },
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                   children: [
                                     const Text('Sign Up'),
                                     if (state is AuthLoading)
@@ -195,7 +239,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                       const SizedBox(
                                         width: 16,
                                         height: 16,
-                                        child: CircularProgressIndicator(
+                                        child:
+                                            CircularProgressIndicator(
                                           strokeWidth: 2,
                                         ),
                                       ),
