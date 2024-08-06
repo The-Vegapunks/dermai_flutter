@@ -168,25 +168,29 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
       DateTime now = DateTime.now();
       var postURi = Uri.parse('${Env.diseaseClassifierUrl}/predict');
       var request = http.MultipartRequest("POST", postURi);
+
       request.files.add(await http.MultipartFile.fromPath(
         'image',
         imagePath,
-        contentType: MediaType('image', 'jpeg'),
+        contentType: MediaType('image', imagePath.split(".").last),
       ));
+
       var streamedResponse = await request.send();
+
       var response =
           jsonDecode((await http.Response.fromStream(streamedResponse)).body);
 
       File image = File(imagePath);
       final String patientID = client.auth.currentUser!.id;
       await client.storage.from('disease_images').upload(
-            '$patientID/${now.toIso8601String()}.jpeg',
+            '$patientID/${now.toIso8601String()}.${imagePath.split(".").last}',
             image,
             fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
           );
       final supabaseImagePath = client.storage
           .from('disease_images')
-          .getPublicUrl('$patientID/${now.toIso8601String()}.jpeg');
+          .getPublicUrl(
+              '$patientID/${now.toIso8601String()}.${imagePath.split(".").last}');
 
       final ans = await gemini.text(
           'I have been diagnosed with ${response['disease']}. I understand you can\'t provide medical advice, but could you list some preventive measures? Please provide the list without any titles, symbols, or markdown.');
@@ -287,7 +291,7 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
       throw const ServerException("An error occurred while sending message");
     }
   }
-  
+
   @override
   Future<void> deleteDiagnosedDisease({required String diagnosedID}) async {
     try {
