@@ -32,6 +32,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     'An email has been sent with instructions on how to reset your password.'),
               ),
             );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    OTPVerificationScreen(email: _email!.trim()),
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -76,15 +83,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 onPressed: () {
                                   if (_validateInputs()) {
                                     context.read<AuthBloc>().add(
-                                          AuthForgetPassword(email: _email!.trim()),
+                                          AuthForgetPassword(
+                                              email: _email!.trim()),
                                         );
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            OTPVerificationScreen(email: _email!.trim()),
-                                      ),
-                                    );
                                   }
                                 },
                                 child: Row(

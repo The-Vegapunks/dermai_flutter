@@ -1,7 +1,9 @@
+import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/fp_reset_password_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter/services.dart'; // Import this for setting orientation
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import this for setting orientation
 
 class OTPVerificationScreen extends StatefulWidget {
   final String email;
@@ -14,7 +16,8 @@ class OTPVerificationScreen extends StatefulWidget {
 
 class OTPVerificationScreenState extends State<OTPVerificationScreen> {
   late Timer _timer;
-  int _start = 240; // 4 minutes timer
+  int _start = 10; // 4 minutes timer
+  var token = ["", "", "", "", "", ""];
 
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -33,7 +36,7 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
       _timer.cancel();
     }
     setState(() {
-      _start = 240; // Reset the timer to 4 minutes
+      _start = 10; // Reset the timer to 4 minutes
     });
     startTimer();
   }
@@ -62,75 +65,88 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
     super.dispose();
   }
 
-  void _verifyOTP() {
-    // Replace this with your actual OTP verification logic
-    bool isOTPCorrect = true; // Example condition
-
-    if (isOTPCorrect) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FpResetPasswordPage(),
-        ),
-      );
-    } 
-    // else {
-    //   // Handle incorrect OTP scenario
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text('Incorrect OTP')),
-    //   );
-    // }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('OTP Verification'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back when the back button is pressed
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'OTP Verification',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccessRecovery) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FpResetPasswordPage(email: widget.email,),
             ),
-            const SizedBox(height: 20),
-            Text(
-              'One Time Password (OTP) has been sent via email to ${widget.email}',
-              textAlign: TextAlign.center,
+          );
+        }
+        if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+        if (state is AuthSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'An email has been resent with the token required to reset the password'),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) => _buildOTPField(index)),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('OTP Verification'),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(
+                    context); // Navigate back when the back button is pressed
+              },
             ),
-            const SizedBox(height: 20),
-            _start > 0
-                ? Text('Resend OTP in $_start seconds')
-                : TextButton(
-                    onPressed: () {
-                      resetTimer();
-                      // Handle resend OTP
-                    },
-                    child: const Text('Resend OTP'),
-                  ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _verifyOTP,
-              child: const Text('Verify OTP'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'OTP Verification',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'One Time Password (OTP) has been sent via email to ${widget.email}',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(6, (index) => _buildOTPField(index)),
+                ),
+                const SizedBox(height: 20),
+                _start > 0
+                    ? Text('Resend OTP in $_start seconds')
+                    : TextButton(
+                        onPressed: () {
+                          resetTimer();
+                          context
+                              .read<AuthBloc>()
+                              .add(AuthForgetPassword(email: widget.email));
+                        },
+                        child: const Text('Resend OTP'),
+                      ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(AuthRecoverPasswordEvent(
+                        email: widget.email, token: token.join("")));
+                  },
+                  child: const Text('Verify OTP'),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -146,6 +162,7 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
           border: OutlineInputBorder(),
         ),
         onChanged: (value) {
+          token[index] = value;
           if (value.length == 1) {
             if (index != 5) {
               FocusScope.of(context).nextFocus();

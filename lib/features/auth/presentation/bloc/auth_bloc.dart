@@ -1,4 +1,5 @@
 import 'package:dermai/features/auth/domain/usecases/current_user.dart';
+import 'package:dermai/features/auth/domain/usecases/user_change_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_forget_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_recover_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_in.dart';
@@ -18,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
   final UserRecoverPassword _userRecoverPassword;
+  final UserChangePassword _userChangePassword;
 
   AuthBloc({
     required UserSignUp userSignUp,
@@ -26,12 +28,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required CurrentUser currentUser,
     required AppUserCubit appUserCubit,
     required UserRecoverPassword userRecoverPassword,
+    required UserChangePassword userChangePassword,
   })  : _userSignUp = userSignUp,
         _userSignIn = userSignIn,
         _userForgetPassword = userForgetPassword,
         _currentUser = currentUser,
         _appUserCubit = appUserCubit,
         _userRecoverPassword = userRecoverPassword,
+        _userChangePassword = userChangePassword,
         super(AuthInitial()) {
     on<AuthSignUp>((event, emit) async {
       emit(AuthLoading());
@@ -68,15 +72,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     });
 
-    on<AuthRecoverPassword>((event, emit) async {
+    on<AuthRecoverPasswordEvent>((event, emit) async {
       emit(AuthLoading());
       final response = await _userRecoverPassword(UserRecoverPasswordParams(
-          email: event.email, password: event.password, token: event.token));
+          email: event.email, token: event.token));
       response.fold(
         (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => _emitAuthSuccess(user, emit),
+        (user) => emit(AuthSuccessRecovery())
       );
     });
+
+  on<AuthChangePasswordEvent>((event, emit) async {
+    emit(AuthLoading());
+          final response = await _userChangePassword(UserChangePasswordParams(
+          email: event.email, password: event.password));
+      response.fold(
+        (failure) => _emitAuthFailure(failure.message, emit),
+        (user) => _emitAuthSuccess(user, emit)
+      );
+  });
+
   }
 
   void _emitAuthSuccess(User user, Emitter<AuthState> emit) {
