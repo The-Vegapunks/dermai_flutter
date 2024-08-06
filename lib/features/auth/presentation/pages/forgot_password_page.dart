@@ -78,11 +78,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     context.read<AuthBloc>().add(
                                           AuthForgetPassword(email: _email!.trim()),
                                         );
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                            const OTPVerificationScreen()));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            OTPVerificationScreen(email: _email!.trim()),
+                                      ),
+                                    );
                                   }
                                 },
                                 child: Row(

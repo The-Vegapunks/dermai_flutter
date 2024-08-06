@@ -4,7 +4,9 @@ import 'dart:async';
 import 'package:flutter/services.dart'; // Import this for setting orientation
 
 class OTPVerificationScreen extends StatefulWidget {
-  const OTPVerificationScreen({super.key});
+  final String email;
+
+  const OTPVerificationScreen({super.key, required this.email});
 
   @override
   OTPVerificationScreenState createState() => OTPVerificationScreenState();
@@ -102,8 +104,8 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'One Time Password (OTP) has been sent via email to posxxx@test.io',
+            Text(
+              'One Time Password (OTP) has been sent via email to ${widget.email}',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -150,22 +152,6 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
             }
           }
         },
-      ),
-    );
-  }
-}
-
-class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-      ),
-      body: const Center(
-        child: Text('Forgot Password Page'),
       ),
     );
   }
