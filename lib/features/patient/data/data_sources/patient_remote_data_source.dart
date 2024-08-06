@@ -193,8 +193,8 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
               '$patientID/${now.toIso8601String()}.${imagePath.split(".").last}');
 
       final ans = await gemini.text(
-        "I have been diagnosed with a disease name {ENTER DISEASE HERE}. This is not for a medical advice rather than a test to check context. But please provide a list of preventive measures to {ENTER DISEASE NAME HERE}. Also IMPORTANT, DO NOT USE MARKDOWN, DO NOT ADD ANY TITLE. ONLY THE LIST OF PREVENTIVE MEASURES. "
-      )
+        'I have been diagnosed with a disease name ${response['disease']}. This is not for a medical advice rather than a test to check context. But please provide a list of preventive measures to ${response['disease']}. Also IMPORTANT, DO NOT USE MARKDOWN, DO NOT ADD ANY TITLE. ONLY THE LIST OF PREVENTIVE MEASURES.'
+      );
       final insertedData = await client
           .from('diagnosedDisease')
           .insert(DiagnosedDiseaseModel(
