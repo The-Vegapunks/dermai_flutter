@@ -1,6 +1,7 @@
 import 'package:dermai/features/auth/presentation/pages/fp_reset_password_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/services.dart'; // Import this for setting orientation
 
 class OTPVerificationScreen extends StatefulWidget {
   const OTPVerificationScreen({super.key});
@@ -25,15 +26,37 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
     });
   }
 
+  void resetTimer() {
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
+    setState(() {
+      _start = 240; // Reset the timer to 4 minutes
+    });
+    startTimer();
+  }
+
   @override
   void initState() {
     super.initState();
     startTimer();
+    // Lock orientation to portrait mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
   void dispose() {
     _timer.cancel();
+    // Reset orientation to default
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
@@ -45,7 +68,7 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const FpResetPasswordPage(email: "Poshan@test.io"),
+          builder: (context) => FpResetPasswordPage(),
         ),
       );
     } 
@@ -93,6 +116,7 @@ class OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 ? Text('Resend OTP in $_start seconds')
                 : TextButton(
                     onPressed: () {
+                      resetTimer();
                       // Handle resend OTP
                     },
                     child: const Text('Resend OTP'),
