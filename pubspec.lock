@@ -636,10 +636,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_webrtc
-      sha256: fd5f115a08dcdc00b988bea3003c956f1b60a78a61d899cbddfb44f5d0e44d4a
+      sha256: f46bd76cef6e8d787dc707d0c591f0e89c912a2970c7b5e68a55b9cca1bdde4c
       url: "https://pub.dev"
     source: hosted
-    version: "0.10.8"
+    version: "0.11.6"
   fpdart:
     dependency: "direct main"
     description:
@@ -1409,26 +1409,26 @@ packages:
     dependency: "direct main"
     description:
       name: stream_video
-      sha256: "8e5effe3b50e861c28a734eaed0b2ea85dcace21557e2bd3aa049c40e3365160"
+      sha256: efc2b13dd3ff6c58d60f43192ed83d7243a5e3d3a03af846ae3ca156cc014c5b
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.4"
+    version: "0.5.0"
   stream_video_flutter:
     dependency: "direct main"
     description:
       name: stream_video_flutter
-      sha256: "1d337d555ebb2d711b97c64bf0c8e58ed45eac452709b546cd8339836bbe8190"
+      sha256: "4ce4c946cae6d56a5e9049142f870b60d1d71fa74edc019afd50227fbe7a6bc1"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.4"
+    version: "0.5.0"
   stream_video_push_notification:
     dependency: "direct main"
     description:
       name: stream_video_push_notification
-      sha256: "8c1af516c0f32e157646878b57ab8d1fceceeb46350b92acdf967f54fe1d0f4a"
+      sha256: "8347c5879b3e7f1216a075069909f973fcd6fd63c60c8ba9484509307b6060f8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.4"
+    version: "0.5.0"
   string_scanner:
     dependency: transitive
     description:
