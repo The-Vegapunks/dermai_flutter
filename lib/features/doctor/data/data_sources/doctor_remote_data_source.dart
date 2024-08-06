@@ -69,6 +69,7 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
       final response = await client
           .from('diagnosedDisease')
           .select('''*, disease( * ), patient!inner( * )''')
+          .or('doctorID.eq.$doctorID, doctorID.is.null')
           .order('doctorID', nullsFirst: true)
           .order('dateCreated', ascending: true);
 
