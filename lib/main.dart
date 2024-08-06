@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      context.read<AuthBloc>().add(AuthAuthenticated());
+      context.read<AuthBloc>().add(AuthAuthenticatedEvent());
     });
   }
 

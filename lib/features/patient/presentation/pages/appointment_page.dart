@@ -36,10 +36,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<PatientBloc, PatientState>(
       listener: (context, state) {
-        if (state is PatientFailure) {
+        if (state is PatientFailureAppointments) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -51,22 +52,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
       },
       builder: (context, state) {
         return Scaffold(
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                const SliverAppBar(
-                  floating: true,
-                  pinned: false,
-                  snap: true,
-                  title: Text('Appointment'),
+          body: appointments.keys.isEmpty
+              ? const Center(
+                  child: Text('No Appointments'),
                 )
-              ];
-            },
-            body: appointments.keys.isEmpty
-                ? const Center(
-                    child: Text('No Appointments'),
-                  )
-                : ListView.builder(
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<PatientBloc>().add(
+                          PatientAppointments(patientID: patient.id),
+                        );
+                  },
+                  child: ListView.builder(
                     itemCount: appointments.keys.length,
                     itemBuilder: (context, index) {
                       DateTime key = appointments.keys.elementAt(index);
@@ -82,7 +78,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       );
                     },
                   ),
-          ),
+                ),
         );
       },
     );

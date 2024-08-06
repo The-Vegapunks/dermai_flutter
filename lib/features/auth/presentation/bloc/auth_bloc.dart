@@ -37,70 +37,74 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _userRecoverPassword = userRecoverPassword,
         _userChangePassword = userChangePassword,
         super(AuthInitial()) {
-    on<AuthSignUp>((event, emit) async {
+    on<AuthSignUpEvent>((event, emit) async {
       emit(AuthLoading());
       final response = await _userSignUp(UserSignUpParams(
           name: event.name, email: event.email, password: event.password));
       response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => _emitAuthSuccess(user, emit),
+        (failure) {
+          _appUserCubit.updateUser(null);
+          emit(AuthFailure(message: failure.message));
+        },
+        (user) {
+          _appUserCubit.updateUser(user);
+          emit(AuthSuccess(user: user));
+        },
       );
     });
-    on<AuthSignIn>((event, emit) async {
+    on<AuthSignInEvent>((event, emit) async {
       emit(AuthLoading());
       final response = await _userSignIn(
           UserSignInParams(email: event.email, password: event.password));
       response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => _emitAuthSuccess(user, emit),
+        (failure) {
+          _appUserCubit.updateUser(null);
+          emit(AuthFailure(message: failure.message));
+        },
+        (user) {
+          _appUserCubit.updateUser(user);
+          emit(AuthSuccess(user: user));
+        },
       );
     });
-    on<AuthForgetPassword>((event, emit) async {
+    on<AuthSendOTPEvent>((event, emit) async {
       emit(AuthLoading());
       final response = await _userForgetPassword(
           UserForgetPasswordParams(email: event.email));
       response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (message) => emit(const AuthSuccess(user: null)),
+        (failure) => emit(event.resend ? AuthFailureResendOTP(message: failure.message) : AuthFailureSendOTP(message: failure.message)),
+        (message) => emit(event.resend ? const AuthSuccessSendOTP() : const AuthSuccessSendOTP()),
       );
     });
-    on<AuthAuthenticated>((event, emit) async {
+    on<AuthAuthenticatedEvent>((event, emit) async {
       final response = await _currentUser(NoParams());
       response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => _emitAuthSuccess(user, emit),
+        (failure) {
+          _appUserCubit.updateUser(null);
+          emit(AuthFailure(message: failure.message));
+        },
+        (user) {
+          _appUserCubit.updateUser(user);
+          emit(AuthSuccess(user: user));
+        },
       );
     });
 
-    on<AuthRecoverPasswordEvent>((event, emit) async {
+    on<AuthOTPVerificationEvent>((event, emit) async {
       emit(AuthLoading());
-      final response = await _userRecoverPassword(UserRecoverPasswordParams(
-          email: event.email, token: event.token));
-      response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => emit(AuthSuccessRecovery())
-      );
+      final response = await _userRecoverPassword(
+          UserRecoverPasswordParams(email: event.email, token: event.token));
+      response.fold((failure) => emit(AuthFailureOTPVerification(message: failure.message)),
+          (user) => emit(const AuthSuccessOTPVerification()));
     });
 
-  on<AuthChangePasswordEvent>((event, emit) async {
-    emit(AuthLoading());
-          final response = await _userChangePassword(UserChangePasswordParams(
+    on<AuthChangePasswordEvent>((event, emit) async {
+      emit(AuthLoading());
+      final response = await _userChangePassword(UserChangePasswordParams(
           email: event.email, password: event.password));
-      response.fold(
-        (failure) => _emitAuthFailure(failure.message, emit),
-        (user) => _emitAuthSuccess(user, emit)
-      );
-  });
-
+      response.fold((failure) => emit(AuthFailureChangePassword(message: failure.message)),
+          (user) => emit(const AuthSuccessChangePassword()));
+    });
   }
 
-  void _emitAuthSuccess(User user, Emitter<AuthState> emit) {
-    _appUserCubit.updateUser(user);
-    emit(AuthSuccess(user: user));
-  }
-
-  void _emitAuthFailure(String message, Emitter<AuthState> emit) {
-    _appUserCubit.updateUser(null);
-    emit(AuthFailure(message: message));
-  }
 }

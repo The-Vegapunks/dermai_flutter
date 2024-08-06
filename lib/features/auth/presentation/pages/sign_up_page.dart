@@ -28,6 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
@@ -167,7 +168,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 onPressed: () {
                                   if (_isPrivacyPolicyChecked == true) {
                                     if (_validateInputs()) {
-                                      context.read<AuthBloc>().add(AuthSignUp(
+                                      context
+                                          .read<AuthBloc>()
+                                          .add(AuthSignUpEvent(
                                             name: _name!.trim(),
                                             email: _email!.trim(),
                                             password: _password!.trim(),

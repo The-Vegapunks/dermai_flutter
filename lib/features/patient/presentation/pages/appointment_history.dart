@@ -38,10 +38,11 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
   Widget build(BuildContext context) {
     return BlocConsumer<PatientBloc, PatientState>(
       listener: (context, state) {
-        if (state is PatientFailure) {
+        if (state is PatientFailureAppointments) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

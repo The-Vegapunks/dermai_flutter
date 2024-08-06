@@ -47,10 +47,11 @@ class _HomePageState extends State<HomePage> {
             diagnosedDiseases = state.diagnosedDiseases;
           });
         }
-        if (state is PatientFailure) {
+        if (state is PatientFailureDiagnosedDiseases) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                   pinned: false,
                   snap: true,
                   title: Text(
-                    'DermAI',
+                    patient.name,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   actions: [
@@ -132,32 +133,37 @@ class _HomePageState extends State<HomePage> {
                             textAlign: TextAlign.center,
                             'No diseases diagnosed yet.\nClick on the + button to diagnose a disease.'),
                       )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16.0),
-                        itemCount: diagnosedDiseases.length,
-                        itemBuilder: (context, index) {
-                          return DiagnosisCard(
-                            diagnosedDisease: diagnosedDiseases[index],
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PatientCaseDetailPage(
-                                              diagnosedDisease:
-                                                  diagnosedDiseases[index].$1,
-                                              disease:
-                                                  diagnosedDiseases[index].$2,
-                                              doctor: diagnosedDiseases[index]
-                                                  .$3))).then((value) {
-                                context.read<PatientBloc>().add(
-                                    PatientDiagnosedDiseases(
-                                        patientID: patient.id));
-                              });
-                            },
-                          );
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          await _fetchDiagnosedDiseases();
                         },
-                      )),
+                      child: ListView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          itemCount: diagnosedDiseases.length,
+                          itemBuilder: (context, index) {
+                            return DiagnosisCard(
+                              diagnosedDisease: diagnosedDiseases[index],
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PatientCaseDetailPage(
+                                                diagnosedDisease:
+                                                    diagnosedDiseases[index].$1,
+                                                disease:
+                                                    diagnosedDiseases[index].$2,
+                                                doctor: diagnosedDiseases[index]
+                                                    .$3))).then((value) {
+                                  context.read<PatientBloc>().add(
+                                      PatientDiagnosedDiseases(
+                                          patientID: patient.id));
+                                });
+                              },
+                            );
+                          },
+                        ),
+                    )),
           ),
         );
       },

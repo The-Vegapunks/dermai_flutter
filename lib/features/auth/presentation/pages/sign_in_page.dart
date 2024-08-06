@@ -28,11 +28,12 @@ class _SignInPageState extends State<SignInPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
           if (state is AuthSuccess) {
-            if (state.user!.isDoctor) {
+            if (state.user.isDoctor) {
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
@@ -116,7 +117,7 @@ class _SignInPageState extends State<SignInPage> {
                                 onPressed: () {
                                   if (_validateInputs()) {
                                     context.read<AuthBloc>().add(
-                                          AuthSignIn(
+                                          AuthSignInEvent(
                                             email: _email!.trim(),
                                             password: _password!.trim(),
                                           ),
