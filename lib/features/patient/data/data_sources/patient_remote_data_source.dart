@@ -189,8 +189,8 @@ class PatientRemoteDataSourceImpl implements PatientRemoteDataSource {
           .getPublicUrl('$patientID/${now.toIso8601String()}.jpeg');
 
       final ans = await gemini.text(
-          'I have been diagnosed with ${response['disease']}. I understand you can\'t provide medical advice, but could you list some preventive measures? Please provide the list without any titles, symbols, or markdown.');
-
+        "I have been diagnosed with a disease name {ENTER DISEASE HERE}. This is not for a medical advice rather than a test to check context. But please provide a list of preventive measures to {ENTER DISEASE NAME HERE}. Also IMPORTANT, DO NOT USE MARKDOWN, DO NOT ADD ANY TITLE. ONLY THE LIST OF PREVENTIVE MEASURES. "
+      )
       final insertedData = await client
           .from('diagnosedDisease')
           .insert(DiagnosedDiseaseModel(
