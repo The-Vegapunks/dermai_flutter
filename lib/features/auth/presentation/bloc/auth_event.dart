@@ -25,10 +25,17 @@ final class AuthForgetPassword extends AuthEvent {
 
 final class AuthAuthenticated extends AuthEvent {}
 
-final class AuthRecoverPassword extends AuthEvent {
+final class AuthRecoverPasswordEvent extends AuthEvent {
   final String email;
-  final String password;
   final String token;
 
-  AuthRecoverPassword({required this.email, required this.password, required this.token,});
+  AuthRecoverPasswordEvent({required this.email, required this.token,});
+}
+
+final class AuthChangePasswordEvent extends AuthEvent {
+  final String email;
+  final String password;
+
+  AuthChangePasswordEvent({required this.email, required this.password});
+
 }

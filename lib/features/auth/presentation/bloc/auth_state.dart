@@ -17,6 +17,8 @@ final class AuthSuccess extends AuthState {
   const AuthSuccess({required this.user});
 }
 
+final class AuthSuccessRecovery extends AuthState {}
+
 final class AuthFailure extends AuthState {
   final String message;
 

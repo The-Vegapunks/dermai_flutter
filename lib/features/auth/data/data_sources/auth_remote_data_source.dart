@@ -14,8 +14,10 @@ abstract interface class AuthRemoteDataSource {
       {required String name, required String email, required String password});
   Future<String> forgotPassword({required String email});
   Future<UserModel?> getCurrentUserData();
-  Future<UserModel> verifyOTPForRecovery(
-      {required String email, required String password, required String token});
+  Future<void> verifyOTPForRecovery(
+      {required String email, required String token});
+  Future<UserModel> changePassword(
+      {required String email, required String password});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -139,20 +141,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> verifyOTPForRecovery(
-      {required String email,
-      required String password,
-      required String token}) async {
+  Future<void> verifyOTPForRecovery(
+      {required String email, required String token}) async {
     try {
       final verifyOTP = await client.auth
-          .verifyOTP(email: email, tokenHash: token, type: OtpType.recovery);
+          .verifyOTP(email: email, token: token, type: OtpType.recovery);
 
       if (verifyOTP.user == null) {
         throw const ServerException('An error occurred while verifying OTP');
       }
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
 
+  @override
+  Future<UserModel> changePassword(
+      {required String email, required String password}) async {
+    try {
       final response =
-          await client.auth.updateUser(UserAttributes(password: password));
+          await client.auth.updateUser(UserAttributes(email: email, password: password));
 
       if (response.user == null) {
         throw const ServerException(
@@ -172,8 +182,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             );
         return UserModel.fromJsonPatient(userData.first);
       }
-    } on AuthException catch (e) {
-      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
