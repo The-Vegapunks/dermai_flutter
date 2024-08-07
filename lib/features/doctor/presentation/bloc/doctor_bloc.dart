@@ -63,7 +63,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         ),
       );
       failureOrDiseases.fold(
-        (failure) => emit(DoctorFailure(message: failure.message)),
+        (failure) => emit(DoctorFailureCases(message: failure.message)),
         (response) => emit(DoctorSuccessCases(diagnosedDiseases: response)),
       );
     });
@@ -75,7 +75,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           ),
         );
         failureOrCaseDetails.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureCaseDetails(message: failure.message)),
           (response) => emit(DoctorSuccessCaseDetails(
             diagnosedDisease: response.$1,
             patient: response.$2,
@@ -94,7 +94,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           ),
         );
         failureOrCaseDetails.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureCaseDetails(message: failure.message)),
           (response) => emit(DoctorSuccessCaseDetails(
             diagnosedDisease: response.$1,
             patient: response.$2,
@@ -114,7 +114,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           ),
         );
         failureOrAppointments.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureAppointments(message: failure.message)),
           (response) => emit(DoctorSuccessAppointments(
             appointments: response,
           )),
@@ -147,7 +147,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
           ),
         );
         failureOrAppointments.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureAvailableSlot(message: failure.message)),
           (response) => emit(DoctorSuccessAvailableSlot(
             availableSlots: response,
           )),
@@ -163,7 +163,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
               appointment: event.appointment, insert: event.insert),
         );
         failureOrAppointments.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureAppointment(message: failure.message)),
           (response) => emit(DoctorSuccessAppointment(
             response: response,
           )),
@@ -175,7 +175,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
       (event, emit) async {
         final failureOrSuccess = await _doctorSignOut(NoParams());
         failureOrSuccess.fold(
-          (failure) => emit(DoctorFailure(message: failure.message)),
+          (failure) => emit(DoctorFailureSignOut(message: failure.message)),
           (_) => emit(DoctorSuccessSignOut()),
         );
       },
@@ -189,7 +189,7 @@ class DoctorBloc extends Bloc<DoctorEvent, DoctorState> {
         ),
       );
       failureOrSuccess.fold(
-        (failure) => emit(DoctorFailure(message: failure.message)),
+        (failure) => emit(DoctorFailureCallPatient(message: failure.message)),
         (response) => emit(DoctorSuccessCallPatient(call: response)),
       ); 
     });

@@ -4,6 +4,7 @@ import 'package:dermai/features/auth/data/repositories/auth_repository_impl.dart
 import 'package:dermai/features/auth/domain/repository/auth_repository.dart';
 import 'package:dermai/features/auth/domain/usecases/current_user.dart';
 import 'package:dermai/features/auth/domain/usecases/user_change_password.dart';
+import 'package:dermai/features/auth/domain/usecases/user_delete_account.dart';
 import 'package:dermai/features/auth/domain/usecases/user_forget_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_recover_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_in.dart';
@@ -104,6 +105,11 @@ void _initAuth() {
         serviceLocator()
       )
     )
+    ..registerFactory(
+      () => UserDeleteAccount(
+        serviceLocator(),
+      ),
+    )
     ..registerLazySingleton(
       () => AuthBloc(
         userSignUp: serviceLocator<UserSignUp>(),
@@ -113,6 +119,7 @@ void _initAuth() {
         appUserCubit: serviceLocator<AppUserCubit>(),
         userRecoverPassword: serviceLocator<UserRecoverPassword>(),
         userChangePassword: serviceLocator<UserChangePassword>(),
+        userDeleteAccount: serviceLocator<UserDeleteAccount>(),
       ),
     );
 

@@ -46,10 +46,11 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage> {
                     element.$1.dateCreated.month, element.$1.dateCreated.day));
           });
         }
-        if (state is DoctorFailure) {
+        if (state is DoctorFailureAppointments) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

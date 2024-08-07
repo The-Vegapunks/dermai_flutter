@@ -50,3 +50,5 @@ final class AuthChangePasswordEvent extends AuthEvent {
 
   AuthChangePasswordEvent({required this.email, required this.password});
 }
+
+final class AuthDeleteAccountEvent extends AuthEvent {}

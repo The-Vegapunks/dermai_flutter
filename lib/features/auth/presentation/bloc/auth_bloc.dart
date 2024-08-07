@@ -1,5 +1,6 @@
 import 'package:dermai/features/auth/domain/usecases/current_user.dart';
 import 'package:dermai/features/auth/domain/usecases/user_change_password.dart';
+import 'package:dermai/features/auth/domain/usecases/user_delete_account.dart';
 import 'package:dermai/features/auth/domain/usecases/user_forget_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_recover_password.dart';
 import 'package:dermai/features/auth/domain/usecases/user_sign_in.dart';
@@ -20,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AppUserCubit _appUserCubit;
   final UserRecoverPassword _userRecoverPassword;
   final UserChangePassword _userChangePassword;
+  final UserDeleteAccount _userDeleteAccount;
 
   AuthBloc({
     required UserSignUp userSignUp,
@@ -29,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required AppUserCubit appUserCubit,
     required UserRecoverPassword userRecoverPassword,
     required UserChangePassword userChangePassword,
+    required UserDeleteAccount userDeleteAccount,
   })  : _userSignUp = userSignUp,
         _userSignIn = userSignIn,
         _userForgetPassword = userForgetPassword,
@@ -36,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _appUserCubit = appUserCubit,
         _userRecoverPassword = userRecoverPassword,
         _userChangePassword = userChangePassword,
+        _userDeleteAccount = userDeleteAccount,
         super(AuthInitial()) {
     on<AuthSignUpEvent>((event, emit) async {
       emit(AuthLoading());
@@ -105,6 +109,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       response.fold((failure) => emit(AuthFailureChangePassword(message: failure.message)),
           (_) => emit(const AuthSuccessChangePassword()));
     });
+
+    on<AuthDeleteAccountEvent>((event, emit) async {
+      emit(AuthLoading());
+      final response = await _userDeleteAccount(NoDeleteParams());
+      response.fold((failure) => emit(AuthFailureDeleteAccount(message: failure.message)),
+          (_) => emit(const AuthSuccessDeleteAccount()));
+    });
+
   }
 
 }

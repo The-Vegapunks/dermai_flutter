@@ -59,3 +59,13 @@ final class AuthFailureChangePassword extends AuthState {
 
   const AuthFailureChangePassword({required this.message});
 }
+
+final class AuthSuccessDeleteAccount extends AuthState {
+  const AuthSuccessDeleteAccount();
+}
+
+final class AuthFailureDeleteAccount extends AuthState {
+  final String message;
+
+  const AuthFailureDeleteAccount({required this.message});
+}

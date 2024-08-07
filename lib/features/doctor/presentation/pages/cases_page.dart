@@ -71,10 +71,11 @@ class _CasesPageState extends State<CasesPage>
     return Scaffold(
       body: BlocConsumer<DoctorBloc, DoctorState>(
         listener: (context, state) {
-          if (state is DoctorFailure) {
+          if (state is DoctorFailureCases) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }

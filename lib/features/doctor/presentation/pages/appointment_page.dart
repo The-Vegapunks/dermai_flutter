@@ -71,10 +71,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
           });
           _handleAppointmentDateChange(selectedDate);
         }
-        if (state is DoctorFailure) {
+        if (state is DoctorFailureAppointments) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -103,58 +104,65 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: selectedEvents.isEmpty ? Center(
-                      child: Text(
-                        'No appointments on this day',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ) : ListView.builder(
-                      itemCount: selectedEvents.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => AppointmentDetailPage(
-                                    param: _filteredAppointments[index],
+                    child: selectedEvents.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No appointments on this day',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: selectedEvents.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AppointmentDetailPage(
+                                          param: _filteredAppointments[index],
+                                        ),
+                                      ),
+                                    )
+                                        .then((_) {
+                                      _fetchAppointments();
+                                    });
+                                  },
+                                  child: Card(
+                                    child: Container(
+                                      margin: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${DateFormat.Hm().format(
+                                              _filteredAppointments[index]
+                                                  .$1
+                                                  .dateCreated,
+                                            )} - ${_filteredAppointments[index].$3.name}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            '${_filteredAppointments[index].$2.diagnosedDiseaseName.isEmpty ? _filteredAppointments[index].$4.name : _filteredAppointments[index].$2.diagnosedDiseaseName} | ${_filteredAppointments[index].$1.isPhysical ? 'Physical' : 'Online'}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ).then((_) {
-                                _fetchAppointments();
-                              });
+                              );
                             },
-                            child: Card(
-                              child: Container(
-                                margin: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${DateFormat.Hm().format(
-                                        _filteredAppointments[index]
-                                            .$1
-                                            .dateCreated,
-                                      )} - ${_filteredAppointments[index].$3.name}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '${_filteredAppointments[index].$2.diagnosedDiseaseName.isEmpty ? _filteredAppointments[index].$4.name : _filteredAppointments[index].$2.diagnosedDiseaseName} | ${_filteredAppointments[index].$1.isPhysical ? 'Physical' : 'Online'}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                           ),
-                        );
-                      },
-                    ),
                   ),
                 );
               },

@@ -29,6 +29,7 @@ abstract interface class DoctorRemoteDataSource {
           {required AppointmentModel appointment, required bool insert});
   Future<void> signOut();
   Future<stream.Call> callPatient({required String appointmentID});
+
 }
 
 class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {

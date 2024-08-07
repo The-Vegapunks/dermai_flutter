@@ -218,7 +218,7 @@ class _AIPageState extends State<AIPage> {
                             ),
                           const SizedBox(height: 16.0),
                           UniversalTextField(
-                              labelText: 'Describe your symptoms',
+                              labelText: 'Describe your symptoms (Optional)',
                               onChanged: (value) {
                                 setState(() {
                                   patientComment = value;
@@ -252,16 +252,7 @@ class _AIPageState extends State<AIPage> {
                                       );
                                       return;
                                     }
-                                    if (patientComment.trim().isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              'Please describe your symptoms.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
+
                                     context.read<PatientBloc>().add(
                                         PatientSubmitCaseEvent(
                                             imagePath: image!.path,

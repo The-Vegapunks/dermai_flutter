@@ -8,7 +8,12 @@ import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.
 import 'package:intl/intl.dart';
 
 class ReschedulePage extends StatefulWidget {
-  const ReschedulePage({super.key, required this.insert, required this.appointment, required this.patient, required this.doctor});
+  const ReschedulePage(
+      {super.key,
+      required this.insert,
+      required this.appointment,
+      required this.patient,
+      required this.doctor});
   final Appointment appointment;
   final Patient patient;
   final Doctor doctor;
@@ -31,8 +36,8 @@ class _ReschedulePageState extends State<ReschedulePage> {
     patient = widget.patient;
     doctor = widget.doctor;
     insert = widget.insert;
-    context.read<DoctorBloc>().add(DoctorAvailableSlot(
-        doctorID: doctor.id, patientID: widget.patient.id));
+    context.read<DoctorBloc>().add(
+        DoctorAvailableSlot(doctorID: doctor.id, patientID: widget.patient.id));
     super.initState();
   }
 
@@ -46,9 +51,16 @@ class _ReschedulePageState extends State<ReschedulePage> {
           });
         }
         if (state is DoctorSuccessAppointment) {
-          Navigator.pop(context, (state.response.$1, state.response.$2, state.response.$4));
+          Navigator.pop(context,
+              (state.response.$1, state.response.$2, state.response.$4));
         }
-        if (state is DoctorFailure) {
+        if (state is DoctorFailureAppointment) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ));
+        }
+        if (state is DoctorFailureAvailableSlot) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(state.message),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -184,10 +196,10 @@ class _ReschedulePageState extends State<ReschedulePage> {
                                       return;
                                     }
                                     // ignore: use_build_context_synchronously
-                                    context.read<DoctorBloc>().add(
-                                        DoctorUpdateAppointment(
-                                            appointment:
-                                                appointment.copyWith(
+                                    context
+                                        .read<DoctorBloc>()
+                                        .add(DoctorUpdateAppointment(
+                                            appointment: appointment.copyWith(
                                               dateCreated: selectedEvents[index]
                                                   .startTime,
                                               isPhysical: resultSheet,
@@ -225,10 +237,10 @@ class _ReschedulePageState extends State<ReschedulePage> {
                                       return;
                                     }
                                     // ignore: use_build_context_synchronously
-                                    context.read<DoctorBloc>().add(
-                                        DoctorUpdateAppointment(
-                                            appointment:
-                                                appointment.copyWith(
+                                    context
+                                        .read<DoctorBloc>()
+                                        .add(DoctorUpdateAppointment(
+                                            appointment: appointment.copyWith(
                                               dateCreated: selectedEvents[index]
                                                   .startTime,
                                             ),

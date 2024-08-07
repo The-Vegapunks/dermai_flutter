@@ -50,11 +50,11 @@ class _CaseDetailPageState extends State<CaseDetailPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<DoctorBloc, DoctorState>(
       listener: (context, state) {
-        if (state is DoctorFailure) {
+        if (state is DoctorFailureCaseDetails) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

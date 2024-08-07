@@ -18,6 +18,7 @@ abstract interface class AuthRemoteDataSource {
       {required String email, required String token});
   Future<void> changePassword(
       {required String email, required String password});
+  Future<void> deleteAccount();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -161,8 +162,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> changePassword(
       {required String email, required String password}) async {
     try {
-      final response =
-          await client.auth.updateUser(UserAttributes(email: email, password: password));
+      final response = await client.auth
+          .updateUser(UserAttributes(email: email, password: password));
 
       if (response.user == null) {
         throw const ServerException(
@@ -170,6 +171,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } catch (e) {
       throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await stream.StreamVideo.reset(disconnect: true);
+      // await client
+      //     .from('patient')
+      //     .delete()
+      //     .eq('patientID', client.auth.currentUser!.id);
+      // await client.auth.admin.deleteUser(client.auth.currentUser!.id);
+      await client.auth.signOut();
+    } catch (e) {
+      throw const ServerException(
+          'An error occurred while deleting the account');
     }
   }
 }
