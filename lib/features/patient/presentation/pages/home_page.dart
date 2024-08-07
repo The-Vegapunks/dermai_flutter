@@ -61,14 +61,13 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // Navigator.push(context,
-              //         MaterialPageRoute(builder: (context) => const AIPage()))
-              //     .then((value) {
-              //   context
-              //       .read<PatientBloc>()
-              //       .add(PatientDiagnosedDiseases(patientID: patient.id));
-              // });
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())); //need to revert back to normal.
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const AIPage()))
+                  .then((value) {
+                context
+                    .read<PatientBloc>()
+                    .add(PatientDiagnosedDiseases(patientID: patient.id));
+              });
             },
             child: const Icon(Icons.add),
           ),
@@ -86,40 +85,10 @@ class _HomePageState extends State<HomePage> {
                   actions: [
                     IconButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Sign out'),
-                                content: const Text(
-                                    'Are you sure you want to sign out?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      context
-                                          .read<PatientBloc>()
-                                          .add(PatientSignOut());
-                                      Navigator.pop(context);
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const WelcomePage()));
-                                    },
-                                    child: const Text('Sign out'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => const SettingsPage()));
                         },
-                        icon: const Icon(Icons.logout)),
+                        icon: const Icon(Icons.settings)),
                   ],
                 )
               ];
