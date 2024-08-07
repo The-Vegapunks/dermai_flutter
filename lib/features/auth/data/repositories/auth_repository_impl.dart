@@ -86,14 +86,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
   
   @override
-  Future<Either<Failure, User>> changePassword({required String email, required String password}) async {
+  Future<Either<Failure, void>> changePassword({required String email, required String password}) async {
     try {
-      final user = await remoteDataSource.changePassword(
+      await remoteDataSource.changePassword(
         email: email,
         password: password,
       );
 
-      return right(user);
+      return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

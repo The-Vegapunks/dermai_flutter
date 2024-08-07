@@ -103,7 +103,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final response = await _userChangePassword(UserChangePasswordParams(
           email: event.email, password: event.password));
       response.fold((failure) => emit(AuthFailureChangePassword(message: failure.message)),
-          (user) => emit(const AuthSuccessChangePassword()));
+          (_) => emit(const AuthSuccessChangePassword()));
     });
   }
 

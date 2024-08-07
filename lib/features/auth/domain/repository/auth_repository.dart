@@ -8,6 +8,6 @@ abstract interface class AuthRepository {
   Future<Either<Failure, String>> forgotPassword({ required String email });
   Future<Either<Failure, User>> currentUser();
   Future<Either<Failure, void>> verifyOTPForRecovery({ required String email, required String token });
-  Future<Either<Failure, User>> changePassword({ required String email, required String password });
+  Future<Either<Failure, void>> changePassword({ required String email, required String password });
 
 }

@@ -16,7 +16,7 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUserData();
   Future<void> verifyOTPForRecovery(
       {required String email, required String token});
-  Future<UserModel> changePassword(
+  Future<void> changePassword(
       {required String email, required String password});
 }
 
@@ -158,7 +158,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> changePassword(
+  Future<void> changePassword(
       {required String email, required String password}) async {
     try {
       final response =
@@ -167,20 +167,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw const ServerException(
             'An error occurred while updating password');
-      }
-
-      if (response.user!.userMetadata!['isDoctor'] == true) {
-        final userData = await client.from('doctor').select().eq(
-              'doctorID',
-              response.user!.id,
-            );
-        return UserModel.fromJsonDoctor(userData.first);
-      } else {
-        final userData = await client.from('patient').select().eq(
-              'patientID',
-              response.user!.id,
-            );
-        return UserModel.fromJsonPatient(userData.first);
       }
     } catch (e) {
       throw ServerException(e.toString());

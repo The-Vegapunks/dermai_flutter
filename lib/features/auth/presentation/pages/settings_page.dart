@@ -1,13 +1,28 @@
-import 'package:dermai/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/core/entities/user.dart';
 import 'package:dermai/features/core/presentation/privacy_policy.dart';
 import 'package:dermai/features/core/presentation/terms_conditions.dart';
 import 'package:dermai/features/patient/presentation/bloc/patient_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  late final User user;
+
+  @override
+  void initState() {
+    user = (context.read<AuthBloc>().state as AppUserAuthenticated).user;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +75,30 @@ class SettingsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ListTile(
-              leading: Icon(Icons.lock),
-              title: Text('Change Password'),
+              leading: const Icon(Icons.lock),
+              title: const Text('Change Password'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPasswordPage(email : "dkefkf")));
+
               },
             ),
             ListTile(
-              leading: Icon(Icons.description),
-              title: Text('Terms and Conditions'),
+              leading: const Icon(Icons.description),
+              title: const Text('Terms and Conditions'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsConditions()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TermsConditions()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.privacy_tip),
-              title: Text('Privacy Policy'),
+              leading: const Icon(Icons.privacy_tip),
+              title: const Text('Privacy Policy'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacyPolicy()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PrivacyPolicy()));
               },
             ),
             const SizedBox(height: 505),
@@ -86,14 +107,15 @@ class SettingsPage extends StatelessWidget {
               child: SizedBox(
                 width: 400,
                 height: 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                child: FilledButton.icon(
+                  onPressed: () {
+                    
+                  },
+                  icon: const Icon(Icons.delete),
+                  label: const Text('Delete Account'),
+                  style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ),
-                  onPressed: () {
-                    // Handle account deletion
-                  },
-                  child: const Text('Delete Account'),
                 ),
               ),
             ),
