@@ -227,12 +227,12 @@ class DetailsSection extends StatelessWidget {
                 Text(
                   diagnosedDisease.editedByDoctor
                       ? 'Patient is diagnosed with ${diagnosedDisease.diagnosedDiseaseName.toLowerCase()}.'
-                      : 'AI Analysis classified the disease as ${disease.name.toLowerCase()}.',
+                      : 'AI Analysis: \'${disease.name.toLowerCase()}\'.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 if (doctor == null)
                   Text("No doctor has been assigned to this case yet.",
-                      style: Theme.of(context).textTheme.bodySmall),
+                      style: Theme.of(context).textTheme.labelSmall),
                 const SizedBox(height: 16),
                 Text(
                   DateFormat.yMMMMEEEEd().format(diagnosedDisease.dateCreated),
@@ -253,7 +253,7 @@ class DetailsSection extends StatelessWidget {
                   diagnosedDisease.editedByDoctor
                       ? 'Preventive Measures'
                       : 'AI Preventive Measures',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
                 Text(diagnosedDisease.details.isEmpty
@@ -272,7 +272,7 @@ class DetailsSection extends StatelessWidget {
               children: [
                 Text(
                   'My Comment',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
                 Text(diagnosedDisease.patientsComment),
