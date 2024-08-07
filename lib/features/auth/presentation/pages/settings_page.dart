@@ -1,4 +1,5 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:dermai/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/user.dart';
@@ -20,7 +21,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    user = (context.read<AuthBloc>().state as AppUserAuthenticated).user;
+    user = (context.read<AppUserCubit>().state as AppUserAuthenticated).user;
     super.initState();
   }
 
@@ -78,7 +79,20 @@ class _SettingsPageState extends State<SettingsPage> {
               leading: const Icon(Icons.lock),
               title: const Text('Change Password'),
               onTap: () {
-
+                context.read<AuthBloc>().add(
+                      AuthSendOTPEvent(resend: false, email: user.email),
+                    );
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OTPVerificationPage(
+                              email: user.email,
+                            )));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('OTP sent to your email'),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -101,16 +115,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         builder: (context) => const PrivacyPolicy()));
               },
             ),
-            const SizedBox(height: 505),
+            const Expanded(child: SizedBox(height: 16)),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
-                width: 400,
+                width: double.infinity,
                 height: 40,
                 child: FilledButton.icon(
-                  onPressed: () {
-                    
-                  },
+                  onPressed: () {},
                   icon: const Icon(Icons.delete),
                   label: const Text('Delete Account'),
                   style: FilledButton.styleFrom(
@@ -119,6 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
+            const SizedBox(height: 32),
           ],
         ),
       ),

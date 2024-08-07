@@ -91,7 +91,7 @@ class _CasesPageState extends State<CasesPage>
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
                   title: Text(
-                    'DermAI',
+                    doctor.name,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   actions: [
@@ -173,7 +173,8 @@ class _CasesPageState extends State<CasesPage>
                           }),
                     )),
               ],
-              body: state is DoctorInitial || (state is DoctorLoading && _cases.isEmpty)
+              body: state is DoctorInitial ||
+                      (state is DoctorLoading && _cases.isEmpty)
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )

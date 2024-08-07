@@ -1,5 +1,7 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/core/entities/user.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -16,8 +18,9 @@ class OTPVerificationPage extends StatefulWidget {
 
 class OTPVerificationPageState extends State<OTPVerificationPage> {
   late Timer _timer;
-  int _start = 10; // 4 minutes timer
+  int _start = 60;
   var token = ["", "", "", "", "", ""];
+  late final User? user;
 
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -44,24 +47,18 @@ class OTPVerificationPageState extends State<OTPVerificationPage> {
   @override
   void initState() {
     super.initState();
+    final authState = context.read<AppUserCubit>().state;
+    if (authState is AppUserAuthenticated) {
+      user = authState.user;
+    } else {
+      user = null;
+    }
     startTimer();
-    // Lock orientation to portrait mode
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    // Reset orientation to default
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     super.dispose();
   }
 
@@ -77,6 +74,12 @@ class OTPVerificationPageState extends State<OTPVerificationPage> {
                 email: widget.email,
               ),
             ),
+          ).then(
+            (value) {
+              if (user != null) {
+                Navigator.pop(context);
+              }
+            },
           );
         }
         if (state is AuthFailureOTPVerification) {
@@ -200,61 +203,6 @@ class OTPVerificationPageState extends State<OTPVerificationPage> {
       },
     );
   }
-
-  // Scaffold(
-  //         appBar: AppBar(
-  //           title: const Text('OTP Verification'),
-  //           leading: IconButton(
-  //             icon: const Icon(Icons.arrow_back),
-  //             onPressed: () {
-  //               Navigator.pop(
-  //                   context); // Navigate back when the back button is pressed
-  //             },
-  //           ),
-  //         ),
-  //         body: Padding(
-  //           padding: const EdgeInsets.all(16.0),
-  //           child: Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               const Text(
-  //                 'OTP Verification',
-  //                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-  //               ),
-  //               const SizedBox(height: 20),
-  //               Text(
-  //                 'One Time Password (OTP) has been sent via email to ${widget.email}',
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //               const SizedBox(height: 20),
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                 children: List.generate(6, (index) => _buildOTPField(index)),
-  //               ),
-  //               const SizedBox(height: 20),
-  //               _start > 0
-  //                   ? Text('Resend OTP in $_start seconds')
-  //                   : TextButton(
-  //                       onPressed: () {
-  //                         resetTimer();
-  //                         context
-  //                             .read<AuthBloc>()
-  //                             .add(AuthSendOTPEvent(resend: true, email: widget.email));
-  //                       },
-  //                       child: const Text('Resend OTP'),
-  //                     ),
-  //               const SizedBox(height: 20),
-  //               ElevatedButton(
-  //                 onPressed: () {
-  //                   context.read<AuthBloc>().add(AuthOTPVerificationEvent(
-  //                       email: widget.email, token: token.join("")));
-  //                 },
-  //                 child: const Text('Verify OTP'),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
 
   Widget _buildOTPField(int index) {
     return SizedBox(

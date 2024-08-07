@@ -1,23 +1,48 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:dermai/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
+import 'package:dermai/features/core/entities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ResetPasswordPage extends StatelessWidget {
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmNewPasswordController =
-      TextEditingController();
+class ResetPasswordPage extends StatefulWidget {
   final String email;
 
-  ResetPasswordPage({super.key, required this.email});
+  const ResetPasswordPage({super.key, required this.email});
+
+  @override
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+}
+
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  late final User? user;
+  final TextEditingController newPasswordController = TextEditingController();
+
+  final TextEditingController confirmNewPasswordController =
+      TextEditingController();
+
+  @override
+  void initState() {
+    final state = context.read<AppUserCubit>().state;
+    if (state is AppUserAuthenticated) {
+      user = state.user;
+    } else {
+      user = null;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccessChangePassword) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const SignInPage()));
+          if (user != null) {
+            Navigator.pop(context);
+          } else {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SignInPage()));
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Password changed successfully')),
           );
@@ -85,7 +110,7 @@ class ResetPasswordPage extends StatelessWidget {
                               confirmNewPasswordController.text.trim()) {
                             context.read<AuthBloc>().add(
                                 AuthChangePasswordEvent(
-                                    email: email,
+                                    email: widget.email,
                                     password:
                                         newPasswordController.text.trim()));
                           } else {
