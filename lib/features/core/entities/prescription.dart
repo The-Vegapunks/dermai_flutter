@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class Prescription {
   Prescription({
     required this.medcine,
@@ -7,7 +9,7 @@ class Prescription {
   });
 
   final String medcine;
-  final String dosage;
-  final String frequency;
+  final Float dosage;
+  final int frequency;
   final DateTime datePrescribed;
 }
