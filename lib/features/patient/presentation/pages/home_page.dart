@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dermai/features/auth/presentation/pages/settings_page.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
@@ -60,13 +61,14 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const AIPage()))
-                  .then((value) {
-                context
-                    .read<PatientBloc>()
-                    .add(PatientDiagnosedDiseases(patientID: patient.id));
-              });
+              // Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => const AIPage()))
+              //     .then((value) {
+              //   context
+              //       .read<PatientBloc>()
+              //       .add(PatientDiagnosedDiseases(patientID: patient.id));
+              // });
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage())); //need to revert back to normal.
             },
             child: const Icon(Icons.add),
           ),
