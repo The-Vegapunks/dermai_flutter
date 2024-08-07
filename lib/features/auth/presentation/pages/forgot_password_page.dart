@@ -1,5 +1,5 @@
 import 'package:dermai/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:dermai/features/auth/presentation/pages/otp_page.dart';
+import 'package:dermai/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:dermai/features/core/presentation/textfields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,18 +18,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthFailure) {
+          if (state is AuthFailureSendOTP) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
-          if (state is AuthSuccess) {
+          if (state is AuthSuccessSendOTP) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text(
-                    'An email has been sent with instructions on how to reset your password.'),
+                    'An OTP has been sent to your email. Please enter the OTP to reset your password.'),
+              ),
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    OTPVerificationPage(email: _email!.trim()),
               ),
             );
           }
@@ -76,13 +84,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 onPressed: () {
                                   if (_validateInputs()) {
                                     context.read<AuthBloc>().add(
-                                          AuthForgetPassword(email: _email!.trim()),
+                                          AuthSendOTPEvent(
+                                              resend: false,
+                                              email: _email!.trim()),
                                         );
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                            const OTPVerificationScreen()));
                                   }
                                 },
                                 child: Row(

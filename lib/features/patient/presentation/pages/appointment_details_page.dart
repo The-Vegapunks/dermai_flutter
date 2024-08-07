@@ -46,7 +46,15 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             ),
           );
         }
-        if (state is PatientFailure) {
+        if (state is PatientFailureCallDoctor) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        if (state is PatientFailureCancelAppointment) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),

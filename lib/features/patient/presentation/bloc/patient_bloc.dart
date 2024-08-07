@@ -61,7 +61,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         ),
       );
       failureOrDiseases.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureDiagnosedDiseases(message: failure.message)),
         (response) =>
             emit(PatientSuccessDiagnosedDiseases(diagnosedDiseases: response)),
       );
@@ -70,7 +70,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
     on<PatientSignOut>((event, emit) async {
       final failureOrSuccess = await _patientSignOut(NoParams());
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureSignOut(message: failure.message)),
         (_) => emit(PatientSuccessSignOut()),
       );
     });
@@ -85,7 +85,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
             diagnosedID: event.diagnosedID),
       );
       failureOrAppointments.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureAppointments(message: failure.message)),
         (response) => emit(PatientSuccessAppointments(
             appointments: groupBy(
                 response,
@@ -106,7 +106,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         ),
       );
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureSubmitCase(message: failure.message)),
         (response) => emit(PatientSuccessSubmitCase(
             diagnosedDisease: response.$1, disease: response.$2)),
       );
@@ -118,7 +118,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
       final failureOrSuccess = await _patientCancelAppointment(
           PatientCancelAppointmentParams(appointmentID: event.appointmentID));
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureCancelAppointment(message: failure.message)),
         (response) => emit(PatientSuccessCancelAppointment()),
       );
     });
@@ -133,7 +133,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         ),
       );
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureSendMessage(message: failure.message)),
         (_) => emit(PatientTyping()),
       );
     });
@@ -153,7 +153,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         ),
       );
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureCallDoctor(message: failure.message)),
         (response) => emit(PatientSuccessCallDoctor(call: response)),
       ); 
     });
@@ -165,7 +165,7 @@ class PatientBloc extends Bloc<PatientEvent, PatientState> {
         ),
       );
       failureOrSuccess.fold(
-        (failure) => emit(PatientFailure(message: failure.message)),
+        (failure) => emit(PatientFailureDeleteDiagnosedDisease(message: failure.message)),
         (_) => emit(PatientSuccessDeleteDiagnosedDisease()),
       );
     });

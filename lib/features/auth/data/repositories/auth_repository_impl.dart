@@ -72,12 +72,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
   
   @override
-  Future<Either<Failure, User>> verifyOTPForRecovery({required String email, required String password, required String token}) async {
+  Future<Either<Failure, void>> verifyOTPForRecovery({required String email, required String token}) async {
     try {
       final user = await remoteDataSource.verifyOTPForRecovery(
         email: email,
-        password: password,
         token: token,
+      );
+
+      return right(user);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, User>> changePassword({required String email, required String password}) async {
+    try {
+      final user = await remoteDataSource.changePassword(
+        email: email,
+        password: password,
       );
 
       return right(user);

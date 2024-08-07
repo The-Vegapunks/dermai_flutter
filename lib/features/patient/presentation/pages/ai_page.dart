@@ -32,10 +32,11 @@ class _AIPageState extends State<AIPage> {
                           doctor: null,
                         )));
           }
-          if (state is PatientFailure) {
+          if (state is PatientFailureSubmitCase) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }

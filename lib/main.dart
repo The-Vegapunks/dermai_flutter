@@ -12,11 +12,9 @@ import 'package:dermai/init_dependencies.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
-
   // Right after creation client connects to the backend and authenticates the user.
   // You can set `options: StreamVideoOptions(autoConnect: false)` if you want to disable auto-connect.
   // final client = vid.StreamVideo(
@@ -56,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      context.read<AuthBloc>().add(AuthAuthenticated());
+      context.read<AuthBloc>().add(AuthAuthenticatedEvent());
     });
   }
 
