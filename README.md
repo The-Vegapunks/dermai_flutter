@@ -27,7 +27,7 @@ The AI image classification server is a crucial component of DermAI. Here's how 
 1. **Clone the AI Server Repository**:  
    Clone the AI server repository from GitHub:
    ```bash
-   git clone https://github.com/poshan-p/dermai.git
+   git clone https://github.com/The-Vegapunks/dermai.git
    cd dermai
    ```
 
