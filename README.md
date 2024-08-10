@@ -55,7 +55,7 @@ The AI image classification server is a crucial component of DermAI. Here's how 
 1. **Clone the DermAI Repository**:  
    Clone the DermAI Flutter project:
    ```bash
-   git clone https://github.com/poshan-p/dermai_flutter.git
+   git clone https://github.com/The-Vegapunks/dermai_flutter.git
    cd dermai_flutter
    ```
 
