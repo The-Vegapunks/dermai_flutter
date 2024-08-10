@@ -2,6 +2,8 @@
 
 **DermAI** is an innovative healthcare application designed to connect patients with dermatologists and provide AI-driven image classification for skin conditions. The app combines advanced machine learning algorithms with telemedicine to offer instant preliminary diagnoses, health guidance through a chatbot, and seamless appointment scheduling with dermatologists. It also supports secure video consultations, making dermatological care accessible from anywhere.
 
+![](screenshots.png)
+
 ## Features
 - **AI-Driven Image Classification**: Instant preliminary diagnoses for skin conditions using machine learning.
 - **Chatbot**: Provides health guidance and support.
