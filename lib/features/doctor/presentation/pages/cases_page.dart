@@ -1,3 +1,4 @@
+import 'package:dermai/features/auth/presentation/pages/settings_page.dart';
 import 'package:dermai/features/auth/presentation/pages/welcome_page.dart';
 import 'package:dermai/features/core/cubits/app_user/app_user_cubit.dart';
 import 'package:dermai/features/core/entities/diagnosed_disease.dart';
@@ -98,40 +99,12 @@ class _CasesPageState extends State<CasesPage>
                   actions: [
                     IconButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Sign out'),
-                                content: const Text(
-                                    'Are you sure you want to sign out?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      context
-                                          .read<DoctorBloc>()
-                                          .add(DoctorSignOut());
-                                      Navigator.pop(context);
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const WelcomePage()));
-                                    },
-                                    child: const Text('Sign out'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SettingsPage()));
                         },
-                        icon: const Icon(Icons.logout)),
+                        icon: const Icon(Icons.settings)),
                   ],
                 ),
                 SliverAppBar(

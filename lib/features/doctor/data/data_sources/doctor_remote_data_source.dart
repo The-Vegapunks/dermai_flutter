@@ -58,15 +58,6 @@ class DoctorRemoteDataSourceImpl implements DoctorRemoteDataSource {
   Future<List<(DiagnosedDiseaseModel, PatientModel, DiseaseModel)>> getCases(
       {required String doctorID}) async {
     try {
-      // client.auth.signUp(email: "doctor1@test.io", password: "123456", data: {
-      //   'name': "Dr. Sarah Johnson",
-      //   'isDoctor': true,
-      // });
-      // client.auth.signUp(email: "doctor2@test.io", password: "123456", data: {
-      //   'name': "Dr. John Doe",
-      //   'isDoctor': true,
-      // });
-
       final response = await client
           .from('diagnosedDisease')
           .select('''*, disease( * ), patient!inner( * )''')

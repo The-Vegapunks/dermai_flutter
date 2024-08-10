@@ -51,6 +51,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const ServerException('User not found');
       }
 
+      await stream.StreamVideo.reset(disconnect: true);
+
       if (response.user!.userMetadata!['isDoctor'] == true) {
         final userData = await client.from('doctor').select().eq(
               'doctorID',
@@ -178,11 +180,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> deleteAccount() async {
     try {
       await stream.StreamVideo.reset(disconnect: true);
-      // await client
-      //     .from('patient')
-      //     .delete()
-      //     .eq('patientID', client.auth.currentUser!.id);
-      // await client.auth.admin.deleteUser(client.auth.currentUser!.id);
       await client.auth.signOut();
     } catch (e) {
       throw const ServerException(
