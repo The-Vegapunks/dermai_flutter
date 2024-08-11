@@ -19,7 +19,7 @@
  - Poshan Peeroo (poshanpeeroo@cyberstorm.mu)      - `Back-end & Front-end Integration`
  - Derek Lee Chung    - `Front-end Implementation`
  - Salman Kootoobally - `Front-end Implementation`
- - Bhovanen Murday    - `Front-end Implementation`
+ - Bhovanen Murday (bhovanen31pro@gmail.com)    - `Front-end Implementation`
  - **Every one**      - `Front-end Design`
 
 ## Prerequisites
