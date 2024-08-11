@@ -1,15 +1,27 @@
-# DermAI - Documentation
+<h1 style="text-align:center;font-size:4rem;">DermAI - Documentation</h1>
+
+<img src="assets\Logo\DermAI-darkmode.svg"></img>
 
 **DermAI** is an innovative healthcare application designed to connect patients with dermatologists and provide AI-driven image classification for skin conditions. The app combines advanced machine learning algorithms with telemedicine to offer instant preliminary diagnoses, health guidance through a chatbot, and seamless appointment scheduling with dermatologists. It also supports secure video consultations, making dermatological care accessible from anywhere.
 
-![](screenshots.png)
+<img src="assets\Images\front cover.png">
 
-## Features
-- **AI-Driven Image Classification**: Instant preliminary diagnoses for skin conditions using machine learning.
+
+<h2 style="text-align:left;font-size:3rem;">Features</h2>
+<!-- - **AI-Driven Image Classification**: Instant preliminary diagnoses for skin conditions using machine learning.
 - **Chatbot**: Provides health guidance and support.
 - **Appointment Scheduling**: Seamless integration with dermatologists' schedules.
-- **Secure Video Consultations**: Enabling remote dermatological care.
-  
+- **Secure Video Consultations**: Enabling remote dermatological care. -->
+<img src="assets\Images\Features.png" style="border-radius:10px;">
+
+## Contributors
+ - Atish Joottun (atish.joottun@cyberstorm.mu)      - `AI Implementation & Back-end`
+ - Poshan Peeroo (poshanpeeroo@cyberstorm.mu)      - `Back-end & Front-end Integration`
+ - Derek Lee Chung    - `Front-end Implementation`
+ - Salman Kootoobally - `Front-end Implementation`
+ - Bhovanen Murday    - `Front-end Implementation`
+ - **Every one**      - `Front-end Design`
+
 ## Prerequisites
 
 Before you can build and run the DermAI app, ensure you have the following installed on your development environment:
@@ -23,7 +35,6 @@ Before you can build and run the DermAI app, ensure you have the following insta
 - **Supabase**: Create an account on [Supabase](https://supabase.io/) and set up a project.
   
 ## AI Server Setup
-
 The AI image classification server is a crucial component of DermAI. Here's how to set it up:
 
 1. **Clone the AI Server Repository**:  
@@ -35,13 +46,13 @@ The AI image classification server is a crucial component of DermAI. Here's how 
 
 2. **Install Dependencies**:  
    Install the necessary Python packages:
-   ```bash
+   ```shell
    pip install -r requirements.txt
    ```
 
 3. **Run the AI Server**:  
    Start the Flask server to serve the AI model:
-   ```bash
+   ```console
    flask run
    ```
 
